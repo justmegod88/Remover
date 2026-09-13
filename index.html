@@ -133,17 +133,53 @@ let lensOn = false;
 let faceLandmarker = null;
 let lastVideoTime = -1;
 
-// Reused offscreen canvases so we don't allocate new ones every frame.
-const patchCanvas = document.createElement("canvas");
-const patchCtx = patchCanvas.getContext("2d");
+// Reused offscreen canvas so we don't allocate a new one every frame.
 const maskCanvas = document.createElement("canvas");
 const maskCtx = maskCanvas.getContext("2d");
+const sampleCanvas = document.createElement("canvas");
+sampleCanvas.width = 1;
+sampleCanvas.height = 1;
+const sampleCtx = sampleCanvas.getContext("2d", { willReadFrequently: true });
 
 // Landmark indices from MediaPipe's 468-point face mesh.
 // (Meaning is fixed by the model — these don't change with mirroring.)
 const EYEBROW_A = 105, EYEBROW_B = 334;    // top of each eyebrow
 const EYE_LOWER_A = 145, EYE_LOWER_B = 374; // lower eyelid
 const TEMPLE_A = 127, TEMPLE_B = 356;       // temple / outer cheek
+
+// Points that are skin no matter what — never covered by bangs, glasses
+// frames, or background, regardless of camera distance or hairstyle.
+const SAFE_SKIN_POINTS = [4, 6, 205, 425]; // nose tip, nose bridge, left cheek, right cheek
+
+// Exponential moving average of the sampled skin tone, to stop the patch
+// from flickering in color as the face/landmarks jitter slightly frame to frame.
+let smoothedColor = null;
+
+function sampleAverageColor(landmarks, W, H) {
+  let r = 0, g = 0, b = 0, count = 0;
+  for (const idx of SAFE_SKIN_POINTS) {
+    const lm = landmarks[idx];
+    if (!lm) continue;
+    const x = lm.x * W, y = lm.y * H;
+    const size = 8; // sample an 8x8 px neighborhood, downscaled to 1px (cheap blur/average)
+    sampleCtx.drawImage(video, x - size / 2, y - size / 2, size, size, 0, 0, 1, 1);
+    const [pr, pg, pb] = sampleCtx.getImageData(0, 0, 1, 1).data;
+    r += pr; g += pg; b += pb; count++;
+  }
+  if (count === 0) return smoothedColor;
+  const fresh = { r: r / count, g: g / count, b: b / count };
+  if (!smoothedColor) {
+    smoothedColor = fresh;
+  } else {
+    const a = 0.15; // smoothing factor
+    smoothedColor = {
+      r: smoothedColor.r * (1 - a) + fresh.r * a,
+      g: smoothedColor.g * (1 - a) + fresh.g * a,
+      b: smoothedColor.b * (1 - a) + fresh.b * a
+    };
+  }
+  return smoothedColor;
+}
 
 function showError(message) {
   loadingEl.style.display = "none";
@@ -215,11 +251,12 @@ function renderLoop() {
 }
 
 /**
- * "Removes" glasses by cloning a same-sized patch of forehead skin from
- * directly above the eyebrows and blending it — with a soft, feathered
- * edge — over the glasses region (eyebrows -> lower eyelids, temple to
- * temple). This is a texture-cloning trick, not true inpainting, but for
- * a consultation-room demo it reads convincingly as "no glasses."
+ * "Removes" glasses by covering the glasses region (eyebrows -> lower
+ * eyelids, temple to temple) with a soft, feathered oval filled in the
+ * wearer's own average skin tone. The tone is sampled live every frame
+ * from spots that are essentially always visible skin — nose tip, nose
+ * bridge, and both cheeks — so it never accidentally grabs hair or
+ * background the way copying a forehead patch could.
  */
 function removeGlasses(landmarks) {
   const W = canvas.width, H = canvas.height;
@@ -229,22 +266,23 @@ function removeGlasses(landmarks) {
   const lowerA = p(EYE_LOWER_A), lowerB = p(EYE_LOWER_B);
   const templeA = p(TEMPLE_A), templeB = p(TEMPLE_B);
 
-  const padX = 0.12;      // horizontal breathing room beyond the temples
-  const padTop = 0.35;    // room above the eyebrows (typical frame height)
-  const padBottom = 0.25; // room below the lower eyelid
+  const padX = 0.16; // horizontal breathing room beyond the temples (covers the arms of the frame)
 
   let xMin = Math.min(templeA.x, templeB.x, browA.x, browB.x);
   let xMax = Math.max(templeA.x, templeB.x, browA.x, browB.x);
-  let yTop = Math.min(browA.y, browB.y);
-  let yBottom = Math.max(lowerA.y, lowerB.y);
-
   const boxW = xMax - xMin;
-  const boxH = yBottom - yTop;
+
+  // Glasses run from above the eyebrows down onto the upper cheek/nose bridge —
+  // a much bigger span than the eyebrow-to-lower-eyelid gap alone. Size the
+  // patch off the face WIDTH (a stable reference) instead, centered on the
+  // eye line, so it reliably covers the whole frame regardless of face shape.
+  const eyeLineY = (Math.min(browA.y, browB.y) + Math.max(lowerA.y, lowerB.y)) / 2;
+  const halfHeight = boxW * 0.34;
 
   xMin -= boxW * padX;
   xMax += boxW * padX;
-  yTop -= boxH * padTop;
-  yBottom += boxH * padBottom;
+  let yTop = eyeLineY - halfHeight;
+  let yBottom = eyeLineY + halfHeight * 1.25; // a bit more room below, toward the cheek/nose bridge
 
   const destX = Math.max(0, xMin);
   const destY = Math.max(0, yTop);
@@ -252,40 +290,29 @@ function removeGlasses(landmarks) {
   const destH = Math.min(H, yBottom) - destY;
   if (destW <= 0 || destH <= 0) return;
 
-  // Source patch: same size, sampled from higher up on the forehead
-  // (clean skin, same lighting, no glasses ever present there).
-  let srcY = destY - destH * 1.05;
-  if (srcY < 0) srcY = Math.max(0, destY - destH * 0.5); // fallback if forehead is short
+  const color = sampleAverageColor(landmarks, W, H);
+  if (!color) return;
+  const { r, g, b } = color;
 
   const w = Math.round(destW), h = Math.round(destH);
-  patchCanvas.width = w;
-  patchCanvas.height = h;
   maskCanvas.width = w;
   maskCanvas.height = h;
 
-  // 1) Clone the skin texture.
-  patchCtx.clearRect(0, 0, w, h);
-  patchCtx.drawImage(video, destX, srcY, destW, destH, 0, 0, w, h);
-
-  // 2) Build a soft-edged oval mask (opaque center, fading to transparent).
+  // Soft-edged oval: solid skin tone in the middle, feathering to fully
+  // transparent at the rim so it blends into the real skin around it
+  // instead of showing a hard-edged sticker.
   maskCtx.clearRect(0, 0, w, h);
   const cx = w / 2, cy = h / 2;
-  const gradient = maskCtx.createRadialGradient(cx, cy, Math.min(w, h) * 0.25, cx, cy, Math.max(w, h) * 0.62);
-  gradient.addColorStop(0, "rgba(255,255,255,1)");
-  gradient.addColorStop(0.75, "rgba(255,255,255,1)");
-  gradient.addColorStop(1, "rgba(255,255,255,0)");
+  const gradient = maskCtx.createRadialGradient(cx, cy, Math.min(w, h) * 0.15, cx, cy, Math.max(w, h) * 0.62);
+  gradient.addColorStop(0, `rgba(${r},${g},${b},0.97)`);
+  gradient.addColorStop(0.7, `rgba(${r},${g},${b},0.9)`);
+  gradient.addColorStop(1, `rgba(${r},${g},${b},0)`);
   maskCtx.fillStyle = gradient;
   maskCtx.beginPath();
   maskCtx.ellipse(cx, cy, w / 2, h / 2, 0, 0, Math.PI * 2);
   maskCtx.fill();
 
-  // 3) Cut the clone down to that soft oval shape.
-  patchCtx.globalCompositeOperation = "destination-in";
-  patchCtx.drawImage(maskCanvas, 0, 0);
-  patchCtx.globalCompositeOperation = "source-over";
-
-  // 4) Paste the feathered patch over the glasses area.
-  ctx.drawImage(patchCanvas, destX, destY, destW, destH);
+  ctx.drawImage(maskCanvas, destX, destY, destW, destH);
 }
 
 toggleBtn.addEventListener("click", () => {
