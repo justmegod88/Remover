@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Lens Mirror — 렌즈 착용 시뮬레이터</title>
+<style>
+  :root {
+    --teal: #028090;
+    --teal-dark: #07333A;
+    --accent: #02C39A;
+  }
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: #000;
+    font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
+    overflow: hidden;
+  }
+  #stage {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+  }
+  /* Mirror both the raw video and the overlay canvas the same way,
+     so the drawn eye markers line up with what the user sees. */
+  video, canvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1); /* natural "mirror" feel for a front camera */
+  }
+  video { visibility: hidden; } /* we only use <video> as the capture source; canvas draws everything visible */
+
+  #ui {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 24px calc(28px + env(safe-area-inset-bottom));
+    background: linear-gradient(to top, rgba(0,0,0,0.65), transparent);
+  }
+  #status {
+    color: #fff;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(6px);
+    padding: 7px 16px;
+    border-radius: 999px;
+    font-size: 14px;
+  }
+  #toggleBtn {
+    width: 100%;
+    max-width: 420px;
+    padding: 16px;
+    border: none;
+    border-radius: 999px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--teal);
+    transition: background 0.2s;
+  }
+  #toggleBtn.on { background: #c0392b; }
+  #toggleBtn:disabled { background: #555; }
+
+  #loading, #error {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    color: #fff;
+    text-align: center;
+    padding: 0 30px;
+    background: var(--teal-dark);
+  }
+  #error { display: none; background: #3a0f0f; }
+  .spinner {
+    width: 34px; height: 34px;
+    border: 3px solid rgba(255,255,255,0.25);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <video id="video" playsinline autoplay muted></video>
+  <canvas id="canvas"></canvas>
+
+  <div id="ui">
+    <div id="status">카메라 준비 중…</div>
+    <button id="toggleBtn" disabled>렌즈 착용</button>
+  </div>
+
+  <div id="loading">
+    <div class="spinner"></div>
+    <div>얼굴 인식 모델을 불러오는 중입니다…</div>
+  </div>
+
+  <div id="error">
+    <div style="font-size:17px; font-weight:700;">카메라를 사용할 수 없습니다</div>
+    <div id="errorDetail" style="font-size:13px; opacity:0.85; line-height:1.5;"></div>
+  </div>
+</div>
+
+<script type="module">
+import {
+  FaceLandmarker,
+  FilesetResolver
+} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs";
+
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const statusEl = document.getElementById("status");
+const toggleBtn = document.getElementById("toggleBtn");
+const loadingEl = document.getElementById("loading");
+const errorEl = document.getElementById("errorDetail");
+const errorBox = document.getElementById("error");
+
+let lensOn = false;
+let faceLandmarker = null;
+let lastVideoTime = -1;
+
+// MediaPipe Face Landmarker gives 478 points per face when the model
+// includes the iris. Indices 468 and 473 are the LEFT and RIGHT iris centers.
+const LEFT_IRIS = 468;
+const RIGHT_IRIS = 473;
+// A small ring of points around each iris — used to estimate its radius on screen.
+const LEFT_IRIS_RING = [469, 470, 471, 472];
+const RIGHT_IRIS_RING = [474, 475, 476, 477];
+
+function showError(message) {
+  loadingEl.style.display = "none";
+  errorBox.style.display = "flex";
+  errorEl.textContent = message;
+}
+
+async function setup() {
+  try {
+    // 1) Load the face landmark model (downloaded once, then cached by the browser).
+    const filesetResolver = await FilesetResolver.forVisionTasks(
+      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
+    );
+    faceLandmarker = await FaceLandmarker.createFromOptions(filesetResolver, {
+      baseOptions: {
+        modelAssetPath:
+          "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+        delegate: "GPU"
+      },
+      runningMode: "VIDEO",
+      numFaces: 1
+    });
+
+    // 2) Ask for the front camera.
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: false
+    });
+    video.srcObject = stream;
+
+    await new Promise((resolve) => {
+      video.onloadedmetadata = () => {
+        video.play();
+        resolve();
+      };
+    });
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    loadingEl.style.display = "none";
+    statusEl.textContent = "렌즈 미착용";
+    toggleBtn.disabled = false;
+    requestAnimationFrame(renderLoop);
+  } catch (err) {
+    console.error(err);
+    if (err.name === "NotAllowedError") {
+      showError("카메라 권한이 거부되었습니다. 브라우저 설정에서 카메라 접근을 허용한 뒤 새로고침 해주세요.");
+    } else if (location.protocol !== "https:" && location.hostname !== "localhost") {
+      showError("카메라 접근에는 HTTPS 연결이 필요합니다. (GitHub Pages 주소는 자동으로 HTTPS입니다.)");
+    } else {
+      showError(err.message || "알 수 없는 오류가 발생했습니다.");
+    }
+  }
+}
+
+function renderLoop() {
+  if (video.readyState >= 2 && video.currentTime !== lastVideoTime) {
+    lastVideoTime = video.currentTime;
+    const result = faceLandmarker.detectForVideo(video, performance.now());
+    draw(result);
+  }
+  requestAnimationFrame(renderLoop);
+}
+
+function draw(result) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (!lensOn) return;
+
+  const faces = result.faceLandmarks;
+  if (!faces || faces.length === 0) return;
+
+  const landmarks = faces[0];
+  drawTint(landmarks, LEFT_IRIS, LEFT_IRIS_RING);
+  drawTint(landmarks, RIGHT_IRIS, RIGHT_IRIS_RING);
+}
+
+function drawTint(landmarks, centerIdx, ringIdx) {
+  const center = landmarks[centerIdx];
+  if (!center) return;
+
+  const cx = center.x * canvas.width;
+  const cy = center.y * canvas.height;
+
+  // Estimate iris radius from the ring points around the center.
+  let radius = 0.012 * canvas.width; // sensible fallback
+  const ringPoints = ringIdx.map((i) => landmarks[i]).filter(Boolean);
+  if (ringPoints.length > 0) {
+    const dists = ringPoints.map((p) => {
+      const dx = p.x * canvas.width - cx;
+      const dy = p.y * canvas.height - cy;
+      return Math.sqrt(dx * dx + dy * dy);
+    });
+    radius = dists.reduce((a, b) => a + b, 0) / dists.length;
+  }
+
+  const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius * 1.15);
+  gradient.addColorStop(0, "rgba(70, 130, 230, 0.55)");
+  gradient.addColorStop(0.7, "rgba(60, 120, 220, 0.4)");
+  gradient.addColorStop(1, "rgba(60, 120, 220, 0.05)");
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius * 1.15, 0, Math.PI * 2);
+  ctx.fillStyle = gradient;
+  ctx.fill();
+}
+
+toggleBtn.addEventListener("click", () => {
+  lensOn = !lensOn;
+  toggleBtn.textContent = lensOn ? "렌즈 제거" : "렌즈 착용";
+  toggleBtn.classList.toggle("on", lensOn);
+  statusEl.textContent = lensOn ? "렌즈 착용 (Blue Tint ON)" : "렌즈 미착용";
+});
+
+setup();
+</script>
+</body>
+</html>
