@@ -133,9 +133,7 @@ let lensOn = false;
 let faceLandmarker = null;
 let lastVideoTime = -1;
 
-// Reused offscreen canvas so we don't allocate a new one every frame.
-const maskCanvas = document.createElement("canvas");
-const maskCtx = maskCanvas.getContext("2d");
+// Reused 1x1 canvas for cheap color sampling, so we don't allocate a new one every frame.
 const sampleCanvas = document.createElement("canvas");
 sampleCanvas.width = 1;
 sampleCanvas.height = 1;
@@ -143,9 +141,11 @@ const sampleCtx = sampleCanvas.getContext("2d", { willReadFrequently: true });
 
 // Landmark indices from MediaPipe's 468-point face mesh.
 // (Meaning is fixed by the model — these don't change with mirroring.)
-const EYEBROW_A = 105, EYEBROW_B = 334;    // top of each eyebrow
-const EYE_LOWER_A = 145, EYE_LOWER_B = 374; // lower eyelid
-const TEMPLE_A = 127, TEMPLE_B = 356;       // temple / outer cheek
+const EYEBROW_A = 105, EYEBROW_B = 334;      // top of each eyebrow
+const EYE_LOWER_A = 145, EYE_LOWER_B = 374;  // lower eyelid
+const EYE_OUTER_A = 33, EYE_OUTER_B = 263;   // outer eye corner (temple side)
+const EYE_INNER_A = 133, EYE_INNER_B = 362;  // inner eye corner (nose side)
+const TEMPLE_A = 127, TEMPLE_B = 356;        // temple / outer cheek
 
 // Points that are skin no matter what — never covered by bangs, glasses
 // frames, or background, regardless of camera distance or hairstyle.
@@ -251,68 +251,66 @@ function renderLoop() {
 }
 
 /**
- * "Removes" glasses by covering the glasses region (eyebrows -> lower
- * eyelids, temple to temple) with a soft, feathered oval filled in the
- * wearer's own average skin tone. The tone is sampled live every frame
- * from spots that are essentially always visible skin — nose tip, nose
- * bridge, and both cheeks — so it never accidentally grabs hair or
- * background the way copying a forehead patch could.
+ * "Removes" glasses by tracing over just the frame itself — a thin ring
+ * around each eye (the lens rim), a short bridge over the nose, and two
+ * short arms out toward the temples — instead of covering the whole eye
+ * area. Eyes and eyebrows stay untouched; only the frame lines are painted
+ * over in the wearer's own (live-sampled) skin tone, then softened with a
+ * blur so the edges blend in rather than looking like a sticker.
  */
 function removeGlasses(landmarks) {
   const W = canvas.width, H = canvas.height;
   const p = (i) => ({ x: landmarks[i].x * W, y: landmarks[i].y * H });
 
-  const browA = p(EYEBROW_A), browB = p(EYEBROW_B);
-  const lowerA = p(EYE_LOWER_A), lowerB = p(EYE_LOWER_B);
-  const templeA = p(TEMPLE_A), templeB = p(TEMPLE_B);
-
-  const padX = 0.16; // horizontal breathing room beyond the temples (covers the arms of the frame)
-
-  let xMin = Math.min(templeA.x, templeB.x, browA.x, browB.x);
-  let xMax = Math.max(templeA.x, templeB.x, browA.x, browB.x);
-  const boxW = xMax - xMin;
-
-  // Glasses run from above the eyebrows down onto the upper cheek/nose bridge —
-  // a much bigger span than the eyebrow-to-lower-eyelid gap alone. Size the
-  // patch off the face WIDTH (a stable reference) instead, centered on the
-  // eye line, so it reliably covers the whole frame regardless of face shape.
-  const eyeLineY = (Math.min(browA.y, browB.y) + Math.max(lowerA.y, lowerB.y)) / 2;
-  const halfHeight = boxW * 0.34;
-
-  xMin -= boxW * padX;
-  xMax += boxW * padX;
-  let yTop = eyeLineY - halfHeight;
-  let yBottom = eyeLineY + halfHeight * 1.25; // a bit more room below, toward the cheek/nose bridge
-
-  const destX = Math.max(0, xMin);
-  const destY = Math.max(0, yTop);
-  const destW = Math.min(W, xMax) - destX;
-  const destH = Math.min(H, yBottom) - destY;
-  if (destW <= 0 || destH <= 0) return;
-
   const color = sampleAverageColor(landmarks, W, H);
   if (!color) return;
   const { r, g, b } = color;
 
-  const w = Math.round(destW), h = Math.round(destH);
-  maskCanvas.width = w;
-  maskCanvas.height = h;
+  const eyes = [
+    { brow: p(EYEBROW_A), lower: p(EYE_LOWER_A), outer: p(EYE_OUTER_A), inner: p(EYE_INNER_A), temple: p(TEMPLE_A) },
+    { brow: p(EYEBROW_B), lower: p(EYE_LOWER_B), outer: p(EYE_OUTER_B), inner: p(EYE_INNER_B), temple: p(TEMPLE_B) }
+  ];
 
-  // Soft-edged oval: solid skin tone in the middle, feathering to fully
-  // transparent at the rim so it blends into the real skin around it
-  // instead of showing a hard-edged sticker.
-  maskCtx.clearRect(0, 0, w, h);
-  const cx = w / 2, cy = h / 2;
-  const gradient = maskCtx.createRadialGradient(cx, cy, Math.min(w, h) * 0.15, cx, cy, Math.max(w, h) * 0.62);
-  gradient.addColorStop(0, `rgba(${r},${g},${b},0.97)`);
-  gradient.addColorStop(0.7, `rgba(${r},${g},${b},0.9)`);
-  gradient.addColorStop(1, `rgba(${r},${g},${b},0)`);
-  maskCtx.fillStyle = gradient;
-  maskCtx.beginPath();
-  maskCtx.ellipse(cx, cy, w / 2, h / 2, 0, 0, Math.PI * 2);
-  maskCtx.fill();
+  // Scale the line thickness off eye width so it works at any distance from camera.
+  const eyeWidth = Math.hypot(eyes[0].outer.x - eyes[0].inner.x, eyes[0].outer.y - eyes[0].inner.y);
+  const lineWidth = Math.max(4, eyeWidth * 0.32);
 
-  ctx.drawImage(maskCanvas, destX, destY, destW, destH);
+  ctx.save();
+  ctx.filter = "blur(4px)"; // feather the paint so it blends instead of looking pasted on
+  ctx.strokeStyle = `rgba(${r},${g},${b},0.92)`;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+
+  // 1) A ring around each eye, sized a little larger than the eye itself —
+  //    that's where a lens rim actually sits.
+  for (const eye of eyes) {
+    const cx = (eye.outer.x + eye.inner.x) / 2;
+    const cy = (eye.brow.y + eye.lower.y) / 2;
+    const rx = Math.abs(eye.outer.x - eye.inner.x) / 2 * 1.28;
+    const ry = Math.abs(eye.lower.y - eye.brow.y) / 2 * 1.35;
+    ctx.lineWidth = lineWidth;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  // 2) The bridge, connecting the two rings over the nose.
+  ctx.lineWidth = lineWidth * 0.7;
+  ctx.beginPath();
+  ctx.moveTo(eyes[0].inner.x, eyes[0].inner.y);
+  ctx.lineTo(eyes[1].inner.x, eyes[1].inner.y);
+  ctx.stroke();
+
+  // 3) The two temple arms, running out from the outer corner of each eye.
+  for (const eye of eyes) {
+    ctx.lineWidth = lineWidth * 0.7;
+    ctx.beginPath();
+    ctx.moveTo(eye.outer.x, eye.outer.y);
+    ctx.lineTo(eye.temple.x, eye.temple.y);
+    ctx.stroke();
+  }
+
+  ctx.restore();
 }
 
 toggleBtn.addEventListener("click", () => {
