@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Lens Mirror — 렌즈 착용 시뮬레이터</title>
+<title>Lens Mirror — 안경 제거 시뮬레이터</title>
 <style>
   :root {
     --teal: #028090;
@@ -23,17 +23,17 @@
     height: 100vh;
     background: #000;
   }
-  /* Mirror both the raw video and the overlay canvas the same way,
-     so the drawn eye markers line up with what the user sees. */
+  /* Video shows the real live mirror image. Canvas sits on top, transparent,
+     and only paints the small skin patch that covers the glasses area. Both
+     are mirrored identically so the patch always lines up with the face. */
   video, canvas {
     position: absolute;
     top: 0; left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transform: scaleX(-1); /* natural "mirror" feel for a front camera */
+    transform: scaleX(-1);
   }
-  video { visibility: hidden; } /* we only use <video> as the capture source; canvas draws everything visible */
 
   #ui {
     position: absolute;
@@ -100,7 +100,7 @@
 
   <div id="ui">
     <div id="status">카메라 준비 중…</div>
-    <button id="toggleBtn" disabled>렌즈 착용</button>
+    <button id="toggleBtn" disabled>렌즈 착용 (안경 지우기)</button>
   </div>
 
   <div id="loading">
@@ -133,13 +133,17 @@ let lensOn = false;
 let faceLandmarker = null;
 let lastVideoTime = -1;
 
-// MediaPipe Face Landmarker gives 478 points per face when the model
-// includes the iris. Indices 468 and 473 are the LEFT and RIGHT iris centers.
-const LEFT_IRIS = 468;
-const RIGHT_IRIS = 473;
-// A small ring of points around each iris — used to estimate its radius on screen.
-const LEFT_IRIS_RING = [469, 470, 471, 472];
-const RIGHT_IRIS_RING = [474, 475, 476, 477];
+// Reused offscreen canvases so we don't allocate new ones every frame.
+const patchCanvas = document.createElement("canvas");
+const patchCtx = patchCanvas.getContext("2d");
+const maskCanvas = document.createElement("canvas");
+const maskCtx = maskCanvas.getContext("2d");
+
+// Landmark indices from MediaPipe's 468-point face mesh.
+// (Meaning is fixed by the model — these don't change with mirroring.)
+const EYEBROW_A = 105, EYEBROW_B = 334;    // top of each eyebrow
+const EYE_LOWER_A = 145, EYE_LOWER_B = 374; // lower eyelid
+const TEMPLE_A = 127, TEMPLE_B = 356;       // temple / outer cheek
 
 function showError(message) {
   loadingEl.style.display = "none";
@@ -149,7 +153,6 @@ function showError(message) {
 
 async function setup() {
   try {
-    // 1) Load the face landmark model (downloaded once, then cached by the browser).
     const filesetResolver = await FilesetResolver.forVisionTasks(
       "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
     );
@@ -163,7 +166,6 @@ async function setup() {
       numFaces: 1
     });
 
-    // 2) Ask for the front camera.
     const stream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
       audio: false
@@ -181,7 +183,7 @@ async function setup() {
     canvas.height = video.videoHeight;
 
     loadingEl.style.display = "none";
-    statusEl.textContent = "렌즈 미착용";
+    statusEl.textContent = "안경 쓴 모습 (기본 카메라)";
     toggleBtn.disabled = false;
     requestAnimationFrame(renderLoop);
   } catch (err) {
@@ -199,59 +201,99 @@ async function setup() {
 function renderLoop() {
   if (video.readyState >= 2 && video.currentTime !== lastVideoTime) {
     lastVideoTime = video.currentTime;
-    const result = faceLandmarker.detectForVideo(video, performance.now());
-    draw(result);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (lensOn) {
+      const result = faceLandmarker.detectForVideo(video, performance.now());
+      const faces = result.faceLandmarks;
+      if (faces && faces.length > 0) {
+        removeGlasses(faces[0]);
+      }
+    }
   }
   requestAnimationFrame(renderLoop);
 }
 
-function draw(result) {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (!lensOn) return;
+/**
+ * "Removes" glasses by cloning a same-sized patch of forehead skin from
+ * directly above the eyebrows and blending it — with a soft, feathered
+ * edge — over the glasses region (eyebrows -> lower eyelids, temple to
+ * temple). This is a texture-cloning trick, not true inpainting, but for
+ * a consultation-room demo it reads convincingly as "no glasses."
+ */
+function removeGlasses(landmarks) {
+  const W = canvas.width, H = canvas.height;
+  const p = (i) => ({ x: landmarks[i].x * W, y: landmarks[i].y * H });
 
-  const faces = result.faceLandmarks;
-  if (!faces || faces.length === 0) return;
+  const browA = p(EYEBROW_A), browB = p(EYEBROW_B);
+  const lowerA = p(EYE_LOWER_A), lowerB = p(EYE_LOWER_B);
+  const templeA = p(TEMPLE_A), templeB = p(TEMPLE_B);
 
-  const landmarks = faces[0];
-  drawTint(landmarks, LEFT_IRIS, LEFT_IRIS_RING);
-  drawTint(landmarks, RIGHT_IRIS, RIGHT_IRIS_RING);
-}
+  const padX = 0.12;      // horizontal breathing room beyond the temples
+  const padTop = 0.35;    // room above the eyebrows (typical frame height)
+  const padBottom = 0.25; // room below the lower eyelid
 
-function drawTint(landmarks, centerIdx, ringIdx) {
-  const center = landmarks[centerIdx];
-  if (!center) return;
+  let xMin = Math.min(templeA.x, templeB.x, browA.x, browB.x);
+  let xMax = Math.max(templeA.x, templeB.x, browA.x, browB.x);
+  let yTop = Math.min(browA.y, browB.y);
+  let yBottom = Math.max(lowerA.y, lowerB.y);
 
-  const cx = center.x * canvas.width;
-  const cy = center.y * canvas.height;
+  const boxW = xMax - xMin;
+  const boxH = yBottom - yTop;
 
-  // Estimate iris radius from the ring points around the center.
-  let radius = 0.012 * canvas.width; // sensible fallback
-  const ringPoints = ringIdx.map((i) => landmarks[i]).filter(Boolean);
-  if (ringPoints.length > 0) {
-    const dists = ringPoints.map((p) => {
-      const dx = p.x * canvas.width - cx;
-      const dy = p.y * canvas.height - cy;
-      return Math.sqrt(dx * dx + dy * dy);
-    });
-    radius = dists.reduce((a, b) => a + b, 0) / dists.length;
-  }
+  xMin -= boxW * padX;
+  xMax += boxW * padX;
+  yTop -= boxH * padTop;
+  yBottom += boxH * padBottom;
 
-  const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius * 1.15);
-  gradient.addColorStop(0, "rgba(70, 130, 230, 0.55)");
-  gradient.addColorStop(0.7, "rgba(60, 120, 220, 0.4)");
-  gradient.addColorStop(1, "rgba(60, 120, 220, 0.05)");
+  const destX = Math.max(0, xMin);
+  const destY = Math.max(0, yTop);
+  const destW = Math.min(W, xMax) - destX;
+  const destH = Math.min(H, yBottom) - destY;
+  if (destW <= 0 || destH <= 0) return;
 
-  ctx.beginPath();
-  ctx.arc(cx, cy, radius * 1.15, 0, Math.PI * 2);
-  ctx.fillStyle = gradient;
-  ctx.fill();
+  // Source patch: same size, sampled from higher up on the forehead
+  // (clean skin, same lighting, no glasses ever present there).
+  let srcY = destY - destH * 1.05;
+  if (srcY < 0) srcY = Math.max(0, destY - destH * 0.5); // fallback if forehead is short
+
+  const w = Math.round(destW), h = Math.round(destH);
+  patchCanvas.width = w;
+  patchCanvas.height = h;
+  maskCanvas.width = w;
+  maskCanvas.height = h;
+
+  // 1) Clone the skin texture.
+  patchCtx.clearRect(0, 0, w, h);
+  patchCtx.drawImage(video, destX, srcY, destW, destH, 0, 0, w, h);
+
+  // 2) Build a soft-edged oval mask (opaque center, fading to transparent).
+  maskCtx.clearRect(0, 0, w, h);
+  const cx = w / 2, cy = h / 2;
+  const gradient = maskCtx.createRadialGradient(cx, cy, Math.min(w, h) * 0.25, cx, cy, Math.max(w, h) * 0.62);
+  gradient.addColorStop(0, "rgba(255,255,255,1)");
+  gradient.addColorStop(0.75, "rgba(255,255,255,1)");
+  gradient.addColorStop(1, "rgba(255,255,255,0)");
+  maskCtx.fillStyle = gradient;
+  maskCtx.beginPath();
+  maskCtx.ellipse(cx, cy, w / 2, h / 2, 0, 0, Math.PI * 2);
+  maskCtx.fill();
+
+  // 3) Cut the clone down to that soft oval shape.
+  patchCtx.globalCompositeOperation = "destination-in";
+  patchCtx.drawImage(maskCanvas, 0, 0);
+  patchCtx.globalCompositeOperation = "source-over";
+
+  // 4) Paste the feathered patch over the glasses area.
+  ctx.drawImage(patchCanvas, destX, destY, destW, destH);
 }
 
 toggleBtn.addEventListener("click", () => {
   lensOn = !lensOn;
-  toggleBtn.textContent = lensOn ? "렌즈 제거" : "렌즈 착용";
+  toggleBtn.textContent = lensOn ? "안경 다시 보기" : "렌즈 착용 (안경 지우기)";
   toggleBtn.classList.toggle("on", lensOn);
-  statusEl.textContent = lensOn ? "렌즈 착용 (Blue Tint ON)" : "렌즈 미착용";
+  statusEl.textContent = lensOn ? "렌즈 착용 (안경 제거됨)" : "안경 쓴 모습 (기본 카메라)";
+  if (!lensOn) ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
 
 setup();
