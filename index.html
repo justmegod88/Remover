@@ -1,447 +1,270 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Lens Mirror — 안경 제거 시뮬레이터</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AI Glasses Removal Mirror</title>
 <style>
-  :root {
-    --teal: #028090;
-    --teal-dark: #07333A;
-    --accent: #02C39A;
-  }
-  html, body {
-    margin: 0;
-    height: 100%;
-    background: #000;
-    font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
-    overflow: hidden;
-  }
-  #stage {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    background: #000;
-  }
-  /* Video shows the real live mirror image. Canvas sits on top, transparent,
-     and only paints the small skin patch that covers the glasses area. Both
-     are mirrored identically so the patch always lines up with the face. */
-  video, canvas {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transform: scaleX(-1);
-  }
-
-  #ui {
-    position: absolute;
-    left: 0; right: 0; bottom: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    padding: 20px 24px calc(28px + env(safe-area-inset-bottom));
-    background: linear-gradient(to top, rgba(0,0,0,0.65), transparent);
-  }
-  #status {
-    color: #fff;
-    background: rgba(255,255,255,0.12);
-    backdrop-filter: blur(6px);
-    padding: 7px 16px;
-    border-radius: 999px;
-    font-size: 14px;
-  }
-  #toggleBtn {
-    width: 100%;
-    max-width: 420px;
-    padding: 16px;
-    border: none;
-    border-radius: 999px;
-    font-size: 17px;
-    font-weight: 700;
-    color: #fff;
-    background: var(--teal);
-    transition: background 0.2s;
-  }
-  #toggleBtn.on { background: #c0392b; }
-  #toggleBtn:disabled { background: #555; }
-
-  #loading, #error {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-    color: #fff;
-    text-align: center;
-    padding: 0 30px;
-    background: var(--teal-dark);
-  }
-  #error { display: none; background: #3a0f0f; }
-  .spinner {
-    width: 34px; height: 34px;
-    border: 3px solid rgba(255,255,255,0.25);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.9s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+:root{
+  --bg:#050505; --panel:rgba(15,15,18,.78); --line:rgba(255,255,255,.16);
+  --accent:#ff3b30; --text:#fff; --muted:#b8b8bf;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;background:#000;color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Malgun Gothic",sans-serif;
+  overflow:hidden}
+#stage{position:fixed;inset:0;background:#000}
+video,#result{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+}
+video{transform:scaleX(-1)}
+#result{display:none;object-fit:cover}
+#shade{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to top,rgba(0,0,0,.72),transparent 28%,transparent 70%,rgba(0,0,0,.12));
+}
+#top{
+  position:absolute;top:0;left:0;right:0;padding:calc(18px + env(safe-area-inset-top)) 18px 10px;
+  display:flex;justify-content:space-between;align-items:center;pointer-events:none;
+}
+.badge{
+  padding:9px 14px;border:1px solid rgba(255,255,255,.18);border-radius:999px;
+  background:rgba(0,0,0,.35);backdrop-filter:blur(12px);font-size:13px
+}
+#status{color:#fff}
+#bottom{
+  position:absolute;left:0;right:0;bottom:0;
+  padding:12px 18px calc(18px + env(safe-area-inset-bottom));
+  display:flex;flex-direction:column;gap:10px;align-items:center;
+}
+#message{
+  min-height:36px;padding:8px 14px;border-radius:999px;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(12px);
+  font-size:13px;color:#fff;text-align:center
+}
+#aiBtn{
+  width:min(92vw,520px);border:0;border-radius:999px;padding:17px 20px;
+  font-size:18px;font-weight:800;color:#fff;background:var(--accent);
+  box-shadow:0 10px 30px rgba(0,0,0,.3)
+}
+#aiBtn:disabled{opacity:.55}
+#againBtn{
+  display:none;width:min(92vw,520px);border:1px solid rgba(255,255,255,.2);
+  border-radius:999px;padding:15px;background:rgba(0,0,0,.62);
+  color:#fff;font-size:17px;font-weight:750;backdrop-filter:blur(12px)
+}
+#loading{
+  position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+  flex-direction:column;gap:14px;background:rgba(0,0,0,.38);backdrop-filter:blur(4px)
+}
+.spinner{width:38px;height:38px;border:3px solid rgba(255,255,255,.2);
+  border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#hiddenCanvas{display:none}
+.small{font-size:12px;color:var(--muted);max-width:330px;text-align:center;line-height:1.45}
 </style>
 </head>
 <body>
-
 <div id="stage">
-  <video id="video" playsinline autoplay muted></video>
-  <canvas id="canvas"></canvas>
+  <video id="video" autoplay muted playsinline></video>
+  <img id="result" alt="AI 안경 제거 결과">
+  <div id="shade"></div>
 
-  <div id="ui">
-    <div id="status">카메라 준비 중…</div>
-    <button id="toggleBtn" disabled>렌즈 착용 (안경 지우기)</button>
+  <div id="top">
+    <div class="badge" id="status">카메라 준비 중…</div>
+    <div class="badge">AI 안경 제거</div>
+  </div>
+
+  <div id="bottom">
+    <div id="message">얼굴을 화면 중앙에 맞춘 뒤 AI 안경 제거를 눌러주세요.</div>
+    <button id="aiBtn" disabled>AI 안경 제거</button>
+    <button id="againBtn">안경 다시 보기</button>
+    <div class="small">
+      AI 결과는 원본 얼굴을 최대한 유지하면서 안경 영역을 복원합니다.
+      모바일에서는 처리에 수 초가 걸릴 수 있습니다.
+    </div>
   </div>
 
   <div id="loading">
     <div class="spinner"></div>
-    <div>얼굴 인식 모델을 불러오는 중입니다…</div>
-  </div>
-
-  <div id="error">
-    <div style="font-size:17px; font-weight:700;">카메라를 사용할 수 없습니다</div>
-    <div id="errorDetail" style="font-size:13px; opacity:0.85; line-height:1.5;"></div>
+    <div id="loadingText">AI가 안경을 제거하는 중…</div>
   </div>
 </div>
 
+<canvas id="hiddenCanvas"></canvas>
+
 <script type="module">
-import {
-  FaceLandmarker,
-  FilesetResolver
-} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs";
+import { Client, handle_file } from
+  "https://cdn.jsdelivr.net/npm/@gradio/client@1.4.0/+esm";
 
 const video = document.getElementById("video");
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-const statusEl = document.getElementById("status");
-const toggleBtn = document.getElementById("toggleBtn");
-const loadingEl = document.getElementById("loading");
-const errorEl = document.getElementById("errorDetail");
-const errorBox = document.getElementById("error");
+const result = document.getElementById("result");
+const canvas = document.getElementById("hiddenCanvas");
+const aiBtn = document.getElementById("aiBtn");
+const againBtn = document.getElementById("againBtn");
+const status = document.getElementById("status");
+const message = document.getElementById("message");
+const loading = document.getElementById("loading");
+const loadingText = document.getElementById("loadingText");
 
-let lensOn = false;
-let faceLandmarker = null;
-let lastVideoTime = -1;
+let stream = null;
+let client = null;
+let busy = false;
 
-// Reused 1x1 canvas for cheap color sampling, so we don't allocate a new one every frame.
-const sampleCanvas = document.createElement("canvas");
-sampleCanvas.width = 1;
-sampleCanvas.height = 1;
-const sampleCtx = sampleCanvas.getContext("2d", { willReadFrequently: true });
-const removalLayer = document.createElement("canvas");
-const removalCtx = removalLayer.getContext("2d");
-const patchLayer = document.createElement("canvas");
-const patchCtx = patchLayer.getContext("2d");
+const SPACE = "mvp-lab/glasses-removal";
 
+function setMessage(t){ message.textContent = t; }
 
-// Landmark indices from MediaPipe's 468-point face mesh.
-// (Meaning is fixed by the model — these don't change with mirroring.)
-const EYEBROW_A = 105, EYEBROW_B = 334;      // top of each eyebrow
-const EYE_LOWER_A = 145, EYE_LOWER_B = 374;  // lower eyelid
-const EYE_OUTER_A = 33, EYE_OUTER_B = 263;   // outer eye corner (temple side)
-const EYE_INNER_A = 133, EYE_INNER_B = 362;  // inner eye corner (nose side)
-const TEMPLE_A = 127, TEMPLE_B = 356;        // temple / outer cheek
-
-// Points that are skin no matter what — never covered by bangs, glasses
-// frames, or background, regardless of camera distance or hairstyle.
-const SAFE_SKIN_POINTS = [4, 6, 205, 425]; // nose tip, nose bridge, left cheek, right cheek
-
-// Exponential moving average of the sampled skin tone, to stop the patch
-// from flickering in color as the face/landmarks jitter slightly frame to frame.
-let smoothedColor = null;
-
-function sampleAverageColor(landmarks, W, H) {
-  let r = 0, g = 0, b = 0, count = 0;
-  for (const idx of SAFE_SKIN_POINTS) {
-    const lm = landmarks[idx];
-    if (!lm) continue;
-    const x = lm.x * W, y = lm.y * H;
-    const size = 8; // sample an 8x8 px neighborhood, downscaled to 1px (cheap blur/average)
-    sampleCtx.drawImage(video, x - size / 2, y - size / 2, size, size, 0, 0, 1, 1);
-    const [pr, pg, pb] = sampleCtx.getImageData(0, 0, 1, 1).data;
-    r += pr; g += pg; b += pb; count++;
-  }
-  if (count === 0) return smoothedColor;
-  const fresh = { r: r / count, g: g / count, b: b / count };
-  if (!smoothedColor) {
-    smoothedColor = fresh;
-  } else {
-    const a = 0.15; // smoothing factor
-    smoothedColor = {
-      r: smoothedColor.r * (1 - a) + fresh.r * a,
-      g: smoothedColor.g * (1 - a) + fresh.g * a,
-      b: smoothedColor.b * (1 - a) + fresh.b * a
-    };
-  }
-  return smoothedColor;
-}
-
-function showError(message) {
-  loadingEl.style.display = "none";
-  errorBox.style.display = "flex";
-  errorEl.textContent = message;
-}
-
-async function setup() {
-  try {
-    const filesetResolver = await FilesetResolver.forVisionTasks(
-      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
-    );
-    faceLandmarker = await FaceLandmarker.createFromOptions(filesetResolver, {
-      baseOptions: {
-        modelAssetPath:
-          "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
-        delegate: "GPU"
+async function startCamera(){
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({
+      video:{
+        facingMode:"user",
+        width:{ideal:1280},
+        height:{ideal:720}
       },
-      runningMode: "VIDEO",
-      numFaces: 1
-    });
-
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
-      audio: false
+      audio:false
     });
     video.srcObject = stream;
+    await video.play();
+    status.textContent = "카메라 ON";
+    aiBtn.disabled = false;
+  }catch(e){
+    status.textContent = "카메라 오류";
+    setMessage("카메라 권한을 허용한 뒤 새로고침해주세요.");
+    console.error(e);
+  }
+}
 
-    await new Promise((resolve) => {
-      video.onloadedmetadata = () => {
-        video.play();
-        resolve();
-      };
+async function connectAI(){
+  if(client) return client;
+  loadingText.textContent = "AI 모델 연결 중…";
+  loading.style.display = "flex";
+  try{
+    client = await Client.connect(SPACE);
+    loading.style.display = "none";
+    return client;
+  }catch(e){
+    loading.style.display = "none";
+    client = null;
+    throw e;
+  }
+}
+
+function captureFrame(){
+  const vw = video.videoWidth || 1280;
+  const vh = video.videoHeight || 720;
+
+  // Limit upload size to keep mobile inference practical while preserving
+  // enough facial detail for the removal model.
+  const maxW = 1024;
+  const scale = Math.min(1, maxW / vw);
+  canvas.width = Math.round(vw * scale);
+  canvas.height = Math.round(vh * scale);
+
+  const c = canvas.getContext("2d");
+  c.save();
+  // The browser preview is mirrored; send a normal-orientation image to AI.
+  c.translate(canvas.width,0);
+  c.scale(-1,1);
+  c.drawImage(video,0,0,canvas.width,canvas.height);
+  c.restore();
+
+  return new Promise(resolve=>canvas.toBlob(resolve,"image/jpeg",0.92));
+}
+
+function extractImageUrl(data){
+  if(!data) return null;
+  const x = Array.isArray(data) ? data[0] : data;
+  if(typeof x === "string") return x;
+  if(x && typeof x.url === "string") return x.url;
+  if(x && typeof x.path === "string") return x.path;
+  if(x && typeof x.data === "string" && x.data.startsWith("data:")) return x.data;
+  return null;
+}
+
+async function removeGlasses(){
+  if(busy) return;
+  busy = true;
+  aiBtn.disabled = true;
+  loading.style.display = "flex";
+  loadingText.textContent = "AI가 안경과 렌즈를 분석하는 중…";
+  setMessage("잠시만요. 얼굴과 눈 모양을 최대한 유지해서 복원합니다.");
+
+  try{
+    const blob = await captureFrame();
+    const api = await connectAI();
+
+    /*
+     * The public Hugging Face Space is a dedicated glasses-removal demo.
+     * Endpoint names can change as the Space is updated, so try the common
+     * Gradio prediction endpoints in order rather than hard-coding one UI.
+     */
+    let prediction;
+    const file = await handle_file(blob);
+
+    const candidates = [
+      {api_name:"/predict", data:[file]},
+      {api_name:"/remove_glasses", data:[file]},
+      {api_name:"/inference", data:[file]},
+      {api_name:"/run", data:[file]}
+    ];
+
+    let lastError = null;
+    for(const candidate of candidates){
+      try{
+        prediction = await api.predict(candidate.api_name, candidate.data);
+        if(prediction && prediction.data) break;
+      }catch(e){ lastError = e; }
+    }
+
+    if(!prediction || !prediction.data){
+      throw lastError || new Error("AI endpoint를 찾지 못했습니다.");
+    }
+
+    const url = extractImageUrl(prediction.data);
+    if(!url) throw new Error("AI 결과 이미지를 읽지 못했습니다.");
+
+    result.src = url;
+    await new Promise((resolve,reject)=>{
+      result.onload = resolve;
+      result.onerror = reject;
     });
 
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    loadingEl.style.display = "none";
-    statusEl.textContent = "안경 쓴 모습 (기본 카메라)";
-    toggleBtn.disabled = false;
-    requestAnimationFrame(renderLoop);
-  } catch (err) {
-    console.error(err);
-    if (err.name === "NotAllowedError") {
-      showError("카메라 권한이 거부되었습니다. 브라우저 설정에서 카메라 접근을 허용한 뒤 새로고침 해주세요.");
-    } else if (location.protocol !== "https:" && location.hostname !== "localhost") {
-      showError("카메라 접근에는 HTTPS 연결이 필요합니다. (GitHub Pages 주소는 자동으로 HTTPS입니다.)");
-    } else {
-      showError(err.message || "알 수 없는 오류가 발생했습니다.");
-    }
+    video.style.display = "none";
+    result.style.display = "block";
+    againBtn.style.display = "block";
+    aiBtn.style.display = "none";
+    status.textContent = "AI 안경 제거 결과";
+    setMessage("안경 제거 완료");
+  }catch(e){
+    console.error(e);
+    setMessage("AI 처리에 실패했습니다. 잠시 후 다시 시도해주세요.");
+    status.textContent = "AI 연결 오류";
+    alert(
+      "AI 안경 제거에 실패했습니다.\\n\\n" +
+      "처음 실행할 때 모델 로딩 시간이 길 수 있습니다.\\n" +
+      "계속 실패하면 Hugging Face Space가 일시적으로 대기/중지 상태일 수 있습니다."
+    );
+  }finally{
+    loading.style.display = "none";
+    busy = false;
+    aiBtn.disabled = false;
   }
 }
 
-function renderLoop() {
-  if (video.readyState >= 2 && video.currentTime !== lastVideoTime) {
-    lastVideoTime = video.currentTime;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    if (lensOn) {
-      const result = faceLandmarker.detectForVideo(video, performance.now());
-      const faces = result.faceLandmarks;
-      if (faces && faces.length > 0) {
-        removeGlasses(faces[0]);
-      }
-    }
-  }
-  requestAnimationFrame(renderLoop);
+function showCamera(){
+  result.style.display = "none";
+  video.style.display = "block";
+  againBtn.style.display = "none";
+  aiBtn.style.display = "block";
+  status.textContent = "카메라 ON";
+  setMessage("얼굴을 화면 중앙에 맞춘 뒤 AI 안경 제거를 눌러주세요.");
 }
 
-/**
- * "Removes" glasses by tracing over just the frame itself — a thin ring
- * around each eye (the lens rim), a short bridge over the nose, and two
- * short arms out toward the temples — instead of covering the whole eye
- * area. Eyes and eyebrows stay untouched; only the frame lines are painted
- * over in the wearer's own (live-sampled) skin tone, then softened with a
- * blur so the edges blend in rather than looking like a sticker.
- */
-function removeGlasses(landmarks) {
-  const W = canvas.width, H = canvas.height;
-  const p = (i) => ({ x: landmarks[i].x * W, y: landmarks[i].y * H });
-
-  /*
-   * IMPORTANT:
-   * Do NOT paint an eye-shaped/round skin patch.
-   * The earlier version did that and produced the visible pink circles.
-   *
-   * This version treats the glasses as thin frame geometry:
-   * - frame around the eye is only a narrow stroke
-   * - bridge is only a narrow stroke
-   * - temple arms are only short strokes
-   * - the eye opening is never painted
-   *
-   * For transparent glasses this gives a much more natural "frame removal".
-   * Opaque/tinted lenses require generative inpainting because the original
-   * eye pixels are physically hidden by the lens.
-   */
-
-  const color = sampleAverageColor(landmarks, W, H);
-  if (!color) return;
-
-  if (removalLayer.width !== W || removalLayer.height !== H) {
-    removalLayer.width = W;
-    removalLayer.height = H;
-    patchLayer.width = W;
-    patchLayer.height = H;
-  }
-
-  removalCtx.clearRect(0, 0, W, H);
-
-  const eyes = [
-    {
-      brow: p(EYEBROW_A), lower: p(EYE_LOWER_A),
-      outer: p(EYE_OUTER_A), inner: p(EYE_INNER_A), temple: p(TEMPLE_A)
-    },
-    {
-      brow: p(EYEBROW_B), lower: p(EYE_LOWER_B),
-      outer: p(EYE_OUTER_B), inner: p(EYE_INNER_B), temple: p(TEMPLE_B)
-    }
-  ];
-
-  const eyeWidth = Math.max(
-    1,
-    Math.hypot(
-      eyes[0].outer.x - eyes[0].inner.x,
-      eyes[0].outer.y - eyes[0].inner.y
-    )
-  );
-
-  // Thin enough to remove a frame without creating a new "painted glasses".
-  const frameWidth = Math.max(2.5, Math.min(9, eyeWidth * 0.075));
-
-  removalCtx.save();
-  removalCtx.lineCap = "round";
-  removalCtx.lineJoin = "round";
-  removalCtx.strokeStyle =
-    `rgba(${color.r},${color.g},${color.b},0.78)`;
-  removalCtx.lineWidth = frameWidth;
-  removalCtx.filter = `blur(${Math.max(0.7, frameWidth * 0.22)}px)`;
-
-  function stroke(points) {
-    removalCtx.beginPath();
-    removalCtx.moveTo(points[0].x, points[0].y);
-    for (let i = 1; i < points.length; i++) {
-      removalCtx.lineTo(points[i].x, points[i].y);
-    }
-    removalCtx.stroke();
-  }
-
-  // Approximate the lens/frame contour with a narrow path OUTSIDE the eye.
-  // It deliberately does not cover the eye opening.
-  for (const eye of eyes) {
-    const cx = (eye.outer.x + eye.inner.x) / 2;
-    const cy = (eye.brow.y + eye.lower.y) / 2;
-
-    const dx = eye.outer.x - eye.inner.x;
-    const dy = eye.outer.y - eye.inner.y;
-    const w = Math.hypot(dx, dy);
-    const ux = dx / Math.max(w, 1);
-    const uy = dy / Math.max(w, 1);
-    const vx = -uy, vy = ux;
-
-    const rx = w * 0.56;
-    const ry = w * 0.30;
-
-    // Sampled polygon around the outside edge of the eye/lens.
-    // A small gap remains around the eye itself.
-    const pts = [];
-    for (let k = 0; k <= 20; k++) {
-      const a = Math.PI * 2 * k / 20;
-      pts.push({
-        x: cx + ux * rx * Math.cos(a) + vx * ry * Math.sin(a),
-        y: cy + uy * rx * Math.cos(a) + vy * ry * Math.sin(a)
-      });
-    }
-    stroke(pts);
-
-    // Reinforce only the likely top/bottom frame zones. These are much
-    // less likely to cross the eye than a full filled ellipse.
-    stroke([
-      {
-        x: eye.inner.x + ux * w * 0.08 + vx * w * 0.18,
-        y: eye.inner.y + uy * w * 0.08 + vy * w * 0.18
-      },
-      {
-        x: cx + vx * w * 0.28,
-        y: cy + vy * w * 0.28
-      },
-      {
-        x: eye.outer.x - ux * w * 0.08 + vx * w * 0.18,
-        y: eye.outer.y - uy * w * 0.08 + vy * w * 0.18
-      }
-    ]);
-
-    stroke([
-      {
-        x: eye.inner.x + ux * w * 0.08 - vx * w * 0.18,
-        y: eye.inner.y + uy * w * 0.08 - vy * w * 0.18
-      },
-      {
-        x: cx - vx * w * 0.27,
-        y: cy - vy * w * 0.27
-      },
-      {
-        x: eye.outer.x - ux * w * 0.08 - vx * w * 0.18,
-        y: eye.outer.y - uy * w * 0.08 - vy * w * 0.18
-      }
-    ]);
-  }
-
-  // Bridge: only the small connector between the inner corners.
-  const a = eyes[0].inner;
-  const b = eyes[1].inner;
-  const bx = (a.x + b.x) / 2;
-  const by = (a.y + b.y) / 2 - eyeWidth * 0.025;
-
-  stroke([
-    { x: a.x, y: a.y },
-    { x: bx, y: by },
-    { x: b.x, y: b.y }
-  ]);
-
-  // Temple arms: short, thin strokes from the outer corners.
-  for (const eye of eyes) {
-    const dx = eye.temple.x - eye.outer.x;
-    const dy = eye.temple.y - eye.outer.y;
-    const len = Math.hypot(dx, dy) || 1;
-    const armLen = Math.min(len, eyeWidth * 0.70);
-
-    stroke([
-      eye.outer,
-      {
-        x: eye.outer.x + dx * armLen / len,
-        y: eye.outer.y + dy * armLen / len
-      }
-    ]);
-  }
-
-  removalCtx.restore();
-
-  // Composite only the thin frame reconstruction.
-  ctx.drawImage(removalLayer, 0, 0);
-}
-
-toggleBtn.addEventListener("click", () => {
-  lensOn = !lensOn;
-  toggleBtn.textContent = lensOn ? "안경 다시 보기" : "렌즈 착용 (안경 지우기)";
-  toggleBtn.classList.toggle("on", lensOn);
-  statusEl.textContent = lensOn ? "렌즈 착용 (안경 제거됨)" : "안경 쓴 모습 (기본 카메라)";
-  if (!lensOn) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    removalCtx.clearRect(0, 0, removalLayer.width, removalLayer.height);
-    patchCtx.clearRect(0, 0, patchLayer.width, patchLayer.height);
-  }
-});
-
-setup();
+aiBtn.addEventListener("click", removeGlasses);
+againBtn.addEventListener("click", showCamera);
+startCamera();
 </script>
 </body>
 </html>
