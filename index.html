@@ -140,6 +140,8 @@ sampleCanvas.height = 1;
 const sampleCtx = sampleCanvas.getContext("2d", { willReadFrequently: true });
 const removalLayer = document.createElement("canvas");
 const removalCtx = removalLayer.getContext("2d");
+const patchLayer = document.createElement("canvas");
+const patchCtx = patchLayer.getContext("2d");
 
 
 // Landmark indices from MediaPipe's 468-point face mesh.
@@ -261,29 +263,37 @@ function renderLoop() {
  * over in the wearer's own (live-sampled) skin tone, then softened with a
  * blur so the edges blend in rather than looking like a sticker.
  */
-/**
- * Natural-ish glasses removal for a live mirror.
- *
- * Strategy:
- *  1) Keep the real video untouched everywhere except the glasses footprint.
- *  2) Build a glasses-shaped mask from face landmarks rather than drawing an
- *     ellipse over the whole eye.
- *  3) Protect the actual eye opening so eyes/eyelids are not painted over.
- *  4) For the frame, use a soft, multi-sample skin-color fill.
- *  5) For the lens area, use a very conservative translucent reconstruction
- *     only when the lens is clear. We deliberately do NOT invent an eye with
- *     a fake AI face on every frame, which causes temporal flicker.
- *
- * This is designed for real-time browser use. It is not a generative AI
- * inpainting model; a true tinted/opaque-lens removal needs an inpainting
- * model or a paired glasses/no-glasses model.
- */
 function removeGlasses(landmarks) {
   const W = canvas.width, H = canvas.height;
   const p = (i) => ({ x: landmarks[i].x * W, y: landmarks[i].y * H });
 
+  /*
+   * IMPORTANT:
+   * Do NOT paint an eye-shaped/round skin patch.
+   * The earlier version did that and produced the visible pink circles.
+   *
+   * This version treats the glasses as thin frame geometry:
+   * - frame around the eye is only a narrow stroke
+   * - bridge is only a narrow stroke
+   * - temple arms are only short strokes
+   * - the eye opening is never painted
+   *
+   * For transparent glasses this gives a much more natural "frame removal".
+   * Opaque/tinted lenses require generative inpainting because the original
+   * eye pixels are physically hidden by the lens.
+   */
+
   const color = sampleAverageColor(landmarks, W, H);
   if (!color) return;
+
+  if (removalLayer.width !== W || removalLayer.height !== H) {
+    removalLayer.width = W;
+    removalLayer.height = H;
+    patchLayer.width = W;
+    patchLayer.height = H;
+  }
+
+  removalCtx.clearRect(0, 0, W, H);
 
   const eyes = [
     {
@@ -304,130 +314,119 @@ function removeGlasses(landmarks) {
     )
   );
 
-  // The face mesh gives us eye landmarks, but not the exact glasses frame.
-  // Use a narrow footprint around each eye and keep a larger "eye opening"
-  // completely untouched.
-  const frameW = Math.max(3, eyeWidth * 0.12);
-  const outerPadX = eyeWidth * 0.23;
-  const outerPadY = eyeWidth * 0.18;
-  const eyePadX = eyeWidth * 0.035;
-  const eyePadY = eyeWidth * 0.045;
+  // Thin enough to remove a frame without creating a new "painted glasses".
+  const frameWidth = Math.max(2.5, Math.min(9, eyeWidth * 0.075));
 
-  // Draw into a temporary layer at video resolution.
-  if (removalLayer.width !== W || removalLayer.height !== H) {
-    removalLayer.width = W;
-    removalLayer.height = H;
-  }
-  removalCtx.clearRect(0, 0, W, H);
-  const lctx = removalCtx;
+  removalCtx.save();
+  removalCtx.lineCap = "round";
+  removalCtx.lineJoin = "round";
+  removalCtx.strokeStyle =
+    `rgba(${color.r},${color.g},${color.b},0.78)`;
+  removalCtx.lineWidth = frameWidth;
+  removalCtx.filter = `blur(${Math.max(0.7, frameWidth * 0.22)}px)`;
 
-  lctx.save();
-  lctx.lineCap = "round";
-  lctx.lineJoin = "round";
-
-  function softStroke(points, width, alpha = 0.96) {
-    lctx.save();
-    lctx.filter = `blur(${Math.max(1.2, width * 0.28)}px)`;
-    lctx.strokeStyle = `rgba(${color.r},${color.g},${color.b},${alpha})`;
-    lctx.lineWidth = width;
-    lctx.beginPath();
-    lctx.moveTo(points[0].x, points[0].y);
+  function stroke(points) {
+    removalCtx.beginPath();
+    removalCtx.moveTo(points[0].x, points[0].y);
     for (let i = 1; i < points.length; i++) {
-      lctx.lineTo(points[i].x, points[i].y);
+      removalCtx.lineTo(points[i].x, points[i].y);
     }
-    lctx.stroke();
-    lctx.restore();
+    removalCtx.stroke();
   }
 
-  function ellipseMask(cx, cy, rx, ry, holeRx, holeRy) {
-    // Soft outer skin fill, then punch a transparent eye opening back out.
-    lctx.save();
-    lctx.filter = `blur(${Math.max(1.5, frameW * 0.35)}px)`;
-    lctx.fillStyle = `rgba(${color.r},${color.g},${color.b},0.94)`;
-    lctx.beginPath();
-    lctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
-    lctx.fill();
-    lctx.restore();
-
-    // Protect the eye itself. The video remains visible through this hole.
-    lctx.save();
-    lctx.globalCompositeOperation = "destination-out";
-    lctx.filter = `blur(${Math.max(0.7, eyeWidth * 0.018)}px)`;
-    lctx.beginPath();
-    lctx.ellipse(cx, cy, holeRx, holeRy, 0, 0, Math.PI * 2);
-    lctx.fill();
-    lctx.restore();
-  }
-
+  // Approximate the lens/frame contour with a narrow path OUTSIDE the eye.
+  // It deliberately does not cover the eye opening.
   for (const eye of eyes) {
     const cx = (eye.outer.x + eye.inner.x) / 2;
     const cy = (eye.brow.y + eye.lower.y) / 2;
 
-    const rx = Math.abs(eye.outer.x - eye.inner.x) / 2 + outerPadX;
-    const ry = Math.max(eyeWidth * 0.28, Math.abs(eye.lower.y - eye.brow.y) / 2 + outerPadY);
+    const dx = eye.outer.x - eye.inner.x;
+    const dy = eye.outer.y - eye.inner.y;
+    const w = Math.hypot(dx, dy);
+    const ux = dx / Math.max(w, 1);
+    const uy = dy / Math.max(w, 1);
+    const vx = -uy, vy = ux;
 
-    const holeRx = Math.max(eyeWidth * 0.30, Math.abs(eye.outer.x - eye.inner.x) / 2 - eyePadX);
-    const holeRy = Math.max(eyeWidth * 0.13, Math.abs(eye.lower.y - eye.brow.y) / 2 - eyePadY);
+    const rx = w * 0.56;
+    const ry = w * 0.30;
 
-    ellipseMask(cx, cy, rx, ry, holeRx, holeRy);
+    // Sampled polygon around the outside edge of the eye/lens.
+    // A small gap remains around the eye itself.
+    const pts = [];
+    for (let k = 0; k <= 20; k++) {
+      const a = Math.PI * 2 * k / 20;
+      pts.push({
+        x: cx + ux * rx * Math.cos(a) + vx * ry * Math.sin(a),
+        y: cy + uy * rx * Math.cos(a) + vy * ry * Math.sin(a)
+      });
+    }
+    stroke(pts);
 
-    // Add back a very soft narrow frame trace around the actual eye contour.
-    // This avoids a visible "skin-colored sticker" edge.
-    lctx.save();
-    lctx.filter = "blur(1.8px)";
-    lctx.strokeStyle = `rgba(${color.r},${color.g},${color.b},0.58)`;
-    lctx.lineWidth = frameW;
-    lctx.beginPath();
-    lctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
-    lctx.stroke();
-    lctx.restore();
+    // Reinforce only the likely top/bottom frame zones. These are much
+    // less likely to cross the eye than a full filled ellipse.
+    stroke([
+      {
+        x: eye.inner.x + ux * w * 0.08 + vx * w * 0.18,
+        y: eye.inner.y + uy * w * 0.08 + vy * w * 0.18
+      },
+      {
+        x: cx + vx * w * 0.28,
+        y: cy + vy * w * 0.28
+      },
+      {
+        x: eye.outer.x - ux * w * 0.08 + vx * w * 0.18,
+        y: eye.outer.y - uy * w * 0.08 + vy * w * 0.18
+      }
+    ]);
+
+    stroke([
+      {
+        x: eye.inner.x + ux * w * 0.08 - vx * w * 0.18,
+        y: eye.inner.y + uy * w * 0.08 - vy * w * 0.18
+      },
+      {
+        x: cx - vx * w * 0.27,
+        y: cy - vy * w * 0.27
+      },
+      {
+        x: eye.outer.x - ux * w * 0.08 - vx * w * 0.18,
+        y: eye.outer.y - uy * w * 0.08 - vy * w * 0.18
+      }
+    ]);
   }
 
-  // Bridge: follow the actual inner eye corners, not a horizontal generic line.
-  const bridgeStart = {
-    x: eyes[0].inner.x + (eyes[0].outer.x - eyes[0].inner.x) * 0.05,
-    y: eyes[0].inner.y
-  };
-  const bridgeEnd = {
-    x: eyes[1].inner.x + (eyes[1].outer.x - eyes[1].inner.x) * 0.05,
-    y: eyes[1].inner.y
-  };
-  const midX = (bridgeStart.x + bridgeEnd.x) / 2;
-  const midY = (bridgeStart.y + bridgeEnd.y) / 2 - eyeWidth * 0.035;
+  // Bridge: only the small connector between the inner corners.
+  const a = eyes[0].inner;
+  const b = eyes[1].inner;
+  const bx = (a.x + b.x) / 2;
+  const by = (a.y + b.y) / 2 - eyeWidth * 0.025;
 
-  softStroke(
-    [bridgeStart, { x: midX, y: midY }, bridgeEnd],
-    Math.max(3, frameW * 0.9),
-    0.92
-  );
+  stroke([
+    { x: a.x, y: a.y },
+    { x: bx, y: by },
+    { x: b.x, y: b.y }
+  ]);
 
-  // Temple arms. Use a short, tapered-looking stroke and stop before the
-  // cheek so we don't erase real skin unnecessarily.
+  // Temple arms: short, thin strokes from the outer corners.
   for (const eye of eyes) {
     const dx = eye.temple.x - eye.outer.x;
     const dy = eye.temple.y - eye.outer.y;
     const len = Math.hypot(dx, dy) || 1;
-    const stop = Math.min(len, eyeWidth * 0.82);
-    const end = {
-      x: eye.outer.x + dx * stop / len,
-      y: eye.outer.y + dy * stop / len
-    };
-    softStroke([eye.outer, end], Math.max(3, frameW * 0.82), 0.90);
+    const armLen = Math.min(len, eyeWidth * 0.70);
+
+    stroke([
+      eye.outer,
+      {
+        x: eye.outer.x + dx * armLen / len,
+        y: eye.outer.y + dy * armLen / len
+      }
+    ]);
   }
 
-  lctx.restore();
+  removalCtx.restore();
 
-  // Composite the reconstruction over the live video.
+  // Composite only the thin frame reconstruction.
   ctx.drawImage(removalLayer, 0, 0);
-
-  /*
-   * Important limitation:
-   * If the glasses have opaque/tinted lenses, the real eye pixels are not
-   * available underneath the lens. This lightweight real-time version keeps
-   * the true eye pixels whenever they exist instead of hallucinating them.
-   * A future "AI removal" mode can replace only the lens ROIs with an
-   * inpainting model while leaving the rest of the face untouched.
-   */
 }
 
 toggleBtn.addEventListener("click", () => {
@@ -435,7 +434,11 @@ toggleBtn.addEventListener("click", () => {
   toggleBtn.textContent = lensOn ? "안경 다시 보기" : "렌즈 착용 (안경 지우기)";
   toggleBtn.classList.toggle("on", lensOn);
   statusEl.textContent = lensOn ? "렌즈 착용 (안경 제거됨)" : "안경 쓴 모습 (기본 카메라)";
-  if (!lensOn) { ctx.clearRect(0, 0, canvas.width, canvas.height); removalCtx.clearRect(0, 0, removalLayer.width, removalLayer.height); }
+  if (!lensOn) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    removalCtx.clearRect(0, 0, removalLayer.width, removalLayer.height);
+    patchCtx.clearRect(0, 0, patchLayer.width, patchLayer.height);
+  }
 });
 
 setup();
