@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b2f58">
-  <title>콘택트렌즈 제거 연습</title>
+  <title>콘택트렌즈 착용·제거 연습</title>
   <style>
     :root {
       --navy: #0b2f58;
@@ -173,6 +173,277 @@
       color: var(--muted);
       font-size: 13px;
       line-height: 1.45;
+    }
+
+
+    .practice-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 0 0 14px;
+      padding: 5px;
+      border: 1px solid #cfe0ee;
+      border-radius: 16px;
+      background: #eef5fa;
+    }
+
+    .practice-tab {
+      min-height: 45px;
+      padding: 9px 10px;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      color: #617589;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .practice-tab.active {
+      background: #0b5f99;
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(11, 95, 153, .20);
+    }
+
+    .practice-panel[hidden] { display: none !important; }
+
+    .wear-progress-list {
+      display: flex;
+      gap: 6px;
+      margin: 0 0 14px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .wear-progress-list li {
+      flex: 1 1 0;
+      min-width: 0;
+      padding: 9px 3px;
+      border-radius: 12px;
+      background: #eef3f7;
+      color: #738397;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      transition: 180ms ease;
+    }
+
+    .wear-progress-list li.active {
+      background: #dceeff;
+      color: #075993;
+      box-shadow: inset 0 0 0 1px #add8f6;
+    }
+
+    .wear-progress-list li.done { display: none; }
+    .wear-progress-list.all-done { display: none; }
+
+    .wear-simulator {
+      position: relative;
+      overflow: hidden;
+      border-radius: 28px;
+      background: #173047;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.16), 0 14px 30px rgba(12, 44, 72, .18);
+      isolation: isolate;
+    }
+
+    #wearScene {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      max-height: 640px;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: grab;
+    }
+
+    #wearScene:active { cursor: grabbing; }
+
+    .wear-video-pip {
+      position: absolute;
+      z-index: 9;
+      top: 12px;
+      right: 12px;
+      width: min(41%, 182px);
+      overflow: hidden;
+      border: 2px solid rgba(255,255,255,.92);
+      border-radius: 14px;
+      background: #07131f;
+      box-shadow: 0 8px 22px rgba(4, 23, 40, .30);
+    }
+
+    .wear-video-label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 28px;
+      padding: 5px 8px;
+      background: rgba(5, 29, 50, .92);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .wear-video-label::before {
+      content: "▶";
+      color: #8fdcff;
+      font-size: 9px;
+    }
+
+    .wear-video-frame {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: 0;
+      background: #000;
+    }
+
+    .orientation-panel {
+      position: absolute;
+      z-index: 11;
+      inset: 0;
+      display: grid;
+      align-content: end;
+      padding: 0 16px 82px;
+      background: linear-gradient(180deg, rgba(7,22,35,.04) 35%, rgba(7,22,35,.76) 73%, rgba(7,22,35,.92) 100%);
+    }
+
+    .orientation-panel[hidden] { display: none; }
+
+    .orientation-card-wrap {
+      padding: 13px;
+      border: 1px solid rgba(255,255,255,.26);
+      border-radius: 18px;
+      background: rgba(6, 31, 52, .84);
+      color: #fff;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .orientation-card-wrap strong {
+      display: block;
+      margin-bottom: 10px;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .orientation-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .orientation-option {
+      min-height: 92px;
+      padding: 9px 8px 8px;
+      border: 1px solid rgba(255,255,255,.24);
+      border-radius: 14px;
+      background: rgba(255,255,255,.10);
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .orientation-option:active { transform: translateY(1px); }
+
+    .lens-bowl {
+      position: relative;
+      width: 74px;
+      height: 38px;
+      margin: 0 auto 7px;
+      overflow: hidden;
+    }
+
+    .lens-bowl::before {
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      bottom: 0;
+      height: 31px;
+      border: 3px solid #9ceaff;
+      border-top: 0;
+      border-radius: 0 0 42px 42px;
+      content: "";
+      box-shadow: inset 0 -6px 16px rgba(110,220,245,.13);
+    }
+
+    .lens-bowl.inside-out::before {
+      left: 2px;
+      right: 2px;
+      border-radius: 0 0 20px 20px;
+      transform: scaleX(1.12);
+    }
+
+    .lens-bowl.inside-out::after {
+      position: absolute;
+      left: 3px;
+      right: 3px;
+      top: 2px;
+      height: 7px;
+      border-top: 3px solid #9ceaff;
+      border-radius: 50%;
+      content: "";
+      transform: scaleX(1.18);
+    }
+
+    .orientation-option span {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .wear-feedback {
+      position: absolute;
+      z-index: 12;
+      right: 14px;
+      bottom: 14px;
+      left: 14px;
+      min-height: 54px;
+      padding: 12px 14px;
+      border: 1px solid rgba(255,255,255,.28);
+      border-radius: 16px;
+      background: rgba(5, 29, 50, .84);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: 180ms ease;
+    }
+
+    .wear-feedback.error { background: rgba(139, 34, 42, .92); }
+    .wear-feedback.success { background: rgba(5, 108, 74, .92); }
+
+    .wear-completion {
+      position: absolute;
+      z-index: 14;
+      inset: 0;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      padding: 30px;
+      background: rgba(5, 37, 61, .80);
+      color: #fff;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      transition: opacity 260ms ease;
+    }
+
+    .wear-completion.visible { opacity: 1; pointer-events: auto; }
+    .wear-completion h2 { margin: 0 0 8px; font-size: 28px; }
+    .wear-completion p { margin: 0 0 22px; max-width: 320px; color: #d7efff; line-height: 1.5; }
+
+    .wear-source-note {
+      margin: 10px 4px 0;
+      color: #7a8a99;
+      font-size: 10px;
+      line-height: 1.45;
+      text-align: center;
     }
 
     .simulator {
@@ -562,8 +833,8 @@
     <header class="topbar">
       <div class="topbar-row">
         <div>
-          <p class="eyebrow">REMOVAL PRACTICE</p>
-          <h1>콘택트렌즈 제거 연습</h1>
+          <p class="eyebrow" id="headerEyebrow">INSERTION PRACTICE</p>
+          <h1 id="headerTitle">콘택트렌즈 착용 연습</h1>
         </div>
         <div class="top-actions">
           <button class="faq-button" id="faqButton" type="button" aria-haspopup="dialog">FAQ</button>
@@ -573,6 +844,172 @@
     </header>
 
     <main>
+      <div class="practice-tabs" role="tablist" aria-label="착용 또는 제거 연습 선택">
+        <button class="practice-tab active" id="wearTab" type="button" role="tab" aria-selected="true" aria-controls="wearMode">착용 연습</button>
+        <button class="practice-tab" id="removalTab" type="button" role="tab" aria-selected="false" aria-controls="removalMode">제거 연습</button>
+      </div>
+
+      <div class="practice-panel" id="wearMode" role="tabpanel" aria-labelledby="wearTab">
+        <ol class="wear-progress-list" aria-label="착용 연습 진행 단계">
+          <li class="active" data-wear-progress="1">1. 앞뒤 확인</li>
+          <li data-wear-progress="2">2. 눈꺼풀</li>
+          <li data-wear-progress="3">3. 렌즈 올리기</li>
+          <li data-wear-progress="4">4. 깜빡임</li>
+        </ol>
+
+        <section class="coach" aria-labelledby="wearInstructionTitle">
+          <div class="step-number" id="wearStepNumber">1</div>
+          <div>
+            <strong id="wearInstructionTitle">렌즈 앞뒤를 먼저 확인하세요</strong>
+            <p id="wearInstructionBody">손을 깨끗이 씻고 완전히 말린 뒤, 가장자리가 곧게 올라온 그릇 모양의 렌즈를 선택하세요.</p>
+          </div>
+        </section>
+
+        <section class="wear-simulator" aria-label="콘택트렌즈 착용 터치 연습 화면">
+          <div class="wear-video-pip" aria-label="콘택트렌즈 착용 방법 영상">
+            <div class="wear-video-label">실제 착용 방법 · 자동재생</div>
+            <iframe
+              class="wear-video-frame"
+              src="https://www.youtube-nocookie.com/embed/SK0bOgx5pEM?autoplay=1&mute=1&playsinline=1&rel=0&loop=1&playlist=SK0bOgx5pEM"
+              title="아큐브 콘택트렌즈 착용 방법 영상"
+              loading="eager"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen></iframe>
+          </div>
+
+          <svg id="wearScene" viewBox="0 0 400 500" role="img" aria-labelledby="wearSceneTitle wearSceneDesc">
+            <title id="wearSceneTitle">콘택트렌즈 착용 연습용 눈</title>
+            <desc id="wearSceneDesc">렌즈 앞뒤를 확인하고 위아래 눈꺼풀을 충분히 연 뒤, 렌즈를 눈 표면에 부드럽게 올리고 천천히 깜빡여 렌즈를 안착시키는 연습입니다.</desc>
+            <defs>
+              <linearGradient id="wearSkin" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#b97862"/>
+                <stop offset="0.22" stop-color="#d99d80"/>
+                <stop offset="0.52" stop-color="#efc5aa"/>
+                <stop offset="0.78" stop-color="#d7977d"/>
+                <stop offset="1" stop-color="#9f5f54"/>
+              </linearGradient>
+              <radialGradient id="wearSclera" cx="48%" cy="43%" r="65%">
+                <stop offset="0" stop-color="#fffefc"/>
+                <stop offset="0.78" stop-color="#f5e9e4"/>
+                <stop offset="1" stop-color="#d7b7ad"/>
+              </radialGradient>
+              <radialGradient id="wearIris" cx="42%" cy="38%" r="60%">
+                <stop offset="0" stop-color="#d7ad65"/>
+                <stop offset="0.3" stop-color="#a87534"/>
+                <stop offset="0.64" stop-color="#5d391d"/>
+                <stop offset="1" stop-color="#17120e"/>
+              </radialGradient>
+              <radialGradient id="wearLensGlow" cx="42%" cy="35%" r="68%">
+                <stop offset="0" stop-color="#b9f6ff" stop-opacity=".34"/>
+                <stop offset=".72" stop-color="#63d7ef" stop-opacity=".16"/>
+                <stop offset="1" stop-color="#1d91bf" stop-opacity=".25"/>
+              </radialGradient>
+              <filter id="wearShadow" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#10283b" flood-opacity=".28"/>
+              </filter>
+              <marker id="wearArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#ffffff"/>
+              </marker>
+              <clipPath id="wearEyeClip">
+                <path id="wearEyeClipPath" d="M24,250 Q200,105 376,250 Q200,395 24,250Z"/>
+              </clipPath>
+            </defs>
+
+            <rect width="400" height="500" fill="url(#wearSkin)"/>
+            <ellipse cx="200" cy="273" rx="218" ry="200" fill="#713e35" opacity=".14"/>
+            <ellipse cx="200" cy="232" rx="205" ry="145" fill="#ffe0c8" opacity=".12"/>
+            <path d="M34 191 Q200 65 366 191" fill="none" stroke="#704338" stroke-width="9" opacity=".28"/>
+
+            <g filter="url(#wearShadow)">
+              <path id="wearEyeWhite" d="M24,250 Q200,105 376,250 Q200,395 24,250Z" fill="url(#wearSclera)" stroke="#714a3e" stroke-width="8"/>
+              <g clip-path="url(#wearEyeClip)">
+                <path d="M25 250 C73 226 111 236 154 249 M24 270 C78 261 116 274 151 266 M376 249 C331 228 293 239 251 250" fill="none" stroke="#d88e91" stroke-width="2" opacity=".42"/>
+                <g id="wearIrisGroup">
+                  <circle cx="200" cy="250" r="94" fill="url(#wearIris)"/>
+                  <circle cx="200" cy="250" r="92" fill="none" stroke="#1e1711" stroke-width="8" opacity=".8"/>
+                  <circle cx="200" cy="250" r="39" fill="#05080a"/>
+                  <ellipse cx="174" cy="207" rx="20" ry="30" fill="#fff" opacity=".78"/>
+                  <ellipse cx="223" cy="224" rx="8" ry="10" fill="#fff" opacity=".58"/>
+                </g>
+              </g>
+            </g>
+
+            <g id="wearUpperLid">
+              <path id="wearUpperLidOuter" d="M24,250 Q200,105 376,250" fill="none" stroke="#70473c" stroke-width="14" stroke-linecap="round"/>
+              <path id="wearUpperLidInner" d="M31,245 Q200,122 369,245" fill="none" stroke="#efbea7" stroke-width="7" stroke-linecap="round" opacity=".92"/>
+              <path id="wearUpperHit" d="M24,250 Q200,105 376,250" fill="none" stroke="transparent" stroke-width="72"/>
+            </g>
+
+            <g id="wearLowerLid">
+              <path id="wearLowerLidOuter" d="M24,250 Q200,395 376,250" fill="none" stroke="#8f5949" stroke-width="14" stroke-linecap="round"/>
+              <path id="wearLowerLidInner" d="M31,255 Q200,378 369,255" fill="none" stroke="#f0bfaa" stroke-width="7" stroke-linecap="round" opacity=".92"/>
+              <path id="wearLowerHit" d="M24,250 Q200,395 376,250" fill="none" stroke="transparent" stroke-width="72"/>
+            </g>
+
+            <g id="wearGuides" pointer-events="none">
+              <g id="wearGuideStep2" opacity="0">
+                <circle id="wearUpperGuideCircle" cx="200" cy="150" r="23" fill="#4aa9e8" fill-opacity=".48" stroke="#fff" stroke-width="3"/>
+                <text id="wearUpperGuideText" x="200" y="154" fill="#fff" text-anchor="middle" font-size="10" font-weight="800">위로</text>
+                <path id="wearUpperGuideArrow" d="M200 124 L200 88" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#wearArrow)"/>
+                <circle id="wearLowerGuideCircle" cx="200" cy="350" r="23" fill="#4aa9e8" fill-opacity=".25" stroke="#fff" stroke-width="2" opacity=".35"/>
+                <text id="wearLowerGuideText" x="200" y="354" fill="#fff" text-anchor="middle" font-size="10" font-weight="800" opacity=".45">아래로</text>
+                <path id="wearLowerGuideArrow" d="M200 376 L200 412" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#wearArrow)" opacity=".35"/>
+              </g>
+              <g id="wearGuideStep3" opacity="0">
+                <circle cx="200" cy="250" r="78" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="9 8" opacity=".9"/>
+                <text x="200" y="360" fill="#fff" text-anchor="middle" font-size="14" font-weight="800">렌즈를 눈 표면에 살짝 올리기</text>
+              </g>
+              <g id="wearGuideStep4" opacity="0">
+                <text x="200" y="355" fill="#fff" text-anchor="middle" font-size="15" font-weight="800">눈을 한 번 천천히 깜빡여 주세요</text>
+              </g>
+            </g>
+
+            <g id="wearFingerGroup" opacity="0">
+              <ellipse id="wearFinger" cx="200" cy="444" rx="39" ry="77" fill="#efb99f" stroke="#c6846f" stroke-width="4"/>
+              <ellipse cx="200" cy="392" rx="25" ry="17" fill="#f7d0bc" opacity=".72"/>
+              <g id="wearLensGroup" transform="translate(0 0)">
+                <circle id="wearLensHit" cx="200" cy="363" r="53" fill="url(#wearLensGlow)" stroke="#83e7f6" stroke-width="3"/>
+                <path d="M153 370 Q200 391 247 370" fill="none" stroke="#d7fbff" stroke-width="2" opacity=".7"/>
+              </g>
+            </g>
+
+            <g id="wearSettledLens" opacity="0" clip-path="url(#wearEyeClip)">
+              <circle cx="200" cy="250" r="101" fill="url(#wearLensGlow)" stroke="#76dff5" stroke-width="3" stroke-opacity=".85"/>
+            </g>
+          </svg>
+
+          <div class="orientation-panel" id="orientationPanel">
+            <div class="orientation-card-wrap">
+              <strong>어느 쪽이 바른 렌즈 모양일까요?</strong>
+              <div class="orientation-options">
+                <button class="orientation-option" id="orientationCorrect" type="button">
+                  <div class="lens-bowl" aria-hidden="true"></div>
+                  <span>가장자리가 곧은 그릇 모양</span>
+                </button>
+                <button class="orientation-option" id="orientationWrong" type="button">
+                  <div class="lens-bowl inside-out" aria-hidden="true"></div>
+                  <span>가장자리가 벌어진 모양</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="wear-feedback" id="wearFeedback" aria-live="polite">바른 방향의 렌즈를 선택해보세요.</div>
+
+          <div class="wear-completion" id="wearCompletion" aria-hidden="true">
+            <div class="checkmark" aria-hidden="true">✓</div>
+            <h2>착용 성공!</h2>
+            <p>렌즈를 부드럽게 올리고 천천히 깜빡여 안정적으로 안착시켰어요.</p>
+            <button class="again-button" id="wearAgainButton" type="button">한 번 더 연습하기</button>
+          </div>
+        </section>
+
+        <p class="safety-note">착용 전에는 손을 깨끗이 씻고 완전히 말리세요. 렌즈가 뒤집혔거나 손상되지 않았는지 확인하고, 통증·심한 충혈·지속되는 불편감이 있으면 착용을 중단하고 안과 전문가의 안내를 받으세요.</p>
+        <p class="wear-source-note">착용 단계는 EASY 아큐브 및 ACUVUE 공식 착용 가이드를 바탕으로 구성한 교육용 연습입니다.</p>
+      </div>
+
+      <div class="practice-panel" id="removalMode" role="tabpanel" aria-labelledby="removalTab" hidden>
       <ol class="progress-list" aria-label="연습 진행 단계">
         <li class="active" data-progress="1">1. 아랫눈꺼풀</li>
         <li data-progress="2">2. 렌즈 이동</li>
@@ -778,6 +1215,7 @@
       </section>
 
       <p class="safety-note">교육용 시뮬레이터입니다. 실제 착용·제거 시 손을 깨끗이 씻고 안경전문가의 안내를 따라주세요.</p>
+      </div>
     </main>
   </div>
 
@@ -1348,7 +1786,11 @@
 
       svg.addEventListener('pointerup', releasePointer);
       svg.addEventListener('pointercancel', releasePointer);
-      document.getElementById('resetButton').addEventListener('click', reset);
+      window.resetRemovalPractice = reset;
+      document.getElementById('resetButton').addEventListener('click', () => {
+        if (document.body.dataset.practiceMode === 'wear' && typeof window.resetWearPractice === 'function') window.resetWearPractice();
+        else reset();
+      });
       document.getElementById('againButton').addEventListener('click', reset);
 
       function filterFaq() {
@@ -1392,6 +1834,382 @@
       renderGeometry();
       renderStep();
       filterFaq();
+    })();
+
+    (() => {
+      const svg = document.getElementById('wearScene');
+      if (!svg) return;
+      const eyeWhite = document.getElementById('wearEyeWhite');
+      const eyeClipPath = document.getElementById('wearEyeClipPath');
+      const upperOuter = document.getElementById('wearUpperLidOuter');
+      const upperInner = document.getElementById('wearUpperLidInner');
+      const upperHit = document.getElementById('wearUpperHit');
+      const lowerOuter = document.getElementById('wearLowerLidOuter');
+      const lowerInner = document.getElementById('wearLowerLidInner');
+      const lowerHit = document.getElementById('wearLowerHit');
+      const fingerGroup = document.getElementById('wearFingerGroup');
+      const lensGroup = document.getElementById('wearLensGroup');
+      const settledLens = document.getElementById('wearSettledLens');
+      const orientationPanel = document.getElementById('orientationPanel');
+      const feedback = document.getElementById('wearFeedback');
+      const completion = document.getElementById('wearCompletion');
+      const stepNumber = document.getElementById('wearStepNumber');
+      const instructionTitle = document.getElementById('wearInstructionTitle');
+      const instructionBody = document.getElementById('wearInstructionBody');
+      const progressList = document.querySelector('.wear-progress-list');
+      const progressItems = [...document.querySelectorAll('[data-wear-progress]')];
+      const guide2 = document.getElementById('wearGuideStep2');
+      const guide3 = document.getElementById('wearGuideStep3');
+      const guide4 = document.getElementById('wearGuideStep4');
+      const upperGuideCircle = document.getElementById('wearUpperGuideCircle');
+      const upperGuideText = document.getElementById('wearUpperGuideText');
+      const upperGuideArrow = document.getElementById('wearUpperGuideArrow');
+      const lowerGuideCircle = document.getElementById('wearLowerGuideCircle');
+      const lowerGuideText = document.getElementById('wearLowerGuideText');
+      const lowerGuideArrow = document.getElementById('wearLowerGuideArrow');
+
+      const copy = {
+        1: {
+          title: '렌즈 앞뒤를 먼저 확인하세요',
+          body: '손을 깨끗이 씻고 완전히 말린 뒤, 가장자리가 곧게 올라온 그릇 모양의 렌즈를 선택하세요.',
+          feedback: '바른 방향의 렌즈를 선택해보세요.'
+        },
+        2: {
+          title: '위·아래 눈꺼풀을 충분히 열어주세요',
+          body: '먼저 윗눈꺼풀을 속눈썹 가까이 잡아 위로 올린 뒤, 아랫눈꺼풀을 아래로 내려 눈이 감기지 않게 해보세요.',
+          feedback: '위쪽 파란 원을 잡고 윗눈꺼풀을 위로 올려주세요.'
+        },
+        3: {
+          title: '렌즈를 눈 표면에 부드럽게 올리세요',
+          body: '검지 끝의 렌즈를 눈 중앙 또는 편한 흰자 쪽으로 천천히 가져가세요. 세게 누르지 않아도 됩니다.',
+          feedback: '아래 손가락 위의 렌즈를 잡고 점선 원 안으로 천천히 올려보세요.'
+        },
+        4: {
+          title: '손을 떼고 천천히 깜빡여 주세요',
+          body: '렌즈가 닿으면 눈꺼풀을 놓고 눈을 천천히 감았다 뜬 뒤 몇 번 부드럽게 깜빡여 렌즈를 안착시켜 주세요.',
+          feedback: '눈 부분을 한 번 터치해 천천히 깜빡여 보세요.'
+        }
+      };
+
+      const state = {
+        step: 1,
+        lidPhase: 'upper',
+        upperOffset: 0,
+        lowerOffset: 0,
+        lensX: 200,
+        lensY: 363,
+        drag: null,
+        failureCount: 0,
+        success: false,
+        blinking: false
+      };
+
+      function toSvgPoint(event) {
+        const point = svg.createSVGPoint();
+        point.x = event.clientX;
+        point.y = event.clientY;
+        const matrix = svg.getScreenCTM();
+        return matrix ? point.matrixTransform(matrix.inverse()) : { x: 0, y: 0 };
+      }
+
+      function vibrate(pattern = 22) {
+        if ('vibrate' in navigator) navigator.vibrate(pattern);
+      }
+
+      function setFeedback(message, type = '') {
+        feedback.textContent = message;
+        feedback.className = `wear-feedback${type ? ` ${type}` : ''}`;
+      }
+
+      function renderGeometry() {
+        const topOuter = 105 - state.upperOffset * 1.25;
+        const topInner = 122 - state.upperOffset * 1.06;
+        const bottomOuter = 395 + state.lowerOffset * 1.08;
+        const bottomInner = 378 + state.lowerOffset * .95;
+        const eyeOpening = `M24,250 Q200,${topOuter} 376,250 Q200,${bottomOuter} 24,250Z`;
+        eyeWhite.setAttribute('d', eyeOpening);
+        eyeClipPath.setAttribute('d', eyeOpening);
+        upperOuter.setAttribute('d', `M24,250 Q200,${topOuter} 376,250`);
+        upperInner.setAttribute('d', `M31,245 Q200,${topInner} 369,245`);
+        upperHit.setAttribute('d', `M24,250 Q200,${topOuter} 376,250`);
+        lowerOuter.setAttribute('d', `M24,250 Q200,${bottomOuter} 376,250`);
+        lowerInner.setAttribute('d', `M31,255 Q200,${bottomInner} 369,255`);
+        lowerHit.setAttribute('d', `M24,250 Q200,${bottomOuter} 376,250`);
+        lensGroup.setAttribute('transform', `translate(${state.lensX - 200} ${state.lensY - 363})`);
+      }
+
+      function updateLidGuide() {
+        const upperActive = state.lidPhase === 'upper';
+        [upperGuideCircle, upperGuideText, upperGuideArrow].forEach(el => {
+          el.style.opacity = upperActive ? '1' : '.28';
+        });
+        [lowerGuideCircle, lowerGuideText, lowerGuideArrow].forEach(el => {
+          el.style.opacity = upperActive ? '.30' : '1';
+        });
+      }
+
+      function renderStep() {
+        const current = copy[state.step];
+        stepNumber.textContent = state.step;
+        instructionTitle.textContent = current.title;
+        instructionBody.textContent = current.body;
+        setFeedback(current.feedback);
+        progressList.classList.toggle('all-done', state.success);
+        progressItems.forEach((item, index) => {
+          const n = index + 1;
+          item.classList.toggle('active', n === state.step);
+          item.classList.toggle('done', n < state.step || state.success);
+        });
+        orientationPanel.hidden = state.step !== 1;
+        guide2.style.opacity = state.step === 2 ? '1' : '0';
+        guide2.style.display = state.step === 2 ? '' : 'none';
+        guide3.style.opacity = state.step === 3 ? '1' : '0';
+        guide3.style.display = state.step === 3 ? '' : 'none';
+        guide4.style.opacity = state.step === 4 ? '1' : '0';
+        guide4.style.display = state.step === 4 ? '' : 'none';
+        fingerGroup.style.opacity = state.step === 3 ? '1' : '0';
+        settledLens.style.opacity = state.step >= 4 ? '1' : '0';
+        if (state.step === 2) updateLidGuide();
+      }
+
+      function goToStep(next) {
+        state.step = next;
+        state.drag = null;
+        renderGeometry();
+        renderStep();
+        vibrate(18);
+      }
+
+      function registerPlacementFailure() {
+        state.failureCount += 1;
+        if (state.failureCount === 2) {
+          setFeedback('두 번 실패했어요. 손가락 끝을 완전히 말리고, 눈꺼풀을 속눈썹 가까이 단단히 잡은 뒤 렌즈를 눈 표면에 가볍게 닿게 해보세요.', 'error');
+          vibrate([25,45,25]);
+          return;
+        }
+        if (state.failureCount === 4) {
+          setFeedback('네 번 시도했어요. 잠시 쉬고 렌즈가 뒤집히거나 손상되지 않았는지 다시 확인하세요. 통증이나 심한 충혈이 있으면 착용을 중단하고 전문가에게 문의하세요.', 'error');
+          vibrate([30,50,30,50,30]);
+          return;
+        }
+        setFeedback('점선 원 안까지 천천히 가져가 주세요. 렌즈를 세게 누르지 않아도 됩니다.', 'error');
+      }
+
+      function resetLensPosition() {
+        state.lensX = 200;
+        state.lensY = 363;
+        renderGeometry();
+      }
+
+      function finish() {
+        if (state.success) return;
+        state.success = true;
+        setFeedback('잘했어요! 렌즈가 눈에 부드럽게 안착했어요.', 'success');
+        progressItems.forEach(item => {
+          item.classList.add('done');
+          item.classList.remove('active');
+        });
+        progressList.classList.add('all-done');
+        vibrate([35,40,70]);
+        setTimeout(() => {
+          completion.classList.add('visible');
+          completion.setAttribute('aria-hidden', 'false');
+        }, 220);
+      }
+
+      function blinkAndFinish() {
+        if (state.blinking || state.success) return;
+        state.blinking = true;
+        setFeedback('천천히 감았다가 떠볼게요…');
+        const startUpper = state.upperOffset;
+        const startLower = state.lowerOffset;
+        let start = null;
+        const duration = 620;
+        function animate(ts) {
+          if (!start) start = ts;
+          const p = Math.min(1, (ts - start) / duration);
+          const wave = Math.sin(Math.PI * p);
+          state.upperOffset = startUpper - 74 * wave;
+          state.lowerOffset = startLower - 74 * wave;
+          renderGeometry();
+          if (p < 1) requestAnimationFrame(animate);
+          else {
+            state.upperOffset = Math.max(42, startUpper);
+            state.lowerOffset = Math.max(42, startLower);
+            renderGeometry();
+            state.blinking = false;
+            finish();
+          }
+        }
+        requestAnimationFrame(animate);
+      }
+
+      function reset() {
+        state.step = 1;
+        state.lidPhase = 'upper';
+        state.upperOffset = 0;
+        state.lowerOffset = 0;
+        state.lensX = 200;
+        state.lensY = 363;
+        state.drag = null;
+        state.failureCount = 0;
+        state.success = false;
+        state.blinking = false;
+        settledLens.style.opacity = '0';
+        completion.classList.remove('visible');
+        completion.setAttribute('aria-hidden', 'true');
+        renderGeometry();
+        renderStep();
+      }
+
+      document.getElementById('orientationCorrect').addEventListener('click', () => {
+        setFeedback('맞아요. 가장자리가 곧게 올라온 그릇 모양이 바른 방향입니다.', 'success');
+        vibrate(18);
+        setTimeout(() => {
+          state.lidPhase = 'upper';
+          goToStep(2);
+        }, 420);
+      });
+
+      document.getElementById('orientationWrong').addEventListener('click', () => {
+        setFeedback('이 모양은 가장자리가 바깥으로 벌어져 있어요. 반대쪽 그릇 모양을 선택해보세요.', 'error');
+        vibrate([18,36,18]);
+      });
+
+      svg.addEventListener('pointerdown', event => {
+        if (state.success) return;
+        event.preventDefault();
+        const point = toSvgPoint(event);
+        svg.setPointerCapture?.(event.pointerId);
+
+        if (state.step === 2) {
+          if (state.lidPhase === 'upper') {
+            if (point.y > 255) {
+              setFeedback('윗눈꺼풀 쪽 파란 원을 잡아주세요.', 'error');
+              return;
+            }
+            state.drag = { type: 'upper', id: event.pointerId, startY: point.y, startOffset: state.upperOffset };
+            setFeedback('윗눈꺼풀을 속눈썹 가까이 잡고 위로 올려주세요.');
+          } else {
+            if (point.y < 255) {
+              setFeedback('아랫눈꺼풀 쪽 파란 원을 잡아주세요.', 'error');
+              return;
+            }
+            state.drag = { type: 'lower', id: event.pointerId, startY: point.y, startOffset: state.lowerOffset };
+            setFeedback('아랫눈꺼풀을 아래로 충분히 내려주세요.');
+          }
+          return;
+        }
+
+        if (state.step === 3) {
+          const d = Math.hypot(point.x - state.lensX, point.y - state.lensY);
+          if (d > 65) {
+            setFeedback('아래 손가락 위의 투명한 렌즈를 잡아주세요.', 'error');
+            return;
+          }
+          state.drag = { type: 'lens', id: event.pointerId, offsetX: state.lensX - point.x, offsetY: state.lensY - point.y };
+          setFeedback('눈꺼풀을 연 상태를 유지하면서 렌즈를 점선 원 안으로 가져가세요.');
+          return;
+        }
+
+        if (state.step === 4) blinkAndFinish();
+      }, { passive: false });
+
+      svg.addEventListener('pointermove', event => {
+        if (!state.drag || state.drag.id !== event.pointerId || state.success) return;
+        event.preventDefault();
+        const point = toSvgPoint(event);
+
+        if (state.drag.type === 'upper') {
+          const dy = state.drag.startY - point.y;
+          state.upperOffset = Math.max(0, Math.min(58, state.drag.startOffset + dy));
+          renderGeometry();
+          if (state.upperOffset >= 34) {
+            state.upperOffset = 48;
+            state.lidPhase = 'lower';
+            state.drag = null;
+            renderGeometry();
+            updateLidGuide();
+            setFeedback('좋아요. 이제 아래쪽 파란 원을 잡고 아랫눈꺼풀을 아래로 내려주세요.', 'success');
+            vibrate(18);
+          }
+          return;
+        }
+
+        if (state.drag.type === 'lower') {
+          const dy = point.y - state.drag.startY;
+          state.lowerOffset = Math.max(0, Math.min(70, state.drag.startOffset + dy));
+          renderGeometry();
+          if (state.lowerOffset >= 34) {
+            state.lowerOffset = 58;
+            state.upperOffset = Math.max(48, state.upperOffset);
+            state.drag = null;
+            renderGeometry();
+            goToStep(3);
+          }
+          return;
+        }
+
+        if (state.drag.type === 'lens') {
+          state.lensX = Math.max(75, Math.min(325, point.x + state.drag.offsetX));
+          state.lensY = Math.max(205, Math.min(390, point.y + state.drag.offsetY));
+          renderGeometry();
+        }
+      }, { passive: false });
+
+      function release(event) {
+        if (!state.drag || state.drag.id !== event.pointerId) return;
+        if (state.drag.type === 'lens' && state.step === 3 && !state.success) {
+          const targetDistance = Math.hypot(state.lensX - 200, state.lensY - 250);
+          if (targetDistance <= 78) {
+            state.lensX = 200;
+            state.lensY = 250;
+            state.upperOffset = Math.max(48, state.upperOffset);
+            state.lowerOffset = Math.max(58, state.lowerOffset);
+            renderGeometry();
+            setFeedback('렌즈가 닿았어요. 손가락을 천천히 떼고 눈을 부드럽게 깜빡여 주세요.', 'success');
+            state.drag = null;
+            setTimeout(() => goToStep(4), 360);
+            return;
+          }
+          registerPlacementFailure();
+          resetLensPosition();
+        }
+        state.drag = null;
+      }
+
+      svg.addEventListener('pointerup', release);
+      svg.addEventListener('pointercancel', release);
+      document.getElementById('wearAgainButton').addEventListener('click', reset);
+      window.resetWearPractice = reset;
+      reset();
+    })();
+
+    (() => {
+      const wearTab = document.getElementById('wearTab');
+      const removalTab = document.getElementById('removalTab');
+      const wearMode = document.getElementById('wearMode');
+      const removalMode = document.getElementById('removalMode');
+      const eyebrow = document.getElementById('headerEyebrow');
+      const title = document.getElementById('headerTitle');
+
+      function setMode(mode) {
+        const wear = mode === 'wear';
+        document.body.dataset.practiceMode = wear ? 'wear' : 'removal';
+        wearMode.hidden = !wear;
+        removalMode.hidden = wear;
+        wearTab.classList.toggle('active', wear);
+        removalTab.classList.toggle('active', !wear);
+        wearTab.setAttribute('aria-selected', String(wear));
+        removalTab.setAttribute('aria-selected', String(!wear));
+        eyebrow.textContent = wear ? 'INSERTION PRACTICE' : 'REMOVAL PRACTICE';
+        title.textContent = wear ? '콘택트렌즈 착용 연습' : '콘택트렌즈 제거 연습';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      wearTab.addEventListener('click', () => setMode('wear'));
+      removalTab.addEventListener('click', () => setMode('removal'));
+      setMode('wear');
     })();
   </script>
 </body>
