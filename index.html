@@ -532,24 +532,23 @@
 
     <main>
       <ol class="progress-list" aria-label="연습 진행 단계">
-        <li class="active" data-progress="1">1. 윗눈꺼풀</li>
-        <li data-progress="2">2. 아랫눈꺼풀</li>
-        <li data-progress="3">3. 렌즈 이동</li>
-        <li data-progress="4">4. 집어 제거</li>
+        <li class="active" data-progress="1">1. 아랫눈꺼풀</li>
+        <li data-progress="2">2. 렌즈 이동</li>
+        <li data-progress="3">3. 집어 제거</li>
       </ol>
 
       <section class="coach" aria-labelledby="instructionTitle">
         <div class="step-number" id="stepNumber">1</div>
         <div>
-          <strong id="instructionTitle">왼손 중지로 윗눈꺼풀을 올리세요</strong>
-          <p id="instructionBody">표시된 윗눈꺼풀을 왼손 중지로 잡고 위로 드래그하세요.</p>
+          <strong id="instructionTitle">오른손 중지로 아랫눈꺼풀을 내리세요</strong>
+          <p id="instructionBody">표시된 아랫눈꺼풀을 오른손 중지로 잡고 아래로 드래그하세요.</p>
         </div>
       </section>
 
       <section class="simulator" aria-label="콘택트렌즈 제거 터치 연습 화면">
         <svg id="eyeScene" viewBox="0 0 400 500" role="img" aria-labelledby="sceneTitle sceneDesc">
           <title id="sceneTitle">콘택트렌즈 제거 연습용 눈</title>
-          <desc id="sceneDesc">왼손 중지로 윗눈꺼풀을 올리고 오른손 중지로 아랫눈꺼풀을 내린 뒤, 오른손 검지로 렌즈를 흰자위로 이동하고 오른손 검지와 엄지로 집어 제거합니다.</desc>
+          <desc id="sceneDesc">오른손 중지로 아랫눈꺼풀을 내린 뒤, 오른손 검지로 렌즈를 흰자위로 이동하고 손톱이 아닌 오른손 검지와 엄지의 지문 면으로 렌즈 양쪽을 집어 제거합니다.</desc>
           <defs>
             <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0" stop-color="#b97862"/>
@@ -686,43 +685,36 @@
           </g>
 
           <g id="guideLayer" pointer-events="none">
-            <g id="guideStep1" class="pulse">
-              <circle cx="200" cy="154" r="27" fill="#4aa9e8" fill-opacity=".5" stroke="#fff" stroke-width="3"/>
-              <text x="200" y="151" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">왼손</text>
-              <text x="200" y="165" fill="#fff" text-anchor="middle" font-size="11" font-weight="700">중지</text>
-              <path class="bob" d="M200 127 L200 87" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowHead)"/>
-              <text x="200" y="59" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">윗눈꺼풀 올리기</text>
-            </g>
-            <g id="guideStep2" opacity="0">
+            <g id="guideStep1">
               <circle cx="200" cy="365" r="23" fill="#4aa9e8" fill-opacity=".45" stroke="#fff" stroke-width="3"/>
               <text x="200" y="362" fill="#fff" text-anchor="middle" font-size="9" font-weight="700">오른손</text>
               <text x="200" y="375" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">중지</text>
               <path d="M200 389 L200 430" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowHead)"/>
               <text x="200" y="462" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">아랫눈꺼풀 내리기</text>
             </g>
-            <g id="guideStep3" opacity="0">
+            <g id="guideStep2" opacity="0">
               <circle cx="200" cy="310" r="22" fill="#4aa9e8" fill-opacity=".45" stroke="#fff" stroke-width="3"/>
               <text x="200" y="307" fill="#fff" text-anchor="middle" font-size="9" font-weight="700">오른손</text>
               <text x="200" y="320" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">검지</text>
               <path d="M200 329 L200 400" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowHead)"/>
               <text x="200" y="443" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">렌즈를 흰자위로</text>
             </g>
-            <g id="guideStep4" opacity="0">
-              <circle cx="112" cy="315" r="28" fill="#4aa9e8" fill-opacity=".58" stroke="#fff" stroke-width="3"/>
-              <text x="112" y="311" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">오른손</text>
-              <text x="112" y="327" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">검지</text>
-              <circle cx="288" cy="315" r="28" fill="#4aa9e8" fill-opacity=".58" stroke="#fff" stroke-width="3"/>
-              <text x="288" y="311" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">오른손</text>
-              <text x="288" y="327" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">엄지</text>
-              <path d="M143 315 L181 315 M257 315 L219 315" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowHead)"/>
-              <text x="200" y="407" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">렌즈 양쪽 테두리를 안쪽으로 모으기</text>
+            <g id="guideStep3" opacity="0">
+              <circle cx="112" cy="310" r="28" fill="#4aa9e8" fill-opacity=".58" stroke="#fff" stroke-width="3"/>
+              <text x="112" y="306" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">오른손</text>
+              <text x="112" y="322" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">검지</text>
+              <circle cx="288" cy="310" r="28" fill="#4aa9e8" fill-opacity=".58" stroke="#fff" stroke-width="3"/>
+              <text x="288" y="306" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">오른손</text>
+              <text x="288" y="322" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">엄지</text>
+              <path d="M143 310 L181 310 M257 310 L219 310" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowHead)"/>
+              <text x="200" y="402" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">손톱 말고 지문 면으로 테두리 모으기</text>
             </g>
           </g>
         </svg>
 
         <div class="touch-marker" id="touchMarker1"></div>
         <div class="touch-marker" id="touchMarker2"></div>
-        <div class="feedback" id="feedback" aria-live="polite">파란 원에 왼손 중지를 놓고 위로 올려보세요.</div>
+        <div class="feedback" id="feedback" aria-live="polite">파란 원에 오른손 중지를 놓고 아래로 내려보세요.</div>
 
         <div class="completion" id="completion" aria-hidden="true">
           <div class="checkmark" aria-hidden="true">✓</div>
@@ -879,7 +871,7 @@
       const instructionBody = document.getElementById('instructionBody');
       const progressList = document.querySelector('.progress-list');
       const progressItems = [...document.querySelectorAll('[data-progress]')];
-      const guides = [null, document.getElementById('guideStep1'), document.getElementById('guideStep2'), document.getElementById('guideStep3'), document.getElementById('guideStep4')];
+      const guides = [null, document.getElementById('guideStep1'), document.getElementById('guideStep2'), document.getElementById('guideStep3')];
       const markers = [document.getElementById('touchMarker1'), document.getElementById('touchMarker2')];
       const faqButton = document.getElementById('faqButton');
       const faqModal = document.getElementById('faqModal');
@@ -891,24 +883,19 @@
 
       const copy = {
         1: {
-          title: '왼손 중지로 윗눈꺼풀을 올리세요',
-          body: '표시된 윗눈꺼풀을 왼손 중지로 잡고 위로 드래그하세요.',
-          feedback: '파란 원에 왼손 중지를 놓고 위로 올려보세요.'
-        },
-        2: {
           title: '오른손 중지로 아랫눈꺼풀을 내리세요',
-          body: '왼손 중지는 윗눈꺼풀에 유지하고, 오른손 중지로 아래 눈꺼풀을 내리세요.',
+          body: '표시된 아랫눈꺼풀을 오른손 중지로 잡고 아래로 드래그하세요.',
           feedback: '파란 원에 오른손 중지를 놓고 아래로 내려보세요.'
         },
-        3: {
+        2: {
           title: '오른손 검지로 렌즈를 내리세요',
-          body: '두 중지로 눈꺼풀을 연 상태를 유지하고, 오른손 검지로 렌즈를 흰자위까지 내리세요.',
+          body: '렌즈를 아래 흰자위로 이동하면 눈동자가 위로 향하면서 상안검도 자동으로 열립니다.',
           feedback: '오른손 검지를 렌즈 아래쪽에 놓고 아래로 밀어주세요.'
         },
-        4: {
+        3: {
           title: '오른손 검지와 엄지로 렌즈를 빼세요',
-          body: '검지와 엄지를 렌즈의 왼쪽·오른쪽 테두리에 놓고, 두 손가락의 넓은 면을 안쪽으로 살짝 모으세요.',
-          feedback: '왼쪽 파란 원은 오른손 검지, 오른쪽 파란 원은 오른손 엄지입니다.'
+          body: '손톱이 아닌 검지와 엄지의 지문 면을 렌즈 양쪽 테두리에 놓고 안쪽으로 살짝 모으세요.',
+          feedback: '손톱 말고 지문 면을 사용하세요. 왼쪽은 검지, 오른쪽은 엄지입니다.'
         }
       };
 
@@ -983,7 +970,7 @@
         // 렌즈를 아래로 미는 동안 시선은 위를 향한다.
         // 렌즈가 흰자위로 내려갈수록 눈동자는 위를 보되,
         // 검은 동공이 너무 위로 붙지 않도록 상승 폭을 제한한다.
-        const gazeUp = state.success ? 110 : Math.min(110, state.lensY * 1.5);
+        const gazeUp = state.success ? 115 : Math.min(115, state.lensY * 1.7);
         irisGroup.setAttribute('transform', `translate(0 ${-gazeUp})`);
         lensPosition.setAttribute('transform', `translate(0 ${state.lensY})`);
         lensFold.style.transform = `scaleX(${state.fold})`;
@@ -1003,7 +990,7 @@
           item.classList.toggle('done', number < state.step || state.success);
         });
 
-        for (let i = 1; i <= 4; i++) {
+        for (let i = 1; i <= 3; i++) {
           const isCurrentGuide = i === state.step;
           // 완료한 가이드는 애니메이션이 남지 않도록 화면에서 완전히 제외한다.
           guides[i].style.display = isCurrentGuide ? '' : 'none';
@@ -1035,7 +1022,7 @@
       }
 
       function updateMarkers() {
-        if (state.step === 4) {
+        if (state.step === 3) {
           hideMarkers();
           return;
         }
@@ -1082,13 +1069,13 @@
           item.classList.remove('active');
         });
         progressList.classList.add('all-done');
-        guides[4].style.display = 'none';
-        guides[4].style.opacity = '0';
+        guides[3].style.display = 'none';
+        guides[3].style.opacity = '0';
         vibrate([35, 40, 70]);
 
         const start = performance.now();
         const startY = state.lensY;
-        const duration = 520;
+        const duration = 620;
         function animate(now) {
           const raw = Math.min(1, (now - start) / duration);
           const eased = 1 - Math.pow(1 - raw, 3);
@@ -1136,29 +1123,19 @@
         clearTimeout(state.pinchHoldTimer);
         state.pinchHoldTimer = setTimeout(() => {
           const [leftId, rightId] = state.pinch?.ids || [];
-          if (state.step === 4 && !state.success && state.pointers.has(leftId) && state.pointers.has(rightId)) finish();
+          if (state.step === 3 && !state.success && state.pointers.has(leftId) && state.pointers.has(rightId)) finish();
         }, 320);
       }
 
       svg.addEventListener('pointerdown', (event) => {
         if (state.success) return;
         event.preventDefault();
-        if (state.step !== 4) svg.setPointerCapture?.(event.pointerId);
+        if (state.step !== 3) svg.setPointerCapture?.(event.pointerId);
         const point = toSvgPoint(event);
         state.pointers.set(event.pointerId, { ...point, clientX: event.clientX, clientY: event.clientY });
         updateMarkers();
 
         if (state.step === 1) {
-          if (point.y < 90 || point.y > 265) {
-            setFeedback('윗눈꺼풀의 파란 원에 왼손 중지를 놓아주세요.', 'error');
-            return;
-          }
-          state.drag = { type: 'upperLid', id: event.pointerId, startY: point.y, startOffset: state.upperLidOffset };
-          setFeedback('왼손 중지를 그대로 위로 올려주세요.');
-          return;
-        }
-
-        if (state.step === 2) {
           if (point.y < 300 || point.y > 430) {
             setFeedback('아랫눈꺼풀의 파란 원에 오른손 중지를 놓아주세요.', 'error');
             return;
@@ -1168,7 +1145,7 @@
           return;
         }
 
-        if (state.step === 3) {
+        if (state.step === 2) {
           if (!withinLens(point, 8)) {
             setFeedback('투명한 렌즈 안쪽에 손가락을 놓아주세요.', 'error');
             return;
@@ -1178,12 +1155,12 @@
           return;
         }
 
-        if (state.step === 4) {
+        if (state.step === 3) {
           beginPinchIfReady();
           if (state.pointers.size === 1) {
             clearTimeout(state.oneFingerTimer);
             state.oneFingerTimer = setTimeout(() => {
-              if (state.step === 4 && state.pointers.size === 1 && !state.success) {
+              if (state.step === 3 && state.pointers.size === 1 && !state.success) {
                 setFeedback('반대쪽 렌즈 테두리에도 다른 손가락을 놓아주세요.', 'error');
               }
             }, 900);
@@ -1199,11 +1176,11 @@
         updateMarkers();
 
         if (state.step === 1 && state.drag?.id === event.pointerId) {
-          const upward = state.drag.startY - point.y;
-          state.upperLidOffset = Math.max(0, Math.min(64, state.drag.startOffset + upward));
+          const dy = point.y - state.drag.startY;
+          state.lidOffset = Math.max(0, Math.min(70, state.drag.startOffset + dy));
           renderGeometry();
-          if (state.upperLidOffset >= 30) {
-            state.upperLidOffset = 60;
+          if (state.lidOffset >= 34) {
+            state.lidOffset = 66;
             renderGeometry();
             goToStep(2);
           }
@@ -1212,30 +1189,21 @@
 
         if (state.step === 2 && state.drag?.id === event.pointerId) {
           const dy = point.y - state.drag.startY;
-          state.lidOffset = Math.max(0, Math.min(70, state.drag.startOffset + dy));
+          state.lensY = Math.max(0, Math.min(112, state.drag.startLensY + dy));
+          // 별도의 상안검 단계 없이 렌즈를 내리는 거리만큼 상안검이 자동으로 열린다.
+          state.upperLidOffset = Math.min(60, state.lensY);
           renderGeometry();
-          if (state.lidOffset >= 34) {
-            state.lidOffset = 66;
+          if (dy < -12) setFeedback('위쪽이 아니라 아래 흰자위 방향으로 밀어주세요.', 'error');
+          if (state.lensY >= 54) {
+            state.lensY = 60;
+            state.upperLidOffset = 60;
             renderGeometry();
             goToStep(3);
           }
           return;
         }
 
-        if (state.step === 3 && state.drag?.id === event.pointerId) {
-          const dy = point.y - state.drag.startY;
-          state.lensY = Math.max(0, Math.min(112, state.drag.startLensY + dy));
-          renderGeometry();
-          if (dy < -12) setFeedback('위쪽이 아니라 아래 흰자위 방향으로 밀어주세요.', 'error');
-          if (state.lensY >= 58) {
-            state.lensY = 65;
-            renderGeometry();
-            goToStep(4);
-          }
-          return;
-        }
-
-        if (state.step === 4) {
+        if (state.step === 3) {
           if (!state.pinch) beginPinchIfReady();
           if (!state.pinch) return;
           const [idA, idB] = state.pinch.ids;
@@ -1274,7 +1242,7 @@
 
       // iPhone Safari에서 두 번째 PointerEvent가 누락되는 경우를 위한 멀티터치 보조 인식.
       svg.addEventListener('touchstart', event => {
-        if (state.step !== 4 || state.success || event.touches.length < 2) return;
+        if (state.step !== 3 || state.success || event.touches.length < 2) return;
         event.preventDefault();
         clearTimeout(state.oneFingerTimer);
         clearTimeout(state.touchFallbackTimer);
@@ -1283,12 +1251,12 @@
         renderGeometry();
         vibrate(16);
         state.touchFallbackTimer = setTimeout(() => {
-          if (state.step === 4 && !state.success) finish();
+          if (state.step === 3 && !state.success) finish();
         }, 220);
       }, { passive: false });
 
       svg.addEventListener('touchmove', event => {
-        if (state.step !== 4 || state.success || event.touches.length < 2) return;
+        if (state.step !== 3 || state.success || event.touches.length < 2) return;
         event.preventDefault();
         finish();
       }, { passive: false });
