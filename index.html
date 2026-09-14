@@ -979,9 +979,9 @@
         lowerLashes.setAttribute('transform', `translate(0 ${state.lidOffset * .7})`);
 
         // 렌즈를 아래로 미는 동안 시선은 위를 향한다.
-        // 렌즈가 흰자위로 내려갈수록 눈동자는 더 위를 본다.
-        // 마지막 단계에서는 검은 동공의 아래쪽만 살짝 보이도록 충분히 올린다.
-        const gazeUp = state.success ? 205 : Math.min(205, state.lensY * 2.75);
+        // 렌즈가 흰자위로 내려갈수록 눈동자는 위를 보되,
+        // 가장 많이 올려도 검은 동공이 화면 안에 충분히 남도록 제한한다.
+        const gazeUp = state.success ? 165 : Math.min(165, state.lensY * 2.2);
         irisGroup.setAttribute('transform', `translate(0 ${-gazeUp})`);
         lensPosition.setAttribute('transform', `translate(0 ${state.lensY})`);
         lensFold.style.transform = `scaleX(${state.fold})`;
@@ -1191,7 +1191,7 @@
           state.upperLidOffset = Math.max(0, Math.min(48, state.drag.startOffset + upward));
           renderGeometry();
           if (state.upperLidOffset >= 30) {
-            state.upperLidOffset = 38;
+            state.upperLidOffset = 48;
             renderGeometry();
             goToStep(2);
           }
@@ -1203,7 +1203,7 @@
           state.lidOffset = Math.max(0, Math.min(54, state.drag.startOffset + dy));
           renderGeometry();
           if (state.lidOffset >= 34) {
-            state.lidOffset = 42;
+            state.lidOffset = 54;
             renderGeometry();
             goToStep(3);
           }
