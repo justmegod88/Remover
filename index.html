@@ -29,7 +29,9 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    button { font: inherit; }
+    button, input { font: inherit; }
+
+    body.faq-open { overflow: hidden; }
 
     .app {
       width: min(100%, 560px);
@@ -70,6 +72,13 @@
       letter-spacing: -0.04em;
     }
 
+    .top-actions {
+      display: flex;
+      flex: 0 0 auto;
+      gap: 8px;
+    }
+
+    .faq-button,
     .reset-button {
       flex: 0 0 auto;
       min-width: 52px;
@@ -82,13 +91,19 @@
       cursor: pointer;
     }
 
+    .faq-button {
+      border-color: rgba(174, 228, 255, .58);
+      background: rgba(174, 228, 255, .17);
+      font-weight: 800;
+    }
+
+    .faq-button:active,
     .reset-button:active { transform: translateY(1px); }
 
     main { padding: 18px 16px calc(28px + env(safe-area-inset-bottom)); }
 
     .progress-list {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      display: flex;
       gap: 7px;
       margin: 0 0 14px;
       padding: 0;
@@ -96,6 +111,7 @@
     }
 
     .progress-list li {
+      flex: 1 1 0;
       min-width: 0;
       padding: 9px 4px;
       border-radius: 12px;
@@ -114,9 +130,10 @@
     }
 
     .progress-list li.done {
-      background: #dff4ea;
-      color: #0a7450;
+      display: none;
     }
+
+    .progress-list.all-done { display: none; }
 
     .coach {
       display: flex;
@@ -283,6 +300,187 @@
       text-align: center;
     }
 
+    .faq-modal[hidden] { display: none; }
+
+    .faq-modal {
+      position: fixed;
+      z-index: 1000;
+      inset: 0;
+      display: grid;
+      align-items: end;
+      padding-top: env(safe-area-inset-top);
+      background: rgba(4, 23, 40, .62);
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
+    }
+
+    .faq-sheet {
+      display: flex;
+      width: min(100%, 640px);
+      max-height: 94dvh;
+      margin: 0 auto;
+      flex-direction: column;
+      overflow: hidden;
+      border-radius: 28px 28px 0 0;
+      background: #f8fbfe;
+      box-shadow: 0 -18px 60px rgba(4, 23, 40, .28);
+    }
+
+    .faq-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 20px 20px 14px;
+      color: #fff;
+      background: linear-gradient(135deg, #092b50, #0b659b);
+    }
+
+    .faq-kicker {
+      margin: 0 0 3px;
+      color: #aee4ff;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .12em;
+    }
+
+    .faq-header h2 { margin: 0; font-size: 24px; letter-spacing: -.035em; }
+
+    .faq-close {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 50%;
+      background: rgba(255,255,255,.14);
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .faq-search-wrap {
+      padding: 14px 18px 12px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .faq-search-wrap label {
+      display: block;
+      margin-bottom: 7px;
+      color: #33465a;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .faq-search-row { position: relative; }
+
+    .faq-search-row::before {
+      position: absolute;
+      top: 50%;
+      left: 14px;
+      color: #6f8296;
+      content: "⌕";
+      font-size: 24px;
+      transform: translateY(-55%);
+      pointer-events: none;
+    }
+
+    #faqSearch {
+      width: 100%;
+      min-height: 48px;
+      padding: 11px 14px 11px 44px;
+      border: 1px solid #bfd5e7;
+      border-radius: 14px;
+      outline: none;
+      background: #f7fbff;
+      color: var(--text);
+      font-size: 16px;
+    }
+
+    #faqSearch:focus { border-color: #3493cd; box-shadow: 0 0 0 3px rgba(52,147,205,.14); }
+
+    .faq-count { margin: 7px 2px 0; color: var(--muted); font-size: 11px; }
+
+    .faq-list {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
+      padding: 5px 18px 24px;
+      overscroll-behavior: contain;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid #dfe9f1;
+      background: transparent;
+    }
+
+    .faq-item[hidden] { display: none; }
+
+    .faq-item summary {
+      position: relative;
+      padding: 16px 38px 16px 2px;
+      color: #193148;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.4;
+      list-style: none;
+    }
+
+    .faq-item summary::-webkit-details-marker { display: none; }
+
+    .faq-item summary::after {
+      position: absolute;
+      top: 14px;
+      right: 4px;
+      color: #1979b5;
+      content: "+";
+      font-size: 23px;
+      font-weight: 500;
+    }
+
+    .faq-item[open] summary::after { content: "−"; }
+
+    .faq-item p {
+      margin: -3px 0 16px;
+      padding: 0 34px 0 2px;
+      color: #52677b;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .faq-tag {
+      display: inline-block;
+      margin-right: 7px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: #e2f2ff;
+      color: #12669e;
+      font-size: 10px;
+      vertical-align: 1px;
+    }
+
+    .faq-empty {
+      padding: 38px 24px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .faq-sources {
+      padding: 12px 18px calc(12px + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--line);
+      background: #eef6fc;
+      color: #63778a;
+      font-size: 10px;
+      line-height: 1.55;
+    }
+
+    .faq-sources p { margin: 0 0 5px; }
+    .faq-sources p:last-child { margin-bottom: 0; }
+    .faq-sources a { color: #0b639b; font-weight: 700; }
+
     .pulse { animation: pulse 1.25s ease-in-out infinite; }
     .bob { animation: bob 1.25s ease-in-out infinite; }
 
@@ -302,9 +500,18 @@
 
     @media (max-width: 380px) {
       main { padding-inline: 10px; }
+      .topbar { padding-inline: 14px; }
+      .topbar-row { gap: 9px; }
+      .top-actions { gap: 5px; }
+      .faq-button, .reset-button { min-width: 48px; padding-inline: 9px; font-size: 13px; }
       .progress-list { gap: 4px; }
       .progress-list li { font-size: 11px; }
       .coach { min-height: 88px; }
+    }
+
+    @media (min-width: 640px) {
+      .faq-modal { align-items: center; padding: 24px; }
+      .faq-sheet { border-radius: 28px; }
     }
   </style>
 </head>
@@ -316,7 +523,10 @@
           <p class="eyebrow">REMOVAL PRACTICE</p>
           <h1>콘택트렌즈 제거 연습</h1>
         </div>
-        <button class="reset-button" id="resetButton" type="button" aria-label="처음부터 다시 시작">↺ 처음</button>
+        <div class="top-actions">
+          <button class="faq-button" id="faqButton" type="button" aria-haspopup="dialog">FAQ</button>
+          <button class="reset-button" id="resetButton" type="button" aria-label="처음부터 다시 시작">↺ 처음</button>
+        </div>
       </div>
     </header>
 
@@ -498,14 +708,14 @@
               <text x="200" y="443" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">렌즈를 흰자위로</text>
             </g>
             <g id="guideStep4" opacity="0">
-              <circle cx="175" cy="318" r="30" fill="#4aa9e8" fill-opacity=".55" stroke="#fff" stroke-width="3"/>
-              <text x="175" y="314" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">오른손</text>
-              <text x="175" y="330" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">검지</text>
-              <circle cx="225" cy="388" r="30" fill="#4aa9e8" fill-opacity=".55" stroke="#fff" stroke-width="3"/>
-              <text x="225" y="384" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">오른손</text>
-              <text x="225" y="400" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">엄지</text>
-              <path d="M186 340 L196 353 M216 368 L205 356" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowHead)"/>
-              <text x="200" y="447" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">검지와 엄지를 살짝 모으기</text>
+              <circle cx="175" cy="298" r="30" fill="#4aa9e8" fill-opacity=".55" stroke="#fff" stroke-width="3"/>
+              <text x="175" y="294" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">오른손</text>
+              <text x="175" y="310" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">검지</text>
+              <circle cx="225" cy="368" r="30" fill="#4aa9e8" fill-opacity=".55" stroke="#fff" stroke-width="3"/>
+              <text x="225" y="364" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">오른손</text>
+              <text x="225" y="380" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">엄지</text>
+              <path d="M186 320 L196 333 M216 348 L205 336" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowHead)"/>
+              <text x="200" y="427" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">검지와 엄지를 살짝 모으기</text>
             </g>
           </g>
         </svg>
@@ -524,6 +734,123 @@
 
       <p class="safety-note">교육용 시뮬레이터입니다. 실제 착용·제거 시 손을 깨끗이 씻고 안경전문가의 안내를 따라주세요.</p>
     </main>
+  </div>
+
+  <div class="faq-modal" id="faqModal" hidden>
+    <section class="faq-sheet" role="dialog" aria-modal="true" aria-labelledby="faqTitle">
+      <header class="faq-header">
+        <div>
+          <p class="faq-kicker">WEAR &amp; CARE</p>
+          <h2 id="faqTitle">착용·제거 FAQ</h2>
+        </div>
+        <button class="faq-close" id="faqClose" type="button" aria-label="FAQ 닫기">×</button>
+      </header>
+
+      <div class="faq-search-wrap">
+        <label for="faqSearch">궁금한 내용을 검색하세요</label>
+        <div class="faq-search-row">
+          <input id="faqSearch" type="search" placeholder="예: 안 빠져요, 수돗물, 잠" autocomplete="off">
+        </div>
+        <p class="faq-count" id="faqCount" aria-live="polite">22개 질문</p>
+      </div>
+
+      <div class="faq-list" id="faqList">
+        <details class="faq-item" data-search="착용 뒤집힘 앞뒤 그릇 접시 모양">
+          <summary><span class="faq-tag">착용</span>렌즈가 뒤집혔는지 어떻게 확인하나요?</summary>
+          <p>손가락 끝에 올렸을 때 가장자리가 곧게 위를 향한 둥근 그릇 모양이면 바른 방향입니다. 가장자리가 바깥으로 벌어진 접시 모양이면 뒤집힌 것이므로 뒤집어 착용하세요.</p>
+        </details>
+        <details class="faq-item" data-search="착용 이물감 따가움 불편 통증">
+          <summary><span class="faq-tag">착용</span>처음 끼면 약간 이물감이 있어도 되나요?</summary>
+          <p>처음에는 렌즈가 느껴질 수 있지만 지속되는 통증·심한 따가움·충혈·눈부심·시야 변화는 정상으로 넘기면 안 됩니다. 즉시 빼고 증상이 계속되면 안과 또는 렌즈 전문가에게 연락하세요.</p>
+        </details>
+        <details class="faq-item" data-search="착용 렌즈 움직임 깜빡임 중심 이탈">
+          <summary><span class="faq-tag">착용</span>깜빡일 때 렌즈가 조금 움직여도 되나요?</summary>
+          <p>소프트렌즈는 깜빡일 때 약간 움직일 수 있습니다. 계속 크게 밀리거나 중심을 벗어나고 시야가 흔들리면 착용을 중단하고 피팅 상태를 확인받으세요.</p>
+        </details>
+        <details class="faq-item" data-search="착용 흐림 뿌옇게 시야 뒤집힘 이물 건조">
+          <summary><span class="faq-tag">착용</span>착용 후 시야가 흐리면 어떻게 하나요?</summary>
+          <p>렌즈를 빼서 앞뒤가 맞는지, 찢어짐이나 이물질이 없는지 확인하세요. 권장 용액으로 관리한 뒤 다시 착용해도 흐림이 지속되거나 통증·충혈이 동반되면 진료가 필요합니다.</p>
+        </details>
+        <details class="faq-item" data-search="착용 시간 오래 몇시간 교체주기 처방">
+          <summary><span class="faq-tag">착용</span>하루에 몇 시간까지 착용해도 되나요?</summary>
+          <p>렌즈 종류와 눈 상태에 따라 달라서 제품 설명과 안과 전문가가 정한 착용 시간을 따라야 합니다. 불편감이나 건조감이 생기면 정해진 시간 전이라도 빼세요.</p>
+        </details>
+        <details class="faq-item" data-search="착용 화장 메이크업 순서 제거 클렌징">
+          <summary><span class="faq-tag">착용</span>화장 전과 후, 언제 렌즈를 끼고 빼나요?</summary>
+          <p>보통 화장 전에 렌즈를 착용하고, 화장을 지우기 전에 렌즈부터 제거하면 오염이 묻을 가능성을 줄일 수 있습니다. 손과 손가락은 깨끗하고 완전히 마른 상태로 사용하세요.</p>
+        </details>
+        <details class="faq-item" data-search="제거 기본 순서 흰자 검지 엄지 미끄러뜨리기">
+          <summary><span class="faq-tag">제거</span>소프트렌즈를 빼는 기본 순서는 무엇인가요?</summary>
+          <p>위를 보고 눈꺼풀을 충분히 연 뒤, 검지의 넓은 면으로 렌즈를 아래 흰자위로 미세요. 손톱이 아닌 검지와 엄지의 지문 면으로 렌즈 양쪽을 부드럽게 모아 들어냅니다.</p>
+        </details>
+        <details class="faq-item" data-search="제거 렌즈 붙음 안빠짐 건조 재습윤 식염수 깜빡임">
+          <summary><span class="faq-tag">제거</span>렌즈가 붙어서 안 빠져요.</summary>
+          <p>억지로 집지 말고 여러 번 깜빡인 뒤, 전문가가 허용한 렌즈용 재습윤액이나 멸균 식염수를 넣고 몇 분 기다리세요. 손가락을 다시 완전히 말린 후 시도하고, 그래도 움직이지 않거나 아프면 전문가에게 도움을 받으세요.</p>
+        </details>
+        <details class="faq-item" data-search="제거 눈 뒤 넘어감 사라짐 윗눈꺼풀 접힘">
+          <summary><span class="faq-tag">제거</span>렌즈가 눈 뒤로 넘어갈 수 있나요?</summary>
+          <p>눈의 구조상 렌즈가 안구 뒤로 완전히 넘어갈 수는 없습니다. 다만 접혀서 눈꺼풀 아래에 들어갈 수 있으므로 찾지 못하거나 이물감이 계속되면 손톱으로 찾지 말고 안과에서 확인받으세요.</p>
+        </details>
+        <details class="faq-item" data-search="제거 찢어짐 조각 남음 파손 핀셋 손톱">
+          <summary><span class="faq-tag">제거</span>렌즈가 찢어져 조각이 남은 것 같아요.</summary>
+          <p>손톱이나 핀셋으로 눈을 긁지 마세요. 승인된 멸균 용액으로 눈을 적시고 깜빡여도 조각을 확인할 수 없거나 통증·충혈이 있으면 바로 안과에서 제거 여부를 확인받으세요.</p>
+        </details>
+        <details class="faq-item" data-search="제거 긴 손톱 네일 손가락 패드">
+          <summary><span class="faq-tag">제거</span>손톱이 길어도 안전하게 뺄 수 있나요?</summary>
+          <p>반드시 손톱 끝이 아닌 손가락의 넓은 지문 면을 사용하고 천천히 옆에서 접근하세요. 가능하면 검지와 엄지 손톱을 짧고 매끈하게 유지하고, 반복해서 어렵다면 전문가에게 다른 제거법을 배우세요.</p>
+        </details>
+        <details class="faq-item" data-search="제거 한쪽 반복 실패 안빠져요 휴식">
+          <summary><span class="faq-tag">제거</span>한쪽 렌즈만 계속 안 빠지면요?</summary>
+          <p>눈이 자극될 만큼 반복하지 말고 잠시 쉬면서 렌즈용 재습윤액을 사용하세요. 충분히 적신 뒤에도 렌즈가 움직이지 않거나 통증이 생기면 스스로 억지로 빼지 말고 전문가에게 연락하세요.</p>
+        </details>
+        <details class="faq-item" data-search="위생 수돗물 생수 증류수 세척 물 침 타액">
+          <summary><span class="faq-tag">위생</span>수돗물·생수·증류수로 렌즈를 씻어도 되나요?</summary>
+          <p>안 됩니다. FDA는 수돗물·생수·증류수·호수·바닷물 등 어떤 물에도 렌즈를 노출하지 말라고 안내합니다. 침으로 적시는 것도 피하고, 제품에 맞는 멸균 렌즈 관리용액만 사용하세요.</p>
+        </details>
+        <details class="faq-item" data-search="위생 샤워 수영 물 바다 수영장">
+          <summary><span class="faq-tag">위생</span>렌즈를 끼고 샤워하거나 수영해도 되나요?</summary>
+          <p>물에 닿기 전에 렌즈를 빼는 것이 원칙입니다. 실수로 물에 닿았다면 가능한 빨리 제거하고, 일회용은 버리며 재사용 렌즈는 전문가와 제품 지침에 따라 소독하세요.</p>
+        </details>
+        <details class="faq-item" data-search="착용 수면 낮잠 밤 잠자기">
+          <summary><span class="faq-tag">착용</span>렌즈를 끼고 자거나 낮잠을 자도 되나요?</summary>
+          <p>전문가가 해당 렌즈의 연속 착용을 명확히 허용한 경우가 아니라면 잠들기 전에 빼세요. 렌즈를 끼고 자는 행동은 감염 위험을 높일 수 있습니다.</p>
+        </details>
+        <details class="faq-item" data-search="위생 손씻기 비누 건조 보풀 로션 오일">
+          <summary><span class="faq-tag">위생</span>손은 어떻게 씻고 말려야 하나요?</summary>
+          <p>향·크림·오일 잔여물이 적은 순한 비누로 충분히 씻고 깨끗한 보풀 없는 수건으로 완전히 말리세요. 젖은 손가락은 렌즈를 잡기 더 어렵습니다.</p>
+        </details>
+        <details class="faq-item" data-search="위생 다목적 용액 안약 점안 눈에 넣기">
+          <summary><span class="faq-tag">위생</span>다목적 렌즈 용액을 안약처럼 넣어도 되나요?</summary>
+          <p>안 됩니다. 세척·소독용 용액은 일반 점안액이 아니므로 눈에 직접 넣지 마세요. 눈에는 ‘콘택트렌즈 착용 중 사용 가능’이라고 표시된 제품만 전문가의 안내에 따라 사용하세요.</p>
+        </details>
+        <details class="faq-item" data-search="착용 안약 인공눈물 충혈 알레르기 점안액">
+          <summary><span class="faq-tag">착용</span>렌즈를 낀 채 어떤 안약을 쓸 수 있나요?</summary>
+          <p>모든 인공눈물이 렌즈와 호환되는 것은 아닙니다. 포장에 렌즈 착용 중 사용 가능하다고 표시된 재습윤액만 사용하고, 충혈·알레르기·치료용 안약은 의사 지시가 없다면 렌즈를 뺀 뒤 사용하세요.</p>
+        </details>
+        <details class="faq-item" data-search="위생 원데이 일회용 재사용 다시 사용">
+          <summary><span class="faq-tag">위생</span>원데이 렌즈를 빼두었다가 다시 써도 되나요?</summary>
+          <p>원데이 렌즈는 한 번 착용하고 제거하면 버리는 제품입니다. 세척하거나 보관해서 재사용하지 말고 새 렌즈를 사용하세요.</p>
+        </details>
+        <details class="faq-item" data-search="위생 케이스 용액 덧붓기 교체 3개월 보관">
+          <summary><span class="faq-tag">위생</span>케이스의 남은 용액에 새 용액을 덧부어도 되나요?</summary>
+          <p>남은 용액은 매번 버리고 새 용액만 사용하세요. 케이스는 권장 용액으로 문질러 헹군 뒤 자연 건조하고, FDA 안내에 따라 약 3개월마다 또는 전문가 지시에 맞춰 교체하세요.</p>
+        </details>
+        <details class="faq-item" data-search="위생 과산화수소 용액 중화 특수 케이스 화상">
+          <summary><span class="faq-tag">위생</span>과산화수소 용액으로 바로 헹구고 착용해도 되나요?</summary>
+          <p>절대 안 됩니다. 반드시 제품 전용 케이스를 사용해 표시된 시간 동안 완전히 중화해야 하며, 중화되지 않은 용액이 눈에 닿으면 심한 자극이나 손상을 일으킬 수 있습니다.</p>
+        </details>
+        <details class="faq-item" data-search="증상 응급 병원 통증 충혈 눈부심 분비물 눈물 시야 변화">
+          <summary><span class="faq-tag">증상</span>어떤 증상이 생기면 즉시 빼고 진료받아야 하나요?</summary>
+          <p>통증, 심한 충혈, 갑작스럽거나 지속되는 시야 흐림, 눈부심, 많은 눈물이나 분비물이 생기면 렌즈를 즉시 빼고 안과 전문가에게 연락하세요. 증상이 심하거나 빠르게 악화되면 지체하지 말고 진료받으세요.</p>
+        </details>
+        <p class="faq-empty" id="faqEmpty" hidden>검색 결과가 없습니다. 다른 단어로 찾아보세요.</p>
+      </div>
+
+      <footer class="faq-sources">
+        <p>교육용 요약이며 개인 진단을 대신하지 않습니다. 렌즈 종류와 처방에 따라 담당 안과 전문가의 지시를 우선하세요.</p>
+        <p>근거: <a href="https://www.cdc.gov/contact-lenses/about/index.html" target="_blank" rel="noopener">CDC</a> · <a href="https://www.fda.gov/medical-devices/contact-lenses/contact-lens-solutions-and-products" target="_blank" rel="noopener">미국 FDA</a> · <a href="https://www.acuvue.com/en-us/eye-health/take-off-contacts/" target="_blank" rel="noopener">ACUVUE 제거 안내</a> · <a href="https://www.moorfields.nhs.uk/for-patients/visual-aids/contact-lenses/care-of-your-soft-contact-lenses" target="_blank" rel="noopener">Moorfields Eye Hospital</a></p>
+      </footer>
+    </section>
   </div>
 
   <script>
@@ -550,9 +877,17 @@
       const stepNumber = document.getElementById('stepNumber');
       const instructionTitle = document.getElementById('instructionTitle');
       const instructionBody = document.getElementById('instructionBody');
+      const progressList = document.querySelector('.progress-list');
       const progressItems = [...document.querySelectorAll('[data-progress]')];
       const guides = [null, document.getElementById('guideStep1'), document.getElementById('guideStep2'), document.getElementById('guideStep3'), document.getElementById('guideStep4')];
       const markers = [document.getElementById('touchMarker1'), document.getElementById('touchMarker2')];
+      const faqButton = document.getElementById('faqButton');
+      const faqModal = document.getElementById('faqModal');
+      const faqClose = document.getElementById('faqClose');
+      const faqSearch = document.getElementById('faqSearch');
+      const faqItems = [...document.querySelectorAll('.faq-item')];
+      const faqCount = document.getElementById('faqCount');
+      const faqEmpty = document.getElementById('faqEmpty');
 
       const copy = {
         1: {
@@ -644,7 +979,9 @@
         lowerLashes.setAttribute('transform', `translate(0 ${state.lidOffset * .7})`);
 
         // 렌즈를 아래로 미는 동안 시선은 위를 향한다.
-        const gazeUp = state.success ? 48 : Math.min(48, state.lensY * .5);
+        // 렌즈가 흰자위로 내려갈수록 눈동자는 더 위를 본다.
+        // 마지막 단계에서는 검은 동공의 아래쪽만 살짝 보이도록 충분히 올린다.
+        const gazeUp = state.success ? 205 : Math.min(205, state.lensY * 2.75);
         irisGroup.setAttribute('transform', `translate(0 ${-gazeUp})`);
         lensPosition.setAttribute('transform', `translate(0 ${state.lensY})`);
         lensFold.style.transform = `scaleX(${state.fold})`;
@@ -656,6 +993,7 @@
         instructionTitle.textContent = current.title;
         instructionBody.textContent = current.body;
         setFeedback(current.feedback);
+        progressList.classList.toggle('all-done', state.success);
 
         progressItems.forEach((item, index) => {
           const number = index + 1;
@@ -719,6 +1057,7 @@
         lensPosition.style.opacity = '1';
         completion.classList.remove('visible');
         completion.setAttribute('aria-hidden', 'true');
+        progressList.classList.remove('all-done');
         hideMarkers();
         renderGeometry();
         renderStep();
@@ -733,6 +1072,7 @@
           item.classList.add('done');
           item.classList.remove('active');
         });
+        progressList.classList.add('all-done');
         guides[4].style.opacity = '0';
         vibrate([35, 40, 70]);
 
@@ -875,8 +1215,8 @@
           state.lensY = Math.max(0, Math.min(112, state.drag.startLensY + dy));
           renderGeometry();
           if (dy < -12) setFeedback('위쪽이 아니라 아래 흰자위 방향으로 밀어주세요.', 'error');
-          if (state.lensY >= 86) {
-            state.lensY = 96;
+          if (state.lensY >= 68) {
+            state.lensY = 75;
             renderGeometry();
             goToStep(4);
           }
@@ -920,8 +1260,47 @@
       document.getElementById('resetButton').addEventListener('click', reset);
       document.getElementById('againButton').addEventListener('click', reset);
 
+      function filterFaq() {
+        const query = faqSearch.value.trim().toLocaleLowerCase('ko-KR').replace(/\s+/g, '');
+        let visible = 0;
+        faqItems.forEach(item => {
+          const searchable = `${item.dataset.search || ''} ${item.textContent}`.toLocaleLowerCase('ko-KR').replace(/\s+/g, '');
+          const matches = !query || searchable.includes(query);
+          item.hidden = !matches;
+          if (matches) visible += 1;
+        });
+        faqCount.textContent = query ? `검색 결과 ${visible}개` : `${visible}개 질문`;
+        faqEmpty.hidden = visible !== 0;
+      }
+
+      function openFaq() {
+        faqModal.hidden = false;
+        document.body.classList.add('faq-open');
+        faqButton.setAttribute('aria-expanded', 'true');
+        requestAnimationFrame(() => faqSearch.focus());
+      }
+
+      function closeFaq() {
+        faqModal.hidden = true;
+        document.body.classList.remove('faq-open');
+        faqButton.setAttribute('aria-expanded', 'false');
+        faqButton.focus();
+      }
+
+      faqButton.setAttribute('aria-expanded', 'false');
+      faqButton.addEventListener('click', openFaq);
+      faqClose.addEventListener('click', closeFaq);
+      faqSearch.addEventListener('input', filterFaq);
+      faqModal.addEventListener('click', event => {
+        if (event.target === faqModal) closeFaq();
+      });
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && !faqModal.hidden) closeFaq();
+      });
+
       renderGeometry();
       renderStep();
+      filterFaq();
     })();
   </script>
 </body>
