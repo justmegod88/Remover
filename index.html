@@ -389,7 +389,7 @@
               <path d="M 0 0 L 10 5 L 0 10 z" fill="#ffffff"/>
             </marker>
             <clipPath id="eyeClip">
-              <path d="M24,250 Q200,105 376,250 Q200,395 24,250Z"/>
+              <path id="eyeClipPath" d="M24,250 Q200,105 376,250 Q200,395 24,250Z"/>
             </clipPath>
             <path id="irisRay" d="M200 159 C196 177 204 194 200 211" fill="none" stroke="#e0b56b" stroke-width="3" stroke-linecap="round" opacity=".65"/>
           </defs>
@@ -402,15 +402,16 @@
           <path d="M46 202 Q200 91 354 202" fill="none" stroke="#f3c5ad" stroke-width="4" opacity=".36"/>
 
           <g filter="url(#softShadow)">
-            <path d="M24,250 Q200,105 376,250 Q200,395 24,250Z" fill="url(#sclera)" stroke="#714a3e" stroke-width="8"/>
+            <path id="eyeWhite" d="M24,250 Q200,105 376,250 Q200,395 24,250Z" fill="url(#sclera)" stroke="#714a3e" stroke-width="8"/>
             <g clip-path="url(#eyeClip)">
               <path d="M25 250 C73 226 111 236 154 249 M24 270 C78 261 116 274 151 266 M376 249 C331 228 293 239 251 250 M373 274 C326 260 292 272 253 266" fill="none" stroke="#d88e91" stroke-width="2" opacity=".45"/>
               <path d="M38 230 C77 219 106 225 139 238 M363 230 C326 220 299 228 270 239 M47 291 C89 280 116 284 150 275 M352 294 C316 282 286 283 255 275" fill="none" stroke="#c96772" stroke-width="1.2" opacity=".38"/>
               <ellipse cx="35" cy="252" rx="20" ry="14" fill="#d98786" opacity=".72"/>
               <ellipse cx="365" cy="252" rx="17" ry="12" fill="#d98786" opacity=".48"/>
-              <circle cx="200" cy="250" r="94" fill="url(#iris)"/>
-              <circle cx="200" cy="250" r="92" fill="none" stroke="#1e1711" stroke-width="8" opacity=".8"/>
-              <g>
+              <g id="irisGroup">
+                <circle cx="200" cy="250" r="94" fill="url(#iris)"/>
+                <circle cx="200" cy="250" r="92" fill="none" stroke="#1e1711" stroke-width="8" opacity=".8"/>
+                <g>
                 <use href="#irisRay"/>
                 <use href="#irisRay" transform="rotate(15 200 250)"/>
                 <use href="#irisRay" transform="rotate(30 200 250)"/>
@@ -435,37 +436,40 @@
                 <use href="#irisRay" transform="rotate(315 200 250)"/>
                 <use href="#irisRay" transform="rotate(330 200 250)"/>
                 <use href="#irisRay" transform="rotate(345 200 250)"/>
+                </g>
+                <circle cx="200" cy="250" r="53" fill="none" stroke="#4a2d18" stroke-width="9" opacity=".8"/>
+                <circle cx="200" cy="250" r="39" fill="url(#pupil)"/>
+                <ellipse cx="174" cy="207" rx="20" ry="30" fill="#fff" opacity=".8" filter="url(#wetGlow)"/>
+                <ellipse cx="223" cy="224" rx="8" ry="10" fill="#fff" opacity=".62"/>
               </g>
-              <circle cx="200" cy="250" r="53" fill="none" stroke="#4a2d18" stroke-width="9" opacity=".8"/>
-              <circle cx="200" cy="250" r="39" fill="url(#pupil)"/>
-              <ellipse cx="174" cy="207" rx="20" ry="30" fill="#fff" opacity=".8" filter="url(#wetGlow)"/>
-              <ellipse cx="223" cy="224" rx="8" ry="10" fill="#fff" opacity=".62"/>
               <path d="M74 290 Q200 363 326 290" fill="none" stroke="#fff" stroke-width="4" opacity=".3" filter="url(#wetGlow)"/>
             </g>
           </g>
 
-          <g id="lensPosition" transform="translate(0 0)">
-            <g id="lensFold">
-              <circle id="lensHit" cx="200" cy="250" r="101" fill="url(#lensGlow)" stroke="#76dff5" stroke-width="3" stroke-opacity=".92"/>
-              <ellipse cx="178" cy="215" rx="56" ry="32" fill="none" stroke="#d8fbff" stroke-width="2" stroke-opacity=".62"/>
-              <path d="M126 287 Q200 318 274 287" fill="none" stroke="#81dff0" stroke-width="2" stroke-opacity=".6"/>
+          <g id="lensWindow" clip-path="url(#eyeClip)">
+            <g id="lensPosition" transform="translate(0 0)">
+              <g id="lensFold">
+                <circle id="lensHit" cx="200" cy="250" r="101" fill="url(#lensGlow)" stroke="#76dff5" stroke-width="3" stroke-opacity=".92"/>
+                <ellipse cx="178" cy="215" rx="56" ry="32" fill="none" stroke="#d8fbff" stroke-width="2" stroke-opacity=".62"/>
+                <path d="M126 287 Q200 318 274 287" fill="none" stroke="#81dff0" stroke-width="2" stroke-opacity=".6"/>
+              </g>
             </g>
           </g>
 
           <g id="upperLid">
-            <path d="M24,250 Q200,105 376,250" fill="none" stroke="#70473c" stroke-width="14" stroke-linecap="round"/>
-            <path d="M31,245 Q200,122 369,245" fill="none" stroke="#efbea7" stroke-width="7" stroke-linecap="round" opacity=".92"/>
-            <g fill="none" stroke="#3b2724" stroke-width="4" stroke-linecap="round" opacity=".82">
+            <path id="upperLidOuter" d="M24,250 Q200,105 376,250" fill="none" stroke="#70473c" stroke-width="14" stroke-linecap="round"/>
+            <path id="upperLidInner" d="M31,245 Q200,122 369,245" fill="none" stroke="#efbea7" stroke-width="7" stroke-linecap="round" opacity=".92"/>
+            <g id="upperLashes" fill="none" stroke="#3b2724" stroke-width="4" stroke-linecap="round" opacity=".82">
               <path d="M64 221 Q47 200 43 184 M88 195 Q74 169 75 153 M116 171 Q106 141 112 126 M146 151 Q141 119 151 105 M178 139 Q177 105 188 92 M211 138 Q216 104 228 94 M244 146 Q254 114 267 105 M276 161 Q291 132 306 126 M307 181 Q326 156 340 153 M333 207 Q352 187 363 183"/>
             </g>
             <path id="upperLidHit" d="M24,250 Q200,105 376,250" fill="none" stroke="transparent" stroke-width="62"/>
           </g>
 
           <g id="lowerLid">
-            <path d="M24,250 Q200,395 376,250" fill="none" stroke="#8f5949" stroke-width="14" stroke-linecap="round"/>
-            <path d="M31,255 Q200,378 369,255" fill="none" stroke="#f0bfaa" stroke-width="7" stroke-linecap="round" opacity=".92"/>
-            <path d="M46 291 Q200 420 354 291" fill="none" stroke="#714238" stroke-width="7" opacity=".25"/>
-            <g fill="none" stroke="#49302c" stroke-width="3" stroke-linecap="round" opacity=".58">
+            <path id="lowerLidOuter" d="M24,250 Q200,395 376,250" fill="none" stroke="#8f5949" stroke-width="14" stroke-linecap="round"/>
+            <path id="lowerLidInner" d="M31,255 Q200,378 369,255" fill="none" stroke="#f0bfaa" stroke-width="7" stroke-linecap="round" opacity=".92"/>
+            <path id="lowerCrease" d="M46 291 Q200 420 354 291" fill="none" stroke="#714238" stroke-width="7" opacity=".25"/>
+            <g id="lowerLashes" fill="none" stroke="#49302c" stroke-width="3" stroke-linecap="round" opacity=".58">
               <path d="M72 303 Q60 323 57 338 M104 329 Q95 351 96 365 M139 351 Q134 374 138 386 M174 365 Q172 389 178 400 M212 365 Q214 390 220 400 M248 354 Q254 378 262 389 M282 335 Q293 358 302 370 M316 310 Q331 330 339 344"/>
             </g>
             <path id="lidHit" d="M24,250 Q200,395 376,250" fill="none" stroke="transparent" stroke-width="58"/>
@@ -527,6 +531,18 @@
       const svg = document.getElementById('eyeScene');
       const upperLid = document.getElementById('upperLid');
       const lowerLid = document.getElementById('lowerLid');
+      const eyeWhite = document.getElementById('eyeWhite');
+      const eyeClipPath = document.getElementById('eyeClipPath');
+      const irisGroup = document.getElementById('irisGroup');
+      const upperLidOuter = document.getElementById('upperLidOuter');
+      const upperLidInner = document.getElementById('upperLidInner');
+      const upperLidHit = document.getElementById('upperLidHit');
+      const upperLashes = document.getElementById('upperLashes');
+      const lowerLidOuter = document.getElementById('lowerLidOuter');
+      const lowerLidInner = document.getElementById('lowerLidInner');
+      const lowerLidHit = document.getElementById('lidHit');
+      const lowerCrease = document.getElementById('lowerCrease');
+      const lowerLashes = document.getElementById('lowerLashes');
       const lensPosition = document.getElementById('lensPosition');
       const lensFold = document.getElementById('lensFold');
       const feedback = document.getElementById('feedback');
@@ -606,8 +622,30 @@
       }
 
       function renderGeometry() {
-        upperLid.setAttribute('transform', `translate(0 ${-state.upperLidOffset})`);
-        lowerLid.setAttribute('transform', `translate(0 ${state.lidOffset})`);
+        // 눈꺼풀의 양 끝은 고정하고 가운데 곡선만 열어 실제 눈처럼 보이게 한다.
+        const topOuter = 105 - state.upperLidOffset * 1.2;
+        const topInner = 122 - state.upperLidOffset * 1.05;
+        const bottomOuter = 395 + state.lidOffset * 1.08;
+        const bottomInner = 378 + state.lidOffset * .95;
+        const eyeOpening = `M24,250 Q200,${topOuter} 376,250 Q200,${bottomOuter} 24,250Z`;
+
+        upperLid.removeAttribute('transform');
+        lowerLid.removeAttribute('transform');
+        eyeWhite.setAttribute('d', eyeOpening);
+        eyeClipPath.setAttribute('d', eyeOpening);
+        upperLidOuter.setAttribute('d', `M24,250 Q200,${topOuter} 376,250`);
+        upperLidInner.setAttribute('d', `M31,245 Q200,${topInner} 369,245`);
+        upperLidHit.setAttribute('d', `M24,250 Q200,${topOuter} 376,250`);
+        lowerLidOuter.setAttribute('d', `M24,250 Q200,${bottomOuter} 376,250`);
+        lowerLidInner.setAttribute('d', `M31,255 Q200,${bottomInner} 369,255`);
+        lowerLidHit.setAttribute('d', `M24,250 Q200,${bottomOuter} 376,250`);
+        lowerCrease.setAttribute('d', `M46,291 Q200,${420 + state.lidOffset * .75} 354,291`);
+        upperLashes.setAttribute('transform', `translate(0 ${-state.upperLidOffset * .72})`);
+        lowerLashes.setAttribute('transform', `translate(0 ${state.lidOffset * .7})`);
+
+        // 렌즈를 아래로 미는 동안 시선은 위를 향한다.
+        const gazeUp = state.success ? 48 : Math.min(48, state.lensY * .5);
+        irisGroup.setAttribute('transform', `translate(0 ${-gazeUp})`);
         lensPosition.setAttribute('transform', `translate(0 ${state.lensY})`);
         lensFold.style.transform = `scaleX(${state.fold})`;
       }
