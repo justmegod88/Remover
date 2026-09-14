@@ -88,7 +88,7 @@
 
     .progress-list {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 7px;
       margin: 0 0 14px;
       padding: 0;
@@ -322,28 +322,31 @@
 
     <main>
       <ol class="progress-list" aria-label="연습 진행 단계">
-        <li class="active" data-progress="1">1. 눈꺼풀</li>
-        <li data-progress="2">2. 렌즈 이동</li>
-        <li data-progress="3">3. 집어 제거</li>
+        <li class="active" data-progress="1">1. 윗눈꺼풀</li>
+        <li data-progress="2">2. 아랫눈꺼풀</li>
+        <li data-progress="3">3. 렌즈 이동</li>
+        <li data-progress="4">4. 집어 제거</li>
       </ol>
 
       <section class="coach" aria-labelledby="instructionTitle">
         <div class="step-number" id="stepNumber">1</div>
         <div>
-          <strong id="instructionTitle">아래 눈꺼풀을 내려주세요</strong>
-          <p id="instructionBody">표시된 아래 눈꺼풀을 손가락으로 잡고 아래로 드래그하세요.</p>
+          <strong id="instructionTitle">왼손 중지로 윗눈꺼풀을 올리세요</strong>
+          <p id="instructionBody">표시된 윗눈꺼풀을 왼손 중지로 잡고 위로 드래그하세요.</p>
         </div>
       </section>
 
       <section class="simulator" aria-label="콘택트렌즈 제거 터치 연습 화면">
         <svg id="eyeScene" viewBox="0 0 400 500" role="img" aria-labelledby="sceneTitle sceneDesc">
           <title id="sceneTitle">콘택트렌즈 제거 연습용 눈</title>
-          <desc id="sceneDesc">아래 눈꺼풀을 내린 뒤 렌즈를 흰자위로 이동하고 두 손가락으로 집어 제거합니다.</desc>
+          <desc id="sceneDesc">왼손 중지로 윗눈꺼풀을 올리고 오른손 중지로 아랫눈꺼풀을 내린 뒤, 오른손 검지로 렌즈를 흰자위로 이동하고 오른손 검지와 엄지로 집어 제거합니다.</desc>
           <defs>
             <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#d59b7f"/>
-              <stop offset="0.48" stop-color="#edc0a5"/>
-              <stop offset="1" stop-color="#bd7e68"/>
+              <stop offset="0" stop-color="#b97862"/>
+              <stop offset="0.22" stop-color="#d99d80"/>
+              <stop offset="0.52" stop-color="#efc5aa"/>
+              <stop offset="0.78" stop-color="#d7977d"/>
+              <stop offset="1" stop-color="#9f5f54"/>
             </linearGradient>
             <radialGradient id="sclera" cx="48%" cy="43%" r="65%">
               <stop offset="0" stop-color="#fffefc"/>
@@ -351,10 +354,16 @@
               <stop offset="1" stop-color="#d7b7ad"/>
             </radialGradient>
             <radialGradient id="iris" cx="42%" cy="38%" r="60%">
-              <stop offset="0" stop-color="#b88a48"/>
-              <stop offset="0.45" stop-color="#7b5529"/>
-              <stop offset="0.78" stop-color="#42311d"/>
-              <stop offset="1" stop-color="#211a14"/>
+              <stop offset="0" stop-color="#d7ad65"/>
+              <stop offset="0.3" stop-color="#a87534"/>
+              <stop offset="0.58" stop-color="#69421e"/>
+              <stop offset="0.82" stop-color="#382416"/>
+              <stop offset="1" stop-color="#17120e"/>
+            </radialGradient>
+            <radialGradient id="pupil" cx="40%" cy="36%" r="65%">
+              <stop offset="0" stop-color="#18242c"/>
+              <stop offset=".65" stop-color="#070b0e"/>
+              <stop offset="1" stop-color="#000"/>
             </radialGradient>
             <radialGradient id="lensGlow" cx="42%" cy="35%" r="68%">
               <stop offset="0" stop-color="#9eeeff" stop-opacity=".32"/>
@@ -368,29 +377,70 @@
               <feGaussianBlur stdDeviation="4" result="b"/>
               <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
+            <filter id="skinTexture" x="-10%" y="-10%" width="120%" height="120%">
+              <feTurbulence type="fractalNoise" baseFrequency=".58" numOctaves="3" seed="11" result="grain"/>
+              <feColorMatrix in="grain" type="matrix" values="1 0 0 0 0  0 .72 0 0 0  0 0 .58 0 0  0 0 0 .13 0"/>
+            </filter>
+            <filter id="wetGlow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="1.5" result="shine"/>
+              <feMerge><feMergeNode in="shine"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
             <marker id="arrowHead" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
               <path d="M 0 0 L 10 5 L 0 10 z" fill="#ffffff"/>
             </marker>
             <clipPath id="eyeClip">
               <path d="M24,250 Q200,105 376,250 Q200,395 24,250Z"/>
             </clipPath>
+            <path id="irisRay" d="M200 159 C196 177 204 194 200 211" fill="none" stroke="#e0b56b" stroke-width="3" stroke-linecap="round" opacity=".65"/>
           </defs>
 
           <rect width="400" height="500" fill="url(#skin)"/>
-          <ellipse cx="200" cy="270" rx="210" ry="192" fill="#7b493a" opacity=".12"/>
+          <rect width="400" height="500" fill="#8d5c4e" opacity=".2" filter="url(#skinTexture)"/>
+          <ellipse cx="200" cy="273" rx="218" ry="200" fill="#713e35" opacity=".14"/>
+          <ellipse cx="200" cy="232" rx="205" ry="145" fill="#ffe0c8" opacity=".12"/>
+          <path d="M34 191 Q200 65 366 191" fill="none" stroke="#704338" stroke-width="9" opacity=".28"/>
+          <path d="M46 202 Q200 91 354 202" fill="none" stroke="#f3c5ad" stroke-width="4" opacity=".36"/>
 
           <g filter="url(#softShadow)">
             <path d="M24,250 Q200,105 376,250 Q200,395 24,250Z" fill="url(#sclera)" stroke="#714a3e" stroke-width="8"/>
             <g clip-path="url(#eyeClip)">
+              <path d="M25 250 C73 226 111 236 154 249 M24 270 C78 261 116 274 151 266 M376 249 C331 228 293 239 251 250 M373 274 C326 260 292 272 253 266" fill="none" stroke="#d88e91" stroke-width="2" opacity=".45"/>
+              <path d="M38 230 C77 219 106 225 139 238 M363 230 C326 220 299 228 270 239 M47 291 C89 280 116 284 150 275 M352 294 C316 282 286 283 255 275" fill="none" stroke="#c96772" stroke-width="1.2" opacity=".38"/>
+              <ellipse cx="35" cy="252" rx="20" ry="14" fill="#d98786" opacity=".72"/>
+              <ellipse cx="365" cy="252" rx="17" ry="12" fill="#d98786" opacity=".48"/>
               <circle cx="200" cy="250" r="94" fill="url(#iris)"/>
-              <circle cx="200" cy="250" r="77" fill="none" stroke="#c9954d" stroke-width="10" stroke-dasharray="3 8" opacity=".7"/>
-              <g stroke="#d8a35b" stroke-width="3" opacity=".55">
-                <path d="M200 158 L200 207 M200 293 L200 342 M108 250 L158 250 M242 250 L292 250"/>
-                <path d="M135 185 L169 219 M231 281 L265 315 M135 315 L169 281 M231 219 L265 185"/>
+              <circle cx="200" cy="250" r="92" fill="none" stroke="#1e1711" stroke-width="8" opacity=".8"/>
+              <g>
+                <use href="#irisRay"/>
+                <use href="#irisRay" transform="rotate(15 200 250)"/>
+                <use href="#irisRay" transform="rotate(30 200 250)"/>
+                <use href="#irisRay" transform="rotate(45 200 250)"/>
+                <use href="#irisRay" transform="rotate(60 200 250)"/>
+                <use href="#irisRay" transform="rotate(75 200 250)"/>
+                <use href="#irisRay" transform="rotate(90 200 250)"/>
+                <use href="#irisRay" transform="rotate(105 200 250)"/>
+                <use href="#irisRay" transform="rotate(120 200 250)"/>
+                <use href="#irisRay" transform="rotate(135 200 250)"/>
+                <use href="#irisRay" transform="rotate(150 200 250)"/>
+                <use href="#irisRay" transform="rotate(165 200 250)"/>
+                <use href="#irisRay" transform="rotate(180 200 250)"/>
+                <use href="#irisRay" transform="rotate(195 200 250)"/>
+                <use href="#irisRay" transform="rotate(210 200 250)"/>
+                <use href="#irisRay" transform="rotate(225 200 250)"/>
+                <use href="#irisRay" transform="rotate(240 200 250)"/>
+                <use href="#irisRay" transform="rotate(255 200 250)"/>
+                <use href="#irisRay" transform="rotate(270 200 250)"/>
+                <use href="#irisRay" transform="rotate(285 200 250)"/>
+                <use href="#irisRay" transform="rotate(300 200 250)"/>
+                <use href="#irisRay" transform="rotate(315 200 250)"/>
+                <use href="#irisRay" transform="rotate(330 200 250)"/>
+                <use href="#irisRay" transform="rotate(345 200 250)"/>
               </g>
-              <circle cx="200" cy="250" r="39" fill="#0b1115"/>
-              <ellipse cx="176" cy="214" rx="17" ry="25" fill="#fff" opacity=".77"/>
-              <circle cx="224" cy="230" r="7" fill="#fff" opacity=".5"/>
+              <circle cx="200" cy="250" r="53" fill="none" stroke="#4a2d18" stroke-width="9" opacity=".8"/>
+              <circle cx="200" cy="250" r="39" fill="url(#pupil)"/>
+              <ellipse cx="174" cy="207" rx="20" ry="30" fill="#fff" opacity=".8" filter="url(#wetGlow)"/>
+              <ellipse cx="223" cy="224" rx="8" ry="10" fill="#fff" opacity=".62"/>
+              <path d="M74 290 Q200 363 326 290" fill="none" stroke="#fff" stroke-width="4" opacity=".3" filter="url(#wetGlow)"/>
             </g>
           </g>
 
@@ -402,35 +452,63 @@
             </g>
           </g>
 
+          <g id="upperLid">
+            <path d="M24,250 Q200,105 376,250" fill="none" stroke="#70473c" stroke-width="14" stroke-linecap="round"/>
+            <path d="M31,245 Q200,122 369,245" fill="none" stroke="#efbea7" stroke-width="7" stroke-linecap="round" opacity=".92"/>
+            <g fill="none" stroke="#3b2724" stroke-width="4" stroke-linecap="round" opacity=".82">
+              <path d="M64 221 Q47 200 43 184 M88 195 Q74 169 75 153 M116 171 Q106 141 112 126 M146 151 Q141 119 151 105 M178 139 Q177 105 188 92 M211 138 Q216 104 228 94 M244 146 Q254 114 267 105 M276 161 Q291 132 306 126 M307 181 Q326 156 340 153 M333 207 Q352 187 363 183"/>
+            </g>
+            <path id="upperLidHit" d="M24,250 Q200,105 376,250" fill="none" stroke="transparent" stroke-width="62"/>
+          </g>
+
           <g id="lowerLid">
             <path d="M24,250 Q200,395 376,250" fill="none" stroke="#8f5949" stroke-width="14" stroke-linecap="round"/>
             <path d="M31,255 Q200,378 369,255" fill="none" stroke="#f0bfaa" stroke-width="7" stroke-linecap="round" opacity=".92"/>
+            <path d="M46 291 Q200 420 354 291" fill="none" stroke="#714238" stroke-width="7" opacity=".25"/>
+            <g fill="none" stroke="#49302c" stroke-width="3" stroke-linecap="round" opacity=".58">
+              <path d="M72 303 Q60 323 57 338 M104 329 Q95 351 96 365 M139 351 Q134 374 138 386 M174 365 Q172 389 178 400 M212 365 Q214 390 220 400 M248 354 Q254 378 262 389 M282 335 Q293 358 302 370 M316 310 Q331 330 339 344"/>
+            </g>
             <path id="lidHit" d="M24,250 Q200,395 376,250" fill="none" stroke="transparent" stroke-width="58"/>
           </g>
 
           <g id="guideLayer" pointer-events="none">
             <g id="guideStep1" class="pulse">
-              <circle cx="200" cy="365" r="23" fill="#4aa9e8" fill-opacity=".45" stroke="#fff" stroke-width="3"/>
-              <path class="bob" d="M200 385 L200 430" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowHead)"/>
-              <text x="200" y="462" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">아래로 드래그</text>
+              <circle cx="200" cy="154" r="27" fill="#4aa9e8" fill-opacity=".5" stroke="#fff" stroke-width="3"/>
+              <text x="200" y="151" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">왼손</text>
+              <text x="200" y="165" fill="#fff" text-anchor="middle" font-size="11" font-weight="700">중지</text>
+              <path class="bob" d="M200 127 L200 87" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowHead)"/>
+              <text x="200" y="59" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">윗눈꺼풀 올리기</text>
             </g>
             <g id="guideStep2" opacity="0">
+              <circle cx="200" cy="365" r="23" fill="#4aa9e8" fill-opacity=".45" stroke="#fff" stroke-width="3"/>
+              <text x="200" y="362" fill="#fff" text-anchor="middle" font-size="9" font-weight="700">오른손</text>
+              <text x="200" y="375" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">중지</text>
+              <path d="M200 389 L200 430" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowHead)"/>
+              <text x="200" y="462" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">아랫눈꺼풀 내리기</text>
+            </g>
+            <g id="guideStep3" opacity="0">
               <circle cx="200" cy="310" r="22" fill="#4aa9e8" fill-opacity=".45" stroke="#fff" stroke-width="3"/>
+              <text x="200" y="307" fill="#fff" text-anchor="middle" font-size="9" font-weight="700">오른손</text>
+              <text x="200" y="320" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">검지</text>
               <path d="M200 329 L200 400" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowHead)"/>
               <text x="200" y="443" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">렌즈를 흰자위로</text>
             </g>
-            <g id="guideStep3" opacity="0">
-              <circle cx="116" cy="352" r="22" fill="#4aa9e8" fill-opacity=".45" stroke="#fff" stroke-width="3"/>
-              <circle cx="284" cy="352" r="22" fill="#4aa9e8" fill-opacity=".45" stroke="#fff" stroke-width="3"/>
-              <path d="M136 352 L169 352 M264 352 L231 352" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowHead)"/>
-              <text x="200" y="438" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">두 손가락을 안쪽으로</text>
+            <g id="guideStep4" opacity="0">
+              <circle cx="175" cy="318" r="30" fill="#4aa9e8" fill-opacity=".55" stroke="#fff" stroke-width="3"/>
+              <text x="175" y="314" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">오른손</text>
+              <text x="175" y="330" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">검지</text>
+              <circle cx="225" cy="388" r="30" fill="#4aa9e8" fill-opacity=".55" stroke="#fff" stroke-width="3"/>
+              <text x="225" y="384" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">오른손</text>
+              <text x="225" y="400" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">엄지</text>
+              <path d="M186 340 L196 353 M216 368 L205 356" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowHead)"/>
+              <text x="200" y="447" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">검지와 엄지를 살짝 모으기</text>
             </g>
           </g>
         </svg>
 
         <div class="touch-marker" id="touchMarker1"></div>
         <div class="touch-marker" id="touchMarker2"></div>
-        <div class="feedback" id="feedback" aria-live="polite">아래 눈꺼풀을 아래 방향으로 내려보세요.</div>
+        <div class="feedback" id="feedback" aria-live="polite">파란 원에 왼손 중지를 놓고 위로 올려보세요.</div>
 
         <div class="completion" id="completion" aria-hidden="true">
           <div class="checkmark" aria-hidden="true">✓</div>
@@ -447,6 +525,7 @@
   <script>
     (() => {
       const svg = document.getElementById('eyeScene');
+      const upperLid = document.getElementById('upperLid');
       const lowerLid = document.getElementById('lowerLid');
       const lensPosition = document.getElementById('lensPosition');
       const lensFold = document.getElementById('lensFold');
@@ -456,29 +535,35 @@
       const instructionTitle = document.getElementById('instructionTitle');
       const instructionBody = document.getElementById('instructionBody');
       const progressItems = [...document.querySelectorAll('[data-progress]')];
-      const guides = [null, document.getElementById('guideStep1'), document.getElementById('guideStep2'), document.getElementById('guideStep3')];
+      const guides = [null, document.getElementById('guideStep1'), document.getElementById('guideStep2'), document.getElementById('guideStep3'), document.getElementById('guideStep4')];
       const markers = [document.getElementById('touchMarker1'), document.getElementById('touchMarker2')];
 
       const copy = {
         1: {
-          title: '아래 눈꺼풀을 내려주세요',
-          body: '표시된 아래 눈꺼풀을 손가락으로 잡고 아래로 드래그하세요.',
-          feedback: '아래 눈꺼풀을 아래 방향으로 내려보세요.'
+          title: '왼손 중지로 윗눈꺼풀을 올리세요',
+          body: '표시된 윗눈꺼풀을 왼손 중지로 잡고 위로 드래그하세요.',
+          feedback: '파란 원에 왼손 중지를 놓고 위로 올려보세요.'
         },
         2: {
-          title: '렌즈를 흰자위로 이동하세요',
-          body: '검지로 렌즈 아래쪽을 누른 뒤, 천천히 아래로 밀어주세요.',
-          feedback: '렌즈를 아래쪽 흰자위까지 내려주세요.'
+          title: '오른손 중지로 아랫눈꺼풀을 내리세요',
+          body: '왼손 중지는 윗눈꺼풀에 유지하고, 오른손 중지로 아래 눈꺼풀을 내리세요.',
+          feedback: '파란 원에 오른손 중지를 놓고 아래로 내려보세요.'
         },
         3: {
-          title: '렌즈 양쪽을 부드럽게 집으세요',
-          body: '엄지와 검지를 렌즈 양쪽에 놓고 손가락 간격을 좁혀주세요.',
-          feedback: '두 손가락을 렌즈 양쪽에 놓고 안쪽으로 모아주세요.'
+          title: '오른손 검지로 렌즈를 내리세요',
+          body: '두 중지로 눈꺼풀을 연 상태를 유지하고, 오른손 검지로 렌즈를 흰자위까지 내리세요.',
+          feedback: '오른손 검지를 렌즈 아래쪽에 놓고 아래로 밀어주세요.'
+        },
+        4: {
+          title: '오른손 검지와 엄지로 렌즈를 빼세요',
+          body: '검지는 렌즈 위에 둔 채 엄지를 가까이 대고, 두 손가락의 넓은 면을 살짝 모으세요.',
+          feedback: '위쪽 파란 원은 오른손 검지, 아래쪽 파란 원은 오른손 엄지입니다.'
         }
       };
 
       const state = {
         step: 1,
+        upperLidOffset: 0,
         lidOffset: 0,
         lensY: 0,
         fold: 1,
@@ -511,15 +596,6 @@
         return Math.hypot(a.x - b.x, a.y - b.y);
       }
 
-      function oppositeSides(a, b) {
-        const center = { x: 200, y: 250 + state.lensY };
-        const ax = a.x - center.x;
-        const ay = a.y - center.y;
-        const bx = b.x - center.x;
-        const by = b.y - center.y;
-        return (ax * bx + ay * by) < -800;
-      }
-
       function vibrate(pattern = 22) {
         if ('vibrate' in navigator) navigator.vibrate(pattern);
       }
@@ -530,6 +606,7 @@
       }
 
       function renderGeometry() {
+        upperLid.setAttribute('transform', `translate(0 ${-state.upperLidOffset})`);
         lowerLid.setAttribute('transform', `translate(0 ${state.lidOffset})`);
         lensPosition.setAttribute('transform', `translate(0 ${state.lensY})`);
         lensFold.style.transform = `scaleX(${state.fold})`;
@@ -548,7 +625,7 @@
           item.classList.toggle('done', number < state.step || state.success);
         });
 
-        for (let i = 1; i <= 3; i++) {
+        for (let i = 1; i <= 4; i++) {
           guides[i].style.opacity = i === state.step ? '1' : '0';
           guides[i].style.pointerEvents = 'none';
         }
@@ -577,6 +654,10 @@
       }
 
       function updateMarkers() {
+        if (state.step === 4) {
+          hideMarkers();
+          return;
+        }
         const rect = svg.getBoundingClientRect();
         [...state.pointers.values()].slice(0, 2).forEach((pointer, index) => {
           markers[index].style.display = 'block';
@@ -589,6 +670,7 @@
       function reset() {
         clearTimeout(state.oneFingerTimer);
         state.step = 1;
+        state.upperLidOffset = 0;
         state.lidOffset = 0;
         state.lensY = 0;
         state.fold = 1;
@@ -613,7 +695,7 @@
           item.classList.add('done');
           item.classList.remove('active');
         });
-        guides[3].style.opacity = '0';
+        guides[4].style.opacity = '0';
         vibrate([35, 40, 70]);
 
         const start = performance.now();
@@ -636,7 +718,9 @@
       }
 
       function beginPinchIfReady() {
-        const entries = [...state.pointers.entries()].filter(([, pointer]) => withinLens(pointer, 22));
+        // 실제 손가락이 가이드 원을 가리더라도 쉽게 잡히도록
+        // 보이는 렌즈보다 넓은 범위를 터치 영역으로 사용한다.
+        const entries = [...state.pointers.entries()].filter(([, pointer]) => withinLens(pointer, 48));
         if (entries.length < 2) return;
 
         const [first, second] = entries.slice(0, 2);
@@ -646,8 +730,10 @@
         const center = midpoint(a, b);
         const lensCenterDistance = Math.hypot(center.x - 200, center.y - (250 + state.lensY));
 
-        if (!oppositeSides(a, b) || startDistance < 75 || lensCenterDistance > 58) {
-          setFeedback('두 손가락을 렌즈의 서로 반대쪽에 넓게 놓아주세요.', 'error');
+        // 두 손가락이 정확히 반대편에 있지 않아도 인정한다.
+        // 파란 원 안에서 적당히 떨어져 있기만 하면 핀치를 시작한다.
+        if (startDistance < 32 || lensCenterDistance > 96) {
+          setFeedback('두 손가락을 파란 원 안에 조금 떨어뜨려 놓아주세요.', 'error');
           vibrate(18);
           return;
         }
@@ -657,7 +743,7 @@
           startDistance
         };
         clearTimeout(state.oneFingerTimer);
-        setFeedback('좋아요. 두 손가락을 천천히 안쪽으로 모아주세요.');
+        setFeedback('인식됐어요! 두 손가락을 살짝만 안쪽으로 모아주세요.');
       }
 
       svg.addEventListener('pointerdown', (event) => {
@@ -669,16 +755,26 @@
         updateMarkers();
 
         if (state.step === 1) {
-          if (point.y < 300 || point.y > 430) {
-            setFeedback('먼저 아래 눈꺼풀 위에 손가락을 놓아주세요.', 'error');
+          if (point.y < 90 || point.y > 265) {
+            setFeedback('윗눈꺼풀의 파란 원에 왼손 중지를 놓아주세요.', 'error');
             return;
           }
-          state.drag = { type: 'lid', id: event.pointerId, startY: point.y, startOffset: state.lidOffset };
-          setFeedback('그대로 아래로 내려주세요.');
+          state.drag = { type: 'upperLid', id: event.pointerId, startY: point.y, startOffset: state.upperLidOffset };
+          setFeedback('왼손 중지를 그대로 위로 올려주세요.');
           return;
         }
 
         if (state.step === 2) {
+          if (point.y < 300 || point.y > 430) {
+            setFeedback('아랫눈꺼풀의 파란 원에 오른손 중지를 놓아주세요.', 'error');
+            return;
+          }
+          state.drag = { type: 'lowerLid', id: event.pointerId, startY: point.y, startOffset: state.lidOffset };
+          setFeedback('오른손 중지를 그대로 아래로 내려주세요.');
+          return;
+        }
+
+        if (state.step === 3) {
           if (!withinLens(point, 8)) {
             setFeedback('투명한 렌즈 안쪽에 손가락을 놓아주세요.', 'error');
             return;
@@ -688,17 +784,17 @@
           return;
         }
 
-        if (state.step === 3) {
-          if (!withinLens(point, 22)) {
-            setFeedback('손가락을 렌즈 양쪽 가장자리에 놓아주세요.', 'error');
+        if (state.step === 4) {
+          if (!withinLens(point, 48)) {
+            setFeedback('손가락을 파란 렌즈 원 안쪽에 놓아주세요.', 'error');
             return;
           }
           beginPinchIfReady();
           if (state.pointers.size === 1) {
             clearTimeout(state.oneFingerTimer);
             state.oneFingerTimer = setTimeout(() => {
-              if (state.step === 3 && state.pointers.size === 1 && !state.success) {
-                setFeedback('한 손가락이 더 필요해요. 엄지와 검지를 함께 사용해 주세요.', 'error');
+              if (state.step === 4 && state.pointers.size === 1 && !state.success) {
+                setFeedback('오른손 검지와 엄지, 두 손가락을 함께 사용해 주세요.', 'error');
               }
             }, 900);
           }
@@ -713,11 +809,11 @@
         updateMarkers();
 
         if (state.step === 1 && state.drag?.id === event.pointerId) {
-          const dy = point.y - state.drag.startY;
-          state.lidOffset = Math.max(0, Math.min(54, state.drag.startOffset + dy));
+          const upward = state.drag.startY - point.y;
+          state.upperLidOffset = Math.max(0, Math.min(48, state.drag.startOffset + upward));
           renderGeometry();
-          if (state.lidOffset >= 38) {
-            state.lidOffset = 46;
+          if (state.upperLidOffset >= 30) {
+            state.upperLidOffset = 38;
             renderGeometry();
             goToStep(2);
           }
@@ -726,18 +822,30 @@
 
         if (state.step === 2 && state.drag?.id === event.pointerId) {
           const dy = point.y - state.drag.startY;
-          state.lensY = Math.max(0, Math.min(112, state.drag.startLensY + dy));
+          state.lidOffset = Math.max(0, Math.min(54, state.drag.startOffset + dy));
           renderGeometry();
-          if (dy < -12) setFeedback('위쪽이 아니라 아래 흰자위 방향으로 밀어주세요.', 'error');
-          if (state.lensY >= 86) {
-            state.lensY = 96;
+          if (state.lidOffset >= 34) {
+            state.lidOffset = 42;
             renderGeometry();
             goToStep(3);
           }
           return;
         }
 
-        if (state.step === 3) {
+        if (state.step === 3 && state.drag?.id === event.pointerId) {
+          const dy = point.y - state.drag.startY;
+          state.lensY = Math.max(0, Math.min(112, state.drag.startLensY + dy));
+          renderGeometry();
+          if (dy < -12) setFeedback('위쪽이 아니라 아래 흰자위 방향으로 밀어주세요.', 'error');
+          if (state.lensY >= 86) {
+            state.lensY = 96;
+            renderGeometry();
+            goToStep(4);
+          }
+          return;
+        }
+
+        if (state.step === 4) {
           if (!state.pinch) beginPinchIfReady();
           if (!state.pinch) return;
           const [idA, idB] = state.pinch.ids;
@@ -748,9 +856,11 @@
           const center = midpoint(a, b);
           const centerDistance = Math.hypot(center.x - 200, center.y - (250 + state.lensY));
           const ratio = currentDistance / state.pinch.startDistance;
-          state.fold = Math.max(.62, Math.min(1, ratio));
+          const closedDistance = state.pinch.startDistance - currentDistance;
+          state.fold = Math.max(.72, Math.min(1, ratio));
           renderGeometry();
-          if (ratio <= .7 && centerDistance <= 62) finish();
+          // 기존 30% 축소에서 약 14% 또는 11좌표 이동으로 기준을 완화한다.
+          if ((ratio <= .86 || closedDistance >= 11) && centerDistance <= 100) finish();
         }
       }, { passive: false });
 
@@ -762,7 +872,7 @@
           state.pinch = null;
           state.fold = 1;
           renderGeometry();
-          setFeedback('두 손가락을 떼지 말고 렌즈 양쪽에서 함께 모아주세요.', 'error');
+          setFeedback('오른손 검지와 엄지를 떼지 말고 살짝 함께 모아주세요.', 'error');
         }
         if (state.pointers.size === 0) clearTimeout(state.oneFingerTimer);
       }
