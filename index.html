@@ -941,10 +941,15 @@
 
       function pinchSide(point) {
         const centerY = 250 + state.lensY;
-        const leftDistance = Math.hypot(point.x - 112, point.y - centerY);
-        const rightDistance = Math.hypot(point.x - 288, point.y - centerY);
-        if (leftDistance <= 50 && leftDistance <= rightDistance) return 'left';
-        if (rightDistance <= 50) return 'right';
+        const dx = point.x - 200;
+        const dy = point.y - centerY;
+        const radius = Math.hypot(dx, dy);
+
+        // 손가락이 가이드 원을 가려도 잡히도록 좌우 테두리를 넓은 띠로 인식한다.
+        // 중앙부는 제외해 실제 렌즈 양쪽을 잡는 동작은 유지한다.
+        if (Math.abs(dy) > 78 || radius < 48 || radius > 165) return null;
+        if (dx <= -30) return 'left';
+        if (dx >= 30) return 'right';
         return null;
       }
 
@@ -1133,10 +1138,13 @@
 
         state.pinch = {
           ids: [left.id, right.id],
-          startDistance
+          startDistance,
+          startLeftX: a.x,
+          startRightX: b.x
         };
         clearTimeout(state.oneFingerTimer);
         setFeedback('양쪽 테두리가 인식됐어요! 두 손가락을 안쪽으로 살짝만 모아주세요.');
+        vibrate(16);
       }
 
       svg.addEventListener('pointerdown', (event) => {
@@ -1250,10 +1258,15 @@
           const centerDistance = Math.hypot(center.x - 200, center.y - (250 + state.lensY));
           const ratio = currentDistance / state.pinch.startDistance;
           const closedDistance = state.pinch.startDistance - currentDistance;
-          state.fold = Math.max(.72, Math.min(1, ratio));
+          const horizontalClose = (a.x - state.pinch.startLeftX) + (state.pinch.startRightX - b.x);
+          const closeProgress = Math.max(0, horizontalClose, closedDistance);
+
+          // 작은 움직임도 눈에 보이도록 렌즈 접힘을 확대해서 표시한다.
+          state.fold = Math.max(.62, Math.min(1, 1 - closeProgress / 42));
           renderGeometry();
-          // 기존 30% 축소에서 약 14% 또는 11좌표 이동으로 기준을 완화한다.
-          if ((ratio <= .86 || closedDistance >= 11) && centerDistance <= 100) finish();
+          // 좌우 손가락이 합쳐 6좌표만 안쪽으로 움직여도 성공한다.
+          // 위아래 흔들림이 있어도 가로 이동량을 우선 인정한다.
+          if ((horizontalClose >= 6 || closedDistance >= 8 || ratio <= .95) && centerDistance <= 115) finish();
         }
       }, { passive: false });
 
