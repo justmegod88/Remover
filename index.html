@@ -708,14 +708,14 @@
               <text x="200" y="443" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">렌즈를 흰자위로</text>
             </g>
             <g id="guideStep4" opacity="0">
-              <circle cx="175" cy="298" r="30" fill="#4aa9e8" fill-opacity=".55" stroke="#fff" stroke-width="3"/>
-              <text x="175" y="294" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">오른손</text>
-              <text x="175" y="310" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">검지</text>
-              <circle cx="225" cy="368" r="30" fill="#4aa9e8" fill-opacity=".55" stroke="#fff" stroke-width="3"/>
-              <text x="225" y="364" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">오른손</text>
-              <text x="225" y="380" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">엄지</text>
-              <path d="M186 320 L196 333 M216 348 L205 336" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowHead)"/>
-              <text x="200" y="427" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">검지와 엄지를 살짝 모으기</text>
+              <circle cx="112" cy="315" r="28" fill="#4aa9e8" fill-opacity=".58" stroke="#fff" stroke-width="3"/>
+              <text x="112" y="311" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">오른손</text>
+              <text x="112" y="327" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">검지</text>
+              <circle cx="288" cy="315" r="28" fill="#4aa9e8" fill-opacity=".58" stroke="#fff" stroke-width="3"/>
+              <text x="288" y="311" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">오른손</text>
+              <text x="288" y="327" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">엄지</text>
+              <path d="M143 315 L181 315 M257 315 L219 315" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowHead)"/>
+              <text x="200" y="407" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">렌즈 양쪽 테두리를 안쪽으로 모으기</text>
             </g>
           </g>
         </svg>
@@ -907,8 +907,8 @@
         },
         4: {
           title: '오른손 검지와 엄지로 렌즈를 빼세요',
-          body: '검지는 렌즈 위에 둔 채 엄지를 가까이 대고, 두 손가락의 넓은 면을 살짝 모으세요.',
-          feedback: '위쪽 파란 원은 오른손 검지, 아래쪽 파란 원은 오른손 엄지입니다.'
+          body: '검지와 엄지를 렌즈의 왼쪽·오른쪽 테두리에 놓고, 두 손가락의 넓은 면을 안쪽으로 살짝 모으세요.',
+          feedback: '왼쪽 파란 원은 오른손 검지, 오른쪽 파란 원은 오른손 엄지입니다.'
         }
       };
 
@@ -937,6 +937,15 @@
         const dx = point.x - 200;
         const dy = point.y - (250 + state.lensY);
         return Math.hypot(dx, dy) <= 101 + extra;
+      }
+
+      function pinchSide(point) {
+        const centerY = 250 + state.lensY;
+        const leftDistance = Math.hypot(point.x - 112, point.y - centerY);
+        const rightDistance = Math.hypot(point.x - 288, point.y - centerY);
+        if (leftDistance <= 50 && leftDistance <= rightDistance) return 'left';
+        if (rightDistance <= 50) return 'right';
+        return null;
       }
 
       function midpoint(a, b) {
@@ -1100,32 +1109,34 @@
       }
 
       function beginPinchIfReady() {
-        // 실제 손가락이 가이드 원을 가리더라도 쉽게 잡히도록
-        // 보이는 렌즈보다 넓은 범위를 터치 영역으로 사용한다.
-        const entries = [...state.pointers.entries()].filter(([, pointer]) => withinLens(pointer, 48));
-        if (entries.length < 2) return;
+        // 렌즈 중앙이 아니라 왼쪽·오른쪽 테두리를 각각 잡았을 때만 시작한다.
+        // 보이는 가이드보다 약간 넓은 50좌표 반경을 사용해 모바일에서도 쉽게 인식한다.
+        const entries = [...state.pointers.entries()].map(([id, pointer]) => ({ id, pointer, side: pinchSide(pointer) }));
+        const left = entries.find(entry => entry.side === 'left');
+        const right = entries.find(entry => entry.side === 'right');
+        if (!left || !right) {
+          if (entries.length >= 2) setFeedback('검지와 엄지를 렌즈의 왼쪽·오른쪽 테두리에 하나씩 놓아주세요.', 'error');
+          return;
+        }
 
-        const [first, second] = entries.slice(0, 2);
-        const a = first[1];
-        const b = second[1];
+        const a = left.pointer;
+        const b = right.pointer;
         const startDistance = distance(a, b);
         const center = midpoint(a, b);
         const lensCenterDistance = Math.hypot(center.x - 200, center.y - (250 + state.lensY));
 
-        // 두 손가락이 정확히 반대편에 있지 않아도 인정한다.
-        // 파란 원 안에서 적당히 떨어져 있기만 하면 핀치를 시작한다.
-        if (startDistance < 32 || lensCenterDistance > 96) {
-          setFeedback('두 손가락을 파란 원 안에 조금 떨어뜨려 놓아주세요.', 'error');
+        if (lensCenterDistance > 75) {
+          setFeedback('두 손가락을 렌즈 양쪽의 같은 높이에 놓아주세요.', 'error');
           vibrate(18);
           return;
         }
 
         state.pinch = {
-          ids: [first[0], second[0]],
+          ids: [left.id, right.id],
           startDistance
         };
         clearTimeout(state.oneFingerTimer);
-        setFeedback('인식됐어요! 두 손가락을 살짝만 안쪽으로 모아주세요.');
+        setFeedback('양쪽 테두리가 인식됐어요! 두 손가락을 안쪽으로 살짝만 모아주세요.');
       }
 
       svg.addEventListener('pointerdown', (event) => {
@@ -1167,8 +1178,8 @@
         }
 
         if (state.step === 4) {
-          if (!withinLens(point, 48)) {
-            setFeedback('손가락을 파란 렌즈 원 안쪽에 놓아주세요.', 'error');
+          if (!pinchSide(point)) {
+            setFeedback('렌즈 중앙이 아니라 왼쪽 또는 오른쪽 테두리의 파란 원을 눌러주세요.', 'error');
             return;
           }
           beginPinchIfReady();
@@ -1176,7 +1187,7 @@
             clearTimeout(state.oneFingerTimer);
             state.oneFingerTimer = setTimeout(() => {
               if (state.step === 4 && state.pointers.size === 1 && !state.success) {
-                setFeedback('오른손 검지와 엄지, 두 손가락을 함께 사용해 주세요.', 'error');
+                setFeedback('반대쪽 렌즈 테두리에도 다른 손가락을 놓아주세요.', 'error');
               }
             }, 900);
           }
@@ -1219,8 +1230,8 @@
           state.lensY = Math.max(0, Math.min(112, state.drag.startLensY + dy));
           renderGeometry();
           if (dy < -12) setFeedback('위쪽이 아니라 아래 흰자위 방향으로 밀어주세요.', 'error');
-          if (state.lensY >= 68) {
-            state.lensY = 75;
+          if (state.lensY >= 58) {
+            state.lensY = 65;
             renderGeometry();
             goToStep(4);
           }
