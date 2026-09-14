@@ -197,6 +197,48 @@
 
     #eyeScene:active { cursor: grabbing; }
 
+    /* 제거 가이드 영상 PIP */
+    .removal-video-pip {
+      position: absolute;
+      z-index: 9;
+      top: 12px;
+      right: 12px;
+      width: min(41%, 182px);
+      overflow: hidden;
+      border: 2px solid rgba(255,255,255,.92);
+      border-radius: 14px;
+      background: #07131f;
+      box-shadow: 0 8px 22px rgba(4, 23, 40, .30);
+    }
+
+    .removal-video-label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 28px;
+      padding: 5px 8px;
+      background: rgba(5, 29, 50, .92);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -.01em;
+    }
+
+    .removal-video-label::before {
+      content: "▶";
+      color: #8fdcff;
+      font-size: 9px;
+    }
+
+    .removal-video-frame {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: 0;
+      background: #000;
+    }
+
     #lensPosition,
     #lensFold,
     #lowerLid,
@@ -546,6 +588,17 @@
       </section>
 
       <section class="simulator" aria-label="콘택트렌즈 제거 터치 연습 화면">
+        <div class="removal-video-pip" aria-label="콘택트렌즈 제거 방법 영상">
+          <div class="removal-video-label">실제 제거 방법 같이 보기</div>
+          <iframe
+            class="removal-video-frame"
+            src="https://www.youtube-nocookie.com/embed/R3Z0pg4OjAs?playsinline=1&rel=0"
+            title="콘택트렌즈 제거 방법 영상"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen></iframe>
+        </div>
         <svg id="eyeScene" viewBox="0 0 400 500" role="img" aria-labelledby="sceneTitle sceneDesc">
           <title id="sceneTitle">콘택트렌즈 제거 연습용 눈</title>
           <desc id="sceneDesc">오른손 중지로 아랫눈꺼풀을 내린 뒤, 오른손 검지로 렌즈를 흰자위로 이동하고 손톱이 아닌 오른손 검지와 엄지의 지문 면으로 렌즈 양쪽을 집어 제거합니다.</desc>
@@ -700,14 +753,14 @@
               <text x="200" y="443" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">렌즈를 흰자위로</text>
             </g>
             <g id="guideStep3" opacity="0">
-              <circle cx="112" cy="310" r="28" fill="#4aa9e8" fill-opacity=".58" stroke="#fff" stroke-width="3"/>
-              <text x="112" y="306" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">오른손</text>
-              <text x="112" y="322" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">검지</text>
-              <circle cx="288" cy="310" r="28" fill="#4aa9e8" fill-opacity=".58" stroke="#fff" stroke-width="3"/>
-              <text x="288" y="306" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">오른손</text>
-              <text x="288" y="322" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">엄지</text>
-              <path d="M143 310 L181 310 M257 310 L219 310" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowHead)"/>
-              <text x="200" y="402" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">손톱 말고 지문 면으로 테두리 모으기</text>
+              <circle cx="112" cy="292" r="28" fill="#4aa9e8" fill-opacity=".58" stroke="#fff" stroke-width="3"/>
+              <text x="112" y="288" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">오른손</text>
+              <text x="112" y="304" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">검지</text>
+              <circle cx="288" cy="292" r="28" fill="#4aa9e8" fill-opacity=".58" stroke="#fff" stroke-width="3"/>
+              <text x="288" y="288" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">오른손</text>
+              <text x="288" y="304" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">엄지</text>
+              <path d="M143 292 L181 292 M257 292 L219 292" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowHead)"/>
+              <text x="200" y="382" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">손톱 말고 지문 면으로 테두리 모으기</text>
             </g>
           </g>
         </svg>
@@ -911,6 +964,8 @@
         oneFingerTimer: null,
         pinchHoldTimer: null,
         touchFallbackTimer: null,
+        failureCount: 0,
+        singleAttemptFailed: false,
         success: false
       };
 
@@ -1047,6 +1102,8 @@
         state.pointers.clear();
         state.drag = null;
         state.pinch = null;
+        state.failureCount = 0;
+        state.singleAttemptFailed = false;
         state.success = false;
         lensPosition.style.opacity = '1';
         completion.classList.remove('visible');
@@ -1055,6 +1112,25 @@
         hideMarkers();
         renderGeometry();
         renderStep();
+      }
+
+      function registerFailure() {
+        if (state.success || state.step !== 3) return;
+        state.failureCount += 1;
+
+        if (state.failureCount === 2) {
+          setFeedback('두 번 실패했어요. 렌즈 양쪽 테두리에 검지와 엄지의 지문 면을 놓고, 손톱이 닿지 않게 부드럽게 모아보세요.', 'error');
+          vibrate([25, 45, 25]);
+          return;
+        }
+
+        if (state.failureCount === 4) {
+          setFeedback('네 번 시도했어요. 눈이 자극되지 않도록 잠시 쉬고, 손가락을 완전히 말린 뒤 다시 시도해보세요. 계속 어렵다면 안경전문가의 도움을 받으세요.', 'error');
+          vibrate([30, 50, 30, 50, 30]);
+          return;
+        }
+
+        setFeedback('렌즈 양쪽을 두 손가락의 지문 면으로 함께 잡아 안쪽으로 살짝 모아주세요.', 'error');
       }
 
       function finish() {
@@ -1156,12 +1232,14 @@
         }
 
         if (state.step === 3) {
+          if (state.pointers.size === 1) state.singleAttemptFailed = false;
           beginPinchIfReady();
           if (state.pointers.size === 1) {
             clearTimeout(state.oneFingerTimer);
             state.oneFingerTimer = setTimeout(() => {
               if (state.step === 3 && state.pointers.size === 1 && !state.success) {
-                setFeedback('반대쪽 렌즈 테두리에도 다른 손가락을 놓아주세요.', 'error');
+                state.singleAttemptFailed = true;
+                registerFailure();
               }
             }, 900);
           }
@@ -1189,14 +1267,15 @@
 
         if (state.step === 2 && state.drag?.id === event.pointerId) {
           const dy = point.y - state.drag.startY;
-          state.lensY = Math.max(0, Math.min(112, state.drag.startLensY + dy));
+          // 렌즈는 너무 아래까지 내리지 않고, 목표 위치에 도달하면 바로 집기 단계로 전환한다.
+          state.lensY = Math.max(0, Math.min(42, state.drag.startLensY + dy));
           // 별도의 상안검 단계 없이 렌즈를 내리는 거리만큼 상안검이 자동으로 열린다.
-          state.upperLidOffset = Math.min(60, state.lensY);
+          state.upperLidOffset = Math.min(48, state.lensY * 1.14);
           renderGeometry();
           if (dy < -12) setFeedback('위쪽이 아니라 아래 흰자위 방향으로 밀어주세요.', 'error');
-          if (state.lensY >= 54) {
-            state.lensY = 60;
-            state.upperLidOffset = 60;
+          if (state.lensY >= 40) {
+            state.lensY = 42;
+            state.upperLidOffset = 48;
             renderGeometry();
             goToStep(3);
           }
@@ -1231,13 +1310,19 @@
       }, { passive: false });
 
       function releasePointer(event) {
+        const wasStep3 = state.step === 3;
+        const hadPinch = Boolean(state.pinch);
         const completedPinchGesture = state.pinch?.ids.includes(event.pointerId) && !state.success;
         state.pointers.delete(event.pointerId);
         updateMarkers();
         if (state.drag?.id === event.pointerId) state.drag = null;
         // 두 손가락이 한 번 함께 인식됐다면 손가락을 떼는 동작도 핀치 완료로 인정한다.
         if (completedPinchGesture) finish();
-        if (state.pointers.size === 0) clearTimeout(state.oneFingerTimer);
+        if (state.pointers.size === 0) {
+          clearTimeout(state.oneFingerTimer);
+          if (wasStep3 && !hadPinch && !state.success && !state.singleAttemptFailed) registerFailure();
+          state.singleAttemptFailed = false;
+        }
       }
 
       // iPhone Safari에서 두 번째 PointerEvent가 누락되는 경우를 위한 멀티터치 보조 인식.
