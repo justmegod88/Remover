@@ -922,6 +922,8 @@
         drag: null,
         pinch: null,
         oneFingerTimer: null,
+        pinchHoldTimer: null,
+        touchFallbackTimer: null,
         success: false
       };
 
@@ -937,11 +939,6 @@
         const dx = point.x - 200;
         const dy = point.y - (250 + state.lensY);
         return Math.hypot(dx, dy) <= 101 + extra;
-      }
-
-      function withinPinchBand(point) {
-        const centerY = 250 + state.lensY;
-        return point.x >= 24 && point.x <= 376 && Math.abs(point.y - centerY) <= 120;
       }
 
       function midpoint(a, b) {
@@ -1053,6 +1050,8 @@
 
       function reset() {
         clearTimeout(state.oneFingerTimer);
+        clearTimeout(state.pinchHoldTimer);
+        clearTimeout(state.touchFallbackTimer);
         state.step = 1;
         state.upperLidOffset = 0;
         state.lidOffset = 0;
@@ -1075,6 +1074,8 @@
         if (state.success) return;
         state.success = true;
         clearTimeout(state.oneFingerTimer);
+        clearTimeout(state.pinchHoldTimer);
+        clearTimeout(state.touchFallbackTimer);
         setFeedback('정확해요! 손가락의 넓은 면으로 렌즈 양쪽을 부드럽게 모았어요.', 'success');
         progressItems.forEach(item => {
           item.classList.add('done');
@@ -1105,27 +1106,16 @@
       }
 
       function beginPinchIfReady() {
-        // iPhone의 멀티터치에서는 SVG 변환 좌표가 순간적으로 흔들릴 수 있으므로
-        // 실제 화면 터치 좌표(clientX)를 정렬해 왼쪽·오른쪽 손가락을 구분한다.
-        const entries = [...state.pointers.entries()]
-          .filter(([, pointer]) => withinPinchBand(pointer))
-          .sort((a, b) => a[1].clientX - b[1].clientX);
+        // iPhone에서는 두 번째 손가락의 좌표 판정이 불안정할 수 있어
+        // 마지막 단계에서는 두 포인터가 동시에 존재하면 바로 핀치로 인정한다.
+        const entries = [...state.pointers.entries()].sort((a, b) => a[1].clientX - b[1].clientX);
         if (entries.length < 2) return;
 
         const left = entries[0];
         const right = entries[entries.length - 1];
         const a = left[1];
         const b = right[1];
-        const rect = svg.getBoundingClientRect();
-        const screenCenterX = rect.left + rect.width / 2;
-        const sideMargin = Math.min(24, rect.width * .065);
         const startClientGap = b.clientX - a.clientX;
-
-        if (a.clientX > screenCenterX - sideMargin || b.clientX < screenCenterX + sideMargin || startClientGap < 48) {
-          setFeedback('왼쪽과 오른쪽 파란 원에 손가락을 하나씩 놓아주세요.', 'error');
-          return;
-        }
-
         const startDistance = distance(a, b);
 
         state.pinch = {
@@ -1133,17 +1123,27 @@
           startDistance,
           startClientGap,
           startLeftClientX: a.clientX,
-          startRightClientX: b.clientX
+          startRightClientX: b.clientX,
+          startLeftClientY: a.clientY,
+          startRightClientY: b.clientY
         };
         clearTimeout(state.oneFingerTimer);
-        setFeedback('양쪽 테두리가 인식됐어요! 두 손가락을 안쪽으로 살짝만 모아주세요.');
+        setFeedback('두 손가락이 인식됐어요! 안쪽으로 살짝 모아주세요.');
+        state.fold = .86;
+        renderGeometry();
         vibrate(16);
+
+        clearTimeout(state.pinchHoldTimer);
+        state.pinchHoldTimer = setTimeout(() => {
+          const [leftId, rightId] = state.pinch?.ids || [];
+          if (state.step === 4 && !state.success && state.pointers.has(leftId) && state.pointers.has(rightId)) finish();
+        }, 320);
       }
 
       svg.addEventListener('pointerdown', (event) => {
         if (state.success) return;
         event.preventDefault();
-        svg.setPointerCapture?.(event.pointerId);
+        if (state.step !== 4) svg.setPointerCapture?.(event.pointerId);
         const point = toSvgPoint(event);
         state.pointers.set(event.pointerId, { ...point, clientX: event.clientX, clientY: event.clientY });
         updateMarkers();
@@ -1179,10 +1179,6 @@
         }
 
         if (state.step === 4) {
-          if (!withinPinchBand(point)) {
-            setFeedback('렌즈 양쪽 테두리 높이에 손가락을 놓아주세요.', 'error');
-            return;
-          }
           beginPinchIfReady();
           if (state.pointers.size === 1) {
             clearTimeout(state.oneFingerTimer);
@@ -1252,28 +1248,50 @@
           const currentClientGap = b.clientX - a.clientX;
           const horizontalClose = (a.clientX - state.pinch.startLeftClientX) + (state.pinch.startRightClientX - b.clientX);
           const clientClosedDistance = state.pinch.startClientGap - currentClientGap;
-          const closeProgress = Math.max(0, horizontalClose, clientClosedDistance, closedDistance);
+          const totalMotion = Math.abs(a.clientX - state.pinch.startLeftClientX)
+            + Math.abs(b.clientX - state.pinch.startRightClientX)
+            + Math.abs(a.clientY - state.pinch.startLeftClientY)
+            + Math.abs(b.clientY - state.pinch.startRightClientY);
+          const closeProgress = Math.max(4, horizontalClose, clientClosedDistance, closedDistance, totalMotion);
 
           // 작은 움직임도 눈에 보이도록 렌즈 접힘을 확대해서 표시한다.
           state.fold = Math.max(.58, Math.min(1, 1 - closeProgress / 28));
           renderGeometry();
-          // 화면 좌표 기준으로 합계 5px만 안쪽으로 움직여도 성공한다.
-          if (horizontalClose >= 5 || clientClosedDistance >= 6 || closedDistance >= 8 || ratio <= .95) finish();
+          // 두 손가락이 함께 인식된 뒤 아주 작은 움직임만 생겨도 성공한다.
+          if (totalMotion >= 3 || horizontalClose >= 2 || clientClosedDistance >= 2 || closedDistance >= 3 || ratio <= .98) finish();
         }
       }, { passive: false });
 
       function releasePointer(event) {
+        const completedPinchGesture = state.pinch?.ids.includes(event.pointerId) && !state.success;
         state.pointers.delete(event.pointerId);
         updateMarkers();
         if (state.drag?.id === event.pointerId) state.drag = null;
-        if (state.pinch?.ids.includes(event.pointerId) && !state.success) {
-          state.pinch = null;
-          state.fold = 1;
-          renderGeometry();
-          setFeedback('오른손 검지와 엄지를 떼지 말고 살짝 함께 모아주세요.', 'error');
-        }
+        // 두 손가락이 한 번 함께 인식됐다면 손가락을 떼는 동작도 핀치 완료로 인정한다.
+        if (completedPinchGesture) finish();
         if (state.pointers.size === 0) clearTimeout(state.oneFingerTimer);
       }
+
+      // iPhone Safari에서 두 번째 PointerEvent가 누락되는 경우를 위한 멀티터치 보조 인식.
+      svg.addEventListener('touchstart', event => {
+        if (state.step !== 4 || state.success || event.touches.length < 2) return;
+        event.preventDefault();
+        clearTimeout(state.oneFingerTimer);
+        clearTimeout(state.touchFallbackTimer);
+        setFeedback('두 손가락이 인식됐어요! 렌즈를 살짝 집어주세요.');
+        state.fold = .82;
+        renderGeometry();
+        vibrate(16);
+        state.touchFallbackTimer = setTimeout(() => {
+          if (state.step === 4 && !state.success) finish();
+        }, 220);
+      }, { passive: false });
+
+      svg.addEventListener('touchmove', event => {
+        if (state.step !== 4 || state.success || event.touches.length < 2) return;
+        event.preventDefault();
+        finish();
+      }, { passive: false });
 
       svg.addEventListener('pointerup', releasePointer);
       svg.addEventListener('pointercancel', releasePointer);
