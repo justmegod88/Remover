@@ -372,12 +372,18 @@
       background: #061d31;
     }
 
+    .wear-control-dock {
+      min-height: 62px;
+      margin: -2px 0 14px;
+      padding: 7px;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: #eef5fb;
+      box-shadow: 0 6px 18px rgba(25, 74, 111, .07);
+    }
+
     .wear-actions {
-      position: absolute;
-      z-index: 20;
-      right: 14px;
-      bottom: 82px;
-      left: 14px;
+      position: static;
       display: flex;
       justify-content: center;
       gap: 8px;
@@ -387,6 +393,7 @@
     .opening-meter[hidden] { display: none; }
 
     .wear-action {
+      flex: 1 1 auto;
       min-height: 46px;
       padding: 10px 15px;
       border: 1px solid rgba(255,255,255,.45);
@@ -395,12 +402,12 @@
       color: var(--navy);
       font-size: 13px;
       font-weight: 850;
-      box-shadow: 0 7px 20px rgba(4, 29, 49, .2);
+      box-shadow: 0 4px 12px rgba(4, 29, 49, .12);
       cursor: pointer;
     }
 
     .wear-action.secondary {
-      background: rgba(9,47,82,.9);
+      background: #0b3f69;
       color: #fff;
     }
 
@@ -758,6 +765,22 @@
           </div>
         </section>
 
+        <div class="wear-control-dock" aria-label="착용 단계 조작 버튼">
+          <div class="wear-actions orientation-actions" id="orientationActions">
+            <button class="wear-action" id="wrongOrientation" type="button"><span class="orientation-icon">⌒</span>가장자리가 벌어진 렌즈</button>
+            <button class="wear-action" id="correctOrientation" type="button"><span class="orientation-icon">∪</span>둥근 그릇 모양 렌즈</button>
+          </div>
+          <div class="wear-actions" id="openingActions" hidden>
+            <button class="wear-action" id="tryOpening" type="button">이 정도로 착용해보기</button>
+          </div>
+          <div class="wear-actions" id="lensActions" hidden>
+            <button class="wear-action secondary" id="adjustOpening" type="button">눈 벌림 다시 조절</button>
+          </div>
+          <div class="wear-actions" id="blinkActions" hidden>
+            <button class="wear-action" id="blinkButton" type="button">천천히 눈 깜빡이기</button>
+          </div>
+        </div>
+
         <section class="simulator" aria-label="콘택트렌즈 착용 터치 연습 화면">
           <div class="video-pip" aria-label="실제 착용 방법 영상">
             <span>▶ 실제 착용 방법 같이 보기</span>
@@ -854,19 +877,6 @@
             </g>
           </svg>
 
-          <div class="wear-actions orientation-actions" id="orientationActions">
-            <button class="wear-action" id="wrongOrientation" type="button"><span class="orientation-icon">⌒</span>가장자리가 벌어진 렌즈</button>
-            <button class="wear-action" id="correctOrientation" type="button"><span class="orientation-icon">∪</span>둥근 그릇 모양 렌즈</button>
-          </div>
-          <div class="wear-actions" id="openingActions" hidden>
-            <button class="wear-action" id="tryOpening" type="button">이 정도로 착용해보기</button>
-          </div>
-          <div class="wear-actions" id="lensActions" hidden>
-            <button class="wear-action secondary" id="adjustOpening" type="button">눈 벌림 다시 조절</button>
-          </div>
-          <div class="wear-actions" id="blinkActions" hidden>
-            <button class="wear-action" id="blinkButton" type="button">천천히 눈 깜빡이기</button>
-          </div>
           <div class="feedback" id="wearFeedback" aria-live="polite">두 렌즈 중 올바른 앞면 모양을 선택하세요.</div>
 
           <div class="attempt-guide" id="wearAttemptGuide" hidden>
