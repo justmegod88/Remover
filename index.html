@@ -1138,6 +1138,7 @@
                 <filter id="sideSoftShadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#173047" flood-opacity=".28"/></filter>
                 <filter id="sideSkinTexture" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".7" numOctaves="2" seed="8"/><feColorMatrix type="matrix" values="1 0 0 0 0  0 .72 0 0 0  0 0 .62 0 0  0 0 0 .09 0"/></filter>
                 <marker id="sideArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#fff"/></marker>
+                <clipPath id="sideFaceClip"><path d="M0 0 H171 C193 43 190 94 176 137 C164 176 164 193 172 219 C175 231 176 242 176 250 C176 258 175 269 172 281 C164 307 164 338 176 377 C190 420 193 457 171 500 H0Z"/></clipPath>
                 <clipPath id="sideEyeClip"><path d="M24 250 C66 191 120 178 166 198 Q210 250 166 302 C120 322 66 309 24 250Z"/></clipPath>
                 <clipPath id="sideApertureClip"><path id="sideApertureClipPath" d="M24 250 C66 213 120 210 166 220 Q194 250 166 280 C120 290 66 287 24 250Z"/></clipPath>
               </defs>
@@ -1147,8 +1148,10 @@
 
               <path d="M0 0 H171 C193 43 190 94 176 137 C164 176 164 193 172 219 C175 231 176 242 176 250 C176 258 175 269 172 281 C164 307 164 338 176 377 C190 420 193 457 171 500 H0Z" fill="url(#sideSkin)"/>
               <path d="M0 0 H171 C193 43 190 94 176 137 C164 176 164 193 172 219 C175 231 176 242 176 250 C176 258 175 269 172 281 C164 307 164 338 176 377 C190 420 193 457 171 500 H0Z" fill="#8e5b50" opacity=".15" filter="url(#sideSkinTexture)"/>
-              <path d="M25 126 Q105 76 181 135" fill="none" stroke="#77483f" stroke-width="13" stroke-linecap="round" opacity=".48"/>
-              <path d="M35 143 Q111 103 174 151" fill="none" stroke="#efbea5" stroke-width="5" opacity=".42"/>
+              <g clip-path="url(#sideFaceClip)">
+                <path d="M25 126 Q96 82 160 130" fill="none" stroke="#77483f" stroke-width="12" stroke-linecap="round" opacity=".45"/>
+                <path d="M35 143 Q103 108 158 148" fill="none" stroke="#efbea5" stroke-width="4.5" stroke-linecap="round" opacity=".38"/>
+              </g>
 
               <!-- 눈알과 홍채는 항상 같은 모양을 유지하고, 움직이는 안검 틈으로만 노출한다. -->
               <g clip-path="url(#sideApertureClip)">
@@ -1197,11 +1200,12 @@
               <path d="M354 250 H235" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" marker-end="url(#sideArrow)" opacity=".78"/>
 
               <g id="sideInsertionAssembly" transform="translate(0 0) rotate(15 287 250)">
-                <path d="M399 505 C371 475 348 441 331 404 L290 315 C281 296 285 277 300 267 C314 258 332 265 340 283 L380 372 C393 401 405 429 416 455Z" fill="url(#sideFinger)" stroke="#a86c60" stroke-width="3" filter="url(#sideSoftShadow)"/>
-                <path d="M301 267 C287 276 282 292 289 309 C294 320 304 325 315 321 C323 318 329 311 330 301 C331 287 322 271 311 266 C308 265 304 265 301 267Z" fill="#f2b99c" opacity=".96"/>
-                <path d="M318 271 C327 276 333 286 334 296 C335 306 331 315 324 321 C327 306 324 288 318 271Z" fill="url(#sideNail)" stroke="#d28e7d" stroke-width="1.6"/>
-                <path d="M289 284 Q300 279 309 284 M287 292 Q298 287 308 292 M289 300 Q299 295 308 300" fill="none" stroke="#c98573" stroke-width="1.8" stroke-linecap="round" opacity=".72"/>
-                <path d="M322 356 Q336 349 348 356 M338 397 Q352 390 363 397" fill="none" stroke="#bd796a" stroke-width="2.3" stroke-linecap="round" opacity=".6"/>
+                <!-- 오른손 검지: 지문 면이 렌즈 뒤를 직접 받치고, 손톱은 오른쪽 측면에만 보인다. -->
+                <g transform="translate(-12 -2)">
+                  <path d="M399 505 C371 475 348 441 331 404 L290 309 C282 291 285 270 297 257 C304 249 312 247 320 250 C331 254 338 265 341 278 L380 372 C393 401 405 429 416 455Z" fill="url(#sideFinger)" stroke="#a86c60" stroke-width="2.6" filter="url(#sideSoftShadow)"/>
+                  <path d="M327 263 C334 269 337 278 336 287 C336 295 332 301 327 305 C329 291 329 276 327 263Z" fill="url(#sideNail)" stroke="#cf8978" stroke-width="1.35"/>
+                  <path d="M322 356 Q336 349 348 356 M338 397 Q352 390 363 397" fill="none" stroke="#bd796a" stroke-width="2" stroke-linecap="round" opacity=".38"/>
+                </g>
                 <path id="sideLensShape" d="M258 198 Q302 250 258 302" fill="#75d8ee" fill-opacity=".14" stroke="url(#sideLens)" stroke-width="9" stroke-linecap="round" filter="url(#sideGlow)"/>
                 <path d="M258 198 L258 302" fill="none" stroke="#e5fbff" stroke-width="2" stroke-dasharray="5 6" opacity=".72"/>
                 <path d="M263 207 Q297 250 263 293" fill="none" stroke="#fff" stroke-width="3" opacity=".62"/>
