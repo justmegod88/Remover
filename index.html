@@ -1138,7 +1138,8 @@
                 <filter id="sideSoftShadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#173047" flood-opacity=".28"/></filter>
                 <filter id="sideSkinTexture" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".7" numOctaves="2" seed="8"/><feColorMatrix type="matrix" values="1 0 0 0 0  0 .72 0 0 0  0 0 .62 0 0  0 0 0 .09 0"/></filter>
                 <marker id="sideArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#fff"/></marker>
-              <clipPath id="sideEyeClip"><path id="sideEyeClipPath" d="M24 250 C66 191 120 178 166 198 Q210 250 166 302 C120 322 66 309 24 250Z"/></clipPath>
+                <clipPath id="sideEyeClip"><path d="M24 250 C66 191 120 178 166 198 Q210 250 166 302 C120 322 66 309 24 250Z"/></clipPath>
+                <clipPath id="sideApertureClip"><path id="sideApertureClipPath" d="M24 250 C66 213 120 210 166 220 Q210 250 166 280 C120 290 66 287 24 250Z"/></clipPath>
               </defs>
 
               <rect width="400" height="500" fill="url(#sideBg)"/>
@@ -1149,16 +1150,19 @@
               <path d="M25 126 Q105 76 181 135" fill="none" stroke="#77483f" stroke-width="13" stroke-linecap="round" opacity=".48"/>
               <path d="M35 143 Q111 103 174 151" fill="none" stroke="#efbea5" stroke-width="5" opacity=".42"/>
 
-              <path id="sideEyeWhiteShape" d="M24 250 C66 191 120 178 166 198 Q210 250 166 302 C120 322 66 309 24 250Z" fill="url(#sideEyeWhite)" stroke="#784a42" stroke-width="8" filter="url(#sideSoftShadow)"/>
-              <path id="sideUpperRim" d="M34 250 C73 205 120 190 166 204" fill="none" stroke="#efb9a2" stroke-width="8" stroke-linecap="round"/>
-              <path id="sideLowerRim" d="M34 252 C73 295 120 310 166 296" fill="none" stroke="#edb49e" stroke-width="8" stroke-linecap="round"/>
-
-              <g clip-path="url(#sideEyeClip)">
-                <ellipse cx="158" cy="250" rx="30" ry="46" fill="url(#sideIris)" stroke="#40291b" stroke-width="5"/>
-                <ellipse cx="181" cy="250" rx="7" ry="25" fill="#070b0d"/>
-                <ellipse cx="145" cy="228" rx="7" ry="13" fill="#fff" opacity=".76"/>
-                <ellipse cx="182" cy="241" rx="3" ry="5" fill="#fff" opacity=".58"/>
+              <!-- 눈알과 홍채는 항상 같은 모양을 유지하고, 움직이는 안검 틈으로만 노출한다. -->
+              <g clip-path="url(#sideApertureClip)">
+                <path id="sideEyeWhiteShape" d="M24 250 C66 191 120 178 166 198 Q210 250 166 302 C120 322 66 309 24 250Z" fill="url(#sideEyeWhite)" filter="url(#sideSoftShadow)"/>
+                <g clip-path="url(#sideEyeClip)">
+                  <ellipse cx="158" cy="250" rx="30" ry="46" fill="url(#sideIris)" stroke="#40291b" stroke-width="5"/>
+                  <ellipse cx="181" cy="250" rx="7" ry="25" fill="#070b0d"/>
+                  <ellipse cx="145" cy="228" rx="7" ry="13" fill="#fff" opacity=".76"/>
+                  <ellipse cx="182" cy="241" rx="3" ry="5" fill="#fff" opacity=".58"/>
+                </g>
               </g>
+              <path id="sideEyeOpeningOutline" d="M24 250 C66 213 120 210 166 220 Q210 250 166 280 C120 290 66 287 24 250Z" fill="none" stroke="#784a42" stroke-width="8" filter="url(#sideSoftShadow)"/>
+              <path id="sideUpperRim" d="M34 250 C73 220 120 214 166 226" fill="none" stroke="#efb9a2" stroke-width="7" stroke-linecap="round"/>
+              <path id="sideLowerRim" d="M34 252 C73 280 120 286 166 274" fill="none" stroke="#edb49e" stroke-width="7" stroke-linecap="round"/>
               <g id="sideUpperLashes" transform="translate(-10 0)" fill="none" stroke="#382824" stroke-width="5" stroke-linecap="round" opacity=".88">
                 <path d="M151 190 Q170 166 180 151"/><path d="M165 198 Q189 178 201 165"/><path d="M176 210 Q199 195 214 185"/>
               </g>
@@ -2086,8 +2090,8 @@
       const wearCompletion = document.getElementById('wearCompletion');
       const wearVideoPip = wearPractice.querySelector('.video-pip');
       const sideViewStage = document.getElementById('sideViewStage');
-      const sideEyeWhiteShape = document.getElementById('sideEyeWhiteShape');
-      const sideEyeClipPath = document.getElementById('sideEyeClipPath');
+      const sideApertureClipPath = document.getElementById('sideApertureClipPath');
+      const sideEyeOpeningOutline = document.getElementById('sideEyeOpeningOutline');
       const sideUpperRim = document.getElementById('sideUpperRim');
       const sideLowerRim = document.getElementById('sideLowerRim');
       const sideUpperLashes = document.getElementById('sideUpperLashes');
@@ -2205,20 +2209,21 @@
         // 정면에서 사용자가 벌린 위·아래 눈꺼풀의 양을 측면 노출 범위에도 그대로 반영한다.
         const upperRatio = Math.max(0, Math.min(1, wearState.upper / 60));
         const lowerRatio = Math.max(0, Math.min(1, wearState.lower / 60));
-        const upperC1 = 242 - upperRatio * 51;
-        const upperC2 = 228 - upperRatio * 50;
-        const upperShoulder = 235 - upperRatio * 37;
-        const lowerC1 = 258 + lowerRatio * 51;
-        const lowerC2 = 272 + lowerRatio * 50;
-        const lowerShoulder = 265 + lowerRatio * 37;
+        // 0%는 감긴 눈이 아니라 자연스러운 기본 노출, 100%는 충분히 벌린 상태다.
+        const upperC1 = 218 - upperRatio * 27;
+        const upperC2 = 210 - upperRatio * 32;
+        const upperShoulder = 220 - upperRatio * 22;
+        const lowerC1 = 282 + lowerRatio * 27;
+        const lowerC2 = 290 + lowerRatio * 32;
+        const lowerShoulder = 280 + lowerRatio * 22;
         const sideOpening = `M24 250 C66 ${upperC1} 120 ${upperC2} 166 ${upperShoulder} Q210 250 166 ${lowerShoulder} C120 ${lowerC2} 66 ${lowerC1} 24 250Z`;
 
-        sideEyeWhiteShape.setAttribute('d', sideOpening);
-        sideEyeClipPath.setAttribute('d', sideOpening);
-        sideUpperRim.setAttribute('d', `M34 250 C73 ${242 - upperRatio * 37} 120 ${228 - upperRatio * 38} 166 ${upperShoulder + 6}`);
-        sideLowerRim.setAttribute('d', `M34 252 C73 ${258 + lowerRatio * 37} 120 ${272 + lowerRatio * 38} 166 ${lowerShoulder - 6}`);
-        sideUpperLashes.setAttribute('transform', `translate(-10 ${(60 - wearState.upper) * .65})`);
-        sideLowerLashes.setAttribute('transform', `translate(-10 ${-(60 - wearState.lower) * .65})`);
+        sideApertureClipPath.setAttribute('d', sideOpening);
+        sideEyeOpeningOutline.setAttribute('d', sideOpening);
+        sideUpperRim.setAttribute('d', `M34 250 C73 ${225 - upperRatio * 20} 120 ${220 - upperRatio * 30} 166 ${upperShoulder + 6}`);
+        sideLowerRim.setAttribute('d', `M34 252 C73 ${275 + lowerRatio * 20} 120 ${280 + lowerRatio * 30} 166 ${lowerShoulder - 6}`);
+        sideUpperLashes.setAttribute('transform', `translate(-10 ${(60 - wearState.upper) * .25})`);
+        sideLowerLashes.setAttribute('transform', `translate(-10 ${-(60 - wearState.lower) * .25})`);
 
         sideInsertionAssembly.setAttribute('transform', `translate(${wearState.approach} 0) rotate(${wearState.angle} 287 250)`);
         angleSlider.value = String(wearState.angle);
@@ -2473,6 +2478,16 @@
         }, 720);
       }
 
+      function firstSideContactApproach() {
+        if (Math.abs(wearState.angle) < .01) return -92;
+        const radians = wearState.angle * Math.PI / 180;
+        const contactY = wearState.angle > 0 ? 302 : 198;
+        const dx = 258 - 287;
+        const dy = contactY - 250;
+        const rotatedContactX = 287 + dx * Math.cos(radians) - dy * Math.sin(radians);
+        return 166 - rotatedContactX;
+      }
+
       function attemptSideInsertion() {
         if (wearState.step !== 3 || wearState.inserting || wearState.success) return;
         if (wearState.viewMode !== 'side') {
@@ -2492,10 +2507,14 @@
 
         const start = performance.now();
         const duration = 620;
+        const lidIsShort = wearState.upper < 42 || wearState.lower < 42;
+        const firstContact = firstSideContactApproach();
+        // 안검이 덜 열린 경우에는 렌즈가 각막까지 관통하지 않고 속눈썹 앞에서 멈춘다.
+        const targetApproach = lidIsShort ? Math.max(firstContact, -76) : firstContact;
         function animate(now) {
           const progress = Math.min(1, (now - start) / duration);
           const eased = 1 - Math.pow(1 - progress, 3);
-          wearState.approach = -92 * eased;
+          wearState.approach = targetApproach * eased;
           renderSideGeometry();
           if (progress < 1) {
             requestAnimationFrame(animate);
@@ -2507,6 +2526,10 @@
           } else if (Math.abs(wearState.angle) > 6) {
             recordSideFailure('angle');
           } else {
+            // 허용 범위 안의 미세한 기울기는 안착 순간 0°로 정렬해 곡면이 정확히 포개지게 한다.
+            wearState.angle = 0;
+            wearState.approach = -92;
+            renderSideGeometry();
             sideContactSuccess.style.opacity = '1';
             setWearFeedback('정확해요! 렌즈 면이 각막 정면과 평행하게 고르게 닿았습니다.', 'success');
             vibrate([30, 35, 55]);
