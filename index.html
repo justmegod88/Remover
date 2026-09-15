@@ -244,6 +244,7 @@
 
     .feedback.error { background: rgba(139, 34, 42, .9); }
     .feedback.success { background: rgba(5, 108, 74, .92); }
+    .feedback[hidden] { display: none; }
 
     .completion {
       position: absolute;
@@ -943,16 +944,9 @@
       </nav>
 
       <section class="practice-panel" id="wearPractice">
-        <!-- 기존 버튼형 착용 진행 표시는 삭제하지 않고 숨겨 보존한다. -->
-        <ol class="progress-list" id="wearProgress" aria-label="기존 착용 연습 진행 단계" hidden>
-          <li class="active" data-wear-progress="1">1. 앞뒤 확인</li>
-          <li data-wear-progress="2">2. 눈 벌리기</li>
-          <li data-wear-progress="3">3. 수직 맞추기</li>
-          <li data-wear-progress="4">4. 안착</li>
-        </ol>
         <ol class="progress-list" id="directWearProgress" aria-label="직접 착용 연습 진행 단계">
-          <li class="active" data-direct-wear-progress="1">1. 렌즈 선택</li>
-          <li data-direct-wear-progress="2">2. 직접 착용</li>
+          <li class="active" data-direct-wear-progress="1">1. 앞뒤 확인</li>
+          <li data-direct-wear-progress="2">2. 렌즈 넣기</li>
           <li data-direct-wear-progress="3">3. 안착</li>
         </ol>
 
@@ -2150,9 +2144,9 @@
           feedback: '눈꺼풀 고정 손가락은 그대로 두고, 렌즈를 든 검지만 각막 중심으로 움직이세요.'
         },
         4: {
-          title: '손가락을 떼고 천천히 눈을 깜빡이세요',
-          body: '렌즈가 눈에 닿았어요. 한 번 천천히 깜빡여 렌즈를 중앙에 안착시키세요.',
-          feedback: '좋아요! 이제 아래 버튼을 눌러 천천히 깜빡여보세요.'
+          title: DIRECT_SIDE_WEAR ? '렌즈가 각막에 고르게 안착됐어요' : '손가락을 떼고 천천히 눈을 깜빡이세요',
+          body: DIRECT_SIDE_WEAR ? '렌즈가 각막 곡면에 맞게 닿았습니다. 검지를 천천히 떼면 착용 연습이 완료됩니다.' : '렌즈가 눈에 닿았어요. 한 번 천천히 깜빡여 렌즈를 중앙에 안착시키세요.',
+          feedback: DIRECT_SIDE_WEAR ? '착용 성공! 렌즈가 측면에서 각막에 고르게 안착했어요.' : '좋아요! 이제 아래 버튼을 눌러 천천히 깜빡여보세요.'
         }
       };
 
@@ -2304,7 +2298,7 @@
 
       function setPracticeView(mode) {
         wearState.viewMode = mode;
-        const sideActive = (DIRECT_SIDE_WEAR && wearState.step === 2) || (wearState.step === 3 && mode === 'side');
+        const sideActive = (DIRECT_SIDE_WEAR && (wearState.step === 2 || wearState.step === 4)) || (wearState.step === 3 && mode === 'side');
         frontViewButton.classList.toggle('active', !sideActive);
         sideViewButton.classList.toggle('active', sideActive);
         frontViewButton.setAttribute('aria-pressed', String(!sideActive));
@@ -2341,16 +2335,22 @@
         orientationActions.hidden = wearState.step !== 1;
         openingActions.hidden = DIRECT_SIDE_WEAR || wearState.step !== 2;
         lensActions.hidden = DIRECT_SIDE_WEAR || wearState.step !== 3;
-        blinkActions.hidden = wearState.step !== 4;
-        wearControlDock.hidden = DIRECT_SIDE_WEAR && wearState.step === 2;
+        blinkActions.hidden = DIRECT_SIDE_WEAR || wearState.step !== 4;
+        wearControlDock.hidden = DIRECT_SIDE_WEAR && wearState.step !== 1;
         openingMeter.hidden = DIRECT_SIDE_WEAR || wearState.step !== 2;
-        const sidePracticeStep = (DIRECT_SIDE_WEAR && wearState.step === 2) || wearState.step === 3;
-        wearVideoPip.hidden = sidePracticeStep;
-        wearVideoPip.style.display = sidePracticeStep ? 'none' : '';
-        if (DIRECT_SIDE_WEAR && wearState.step === 2) {
+        const sidePracticeStep = (DIRECT_SIDE_WEAR && (wearState.step === 2 || wearState.step === 4)) || wearState.step === 3;
+        wearVideoPip.hidden = DIRECT_SIDE_WEAR || sidePracticeStep;
+        wearVideoPip.style.display = DIRECT_SIDE_WEAR || sidePracticeStep ? 'none' : '';
+        wearFeedback.hidden = DIRECT_SIDE_WEAR && wearState.step === 1;
+        if (DIRECT_SIDE_WEAR && (wearState.step === 2 || wearState.step === 4)) {
           setPracticeView('side');
         } else if (wearState.step === 3) {
           setPracticeView(wearState.viewMode);
+        } else if (DIRECT_SIDE_WEAR && wearState.step === 1) {
+          wearSvg.hidden = true;
+          wearSvg.style.display = 'none';
+          sideViewStage.hidden = true;
+          sideViewStage.style.display = 'none';
         } else {
           wearSvg.hidden = false;
           wearSvg.style.display = 'block';
@@ -2739,6 +2739,7 @@
           wearState.inserting = false;
           wearState.attemptLocked = false;
           goWearStep(4);
+          finishWear();
         }, 650);
       }
 
