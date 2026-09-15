@@ -1035,7 +1035,7 @@
 
           <svg id="wearEyeScene" viewBox="0 0 400 500" role="img" aria-labelledby="wearSceneTitle wearSceneDesc">
             <title id="wearSceneTitle">콘택트렌즈 착용 연습용 눈</title>
-            <desc id="wearSceneDesc">위아래 눈꺼풀을 원하는 만큼 직접 벌린 뒤 렌즈를 눈 중앙으로 이동합니다. 충분히 벌리지 않으면 렌즈가 속눈썹에 닿아 실패합니다.</desc>
+            <desc id="wearSceneDesc">왼손 중지로 윗눈꺼풀 위 피부를 올리고 오른손 중지로 아랫눈꺼풀 아래 피부를 내린 뒤, 오른손 검지 위 렌즈를 눈 중앙으로 이동합니다. 충분히 벌리지 않으면 렌즈가 속눈썹에 닿아 실패합니다.</desc>
             <defs>
               <linearGradient id="wearSkin" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0" stop-color="#b97862"/><stop offset=".22" stop-color="#d99d80"/><stop offset=".52" stop-color="#efc5aa"/><stop offset=".78" stop-color="#d7977d"/><stop offset="1" stop-color="#9f5f54"/>
@@ -1100,11 +1100,11 @@
             </g>
 
             <g id="wearLidGuides" pointer-events="none" opacity="0">
-              <circle id="wearUpperHandle" cx="200" cy="158" r="25" fill="#4aa9e8" fill-opacity=".62" stroke="#fff" stroke-width="3"/>
-              <text id="wearUpperHandleText" x="200" y="162" fill="#fff" text-anchor="middle" font-size="11" font-weight="800">위로</text>
+              <circle id="wearUpperHandle" cx="200" cy="158" r="29" fill="#247fb8" fill-opacity=".78" stroke="#fff" stroke-width="3"/>
+              <text id="wearUpperHandleText" x="200" y="154" fill="#fff" text-anchor="middle" font-size="9" font-weight="850"><tspan x="200">왼손</tspan><tspan x="200" dy="11">중지</tspan></text>
               <path id="wearUpperArrow" d="M200 132 L200 103" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#wearArrow)"/>
-              <circle id="wearLowerHandle" cx="200" cy="342" r="25" fill="#4aa9e8" fill-opacity=".62" stroke="#fff" stroke-width="3"/>
-              <text id="wearLowerHandleText" x="200" y="346" fill="#fff" text-anchor="middle" font-size="11" font-weight="800">아래로</text>
+              <circle id="wearLowerHandle" cx="200" cy="342" r="29" fill="#247fb8" fill-opacity=".78" stroke="#fff" stroke-width="3"/>
+              <text id="wearLowerHandleText" x="200" y="338" fill="#fff" text-anchor="middle" font-size="9" font-weight="850"><tspan x="200">오른손</tspan><tspan x="200" dy="11">중지</tspan></text>
               <path id="wearLowerArrow" d="M200 368 L200 397" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#wearArrow)"/>
             </g>
 
@@ -1122,7 +1122,7 @@
             <span class="side-view-label">SIDE VIEW · 측면</span>
             <svg id="sideViewScene" viewBox="0 0 400 500" role="img" aria-labelledby="sideViewTitle sideViewDesc">
               <title id="sideViewTitle">각막과 렌즈의 측면 정렬 연습</title>
-              <desc id="sideViewDesc">반대손 검지로 윗눈꺼풀을 올리고, 렌즈를 든 손의 중지로 아랫눈꺼풀을 내린 채, 같은 손 검지 위 렌즈의 각도를 조절하여 각막 정면에 고르게 닿도록 연습합니다.</desc>
+              <desc id="sideViewDesc">왼손 중지로 윗눈꺼풀 위 피부를 올리고, 오른손 중지로 아랫눈꺼풀 아래 피부를 내린 채, 아래에서 올라오는 오른손 검지 위 렌즈의 각도를 조절하여 각막 정면에 고르게 닿도록 연습합니다.</desc>
               <defs>
                 <linearGradient id="sideBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d9edf4"/><stop offset=".48" stop-color="#8bb1c2"/><stop offset="1" stop-color="#17394f"/></linearGradient>
                 <radialGradient id="sideSkin" cx="62%" cy="45%" r="75%"><stop offset="0" stop-color="#f4c7ac"/><stop offset=".48" stop-color="#dfa184"/><stop offset=".82" stop-color="#bd7867"/><stop offset="1" stop-color="#8f554d"/></radialGradient>
@@ -1164,7 +1164,7 @@
               </g>
 
               <!-- 반대손 검지: 윗눈꺼풀을 속눈썹 위에서 들어 올린다. -->
-              <g id="sideUpperHoldingHand" filter="url(#sideSoftShadow)">
+              <g id="sideUpperHoldingHand" transform="translate(-24 -18)" filter="url(#sideSoftShadow)">
                 <path d="M22 -9 H214 C219 11 212 31 196 44 C182 55 166 59 151 68 C143 73 140 83 142 95 L158 154 C163 172 156 187 143 193 C129 199 114 191 110 176 L92 100 C88 83 79 74 64 70 L22 62Z" fill="url(#sideFinger)" stroke="#a86c60" stroke-width="3"/>
                 <path d="M39 21 Q77 38 112 28 M48 48 Q79 57 104 51 M104 111 Q123 104 141 110" fill="none" stroke="#be7b6c" stroke-width="2.5" stroke-linecap="round" opacity=".58"/>
                 <path d="M128 101 Q139 93 149 101 L156 132 Q150 144 136 143 Q126 138 125 125Z" fill="url(#sideNail)" stroke="#d28e7d" stroke-width="1.8" opacity=".72"/>
@@ -1172,25 +1172,25 @@
                 <path d="M29 4 Q86 22 141 8" fill="none" stroke="#ffe0cd" stroke-width="5" stroke-linecap="round" opacity=".22"/>
               </g>
               <g pointer-events="none">
-                <path d="M145 184 L145 158" fill="none" stroke="#83e4ff" stroke-width="3" stroke-linecap="round" marker-end="url(#sideArrow)"/>
+                <path d="M121 166 L121 140" fill="none" stroke="#83e4ff" stroke-width="3" stroke-linecap="round" marker-end="url(#sideArrow)"/>
                 <rect x="240" y="72" width="140" height="30" rx="11" fill="#0a3552" fill-opacity=".82" stroke="#b9ecff" stroke-opacity=".48"/>
-                <text x="310" y="91" fill="#fff" text-anchor="middle" font-size="10" font-weight="850">반대손 검지 · 위 고정</text>
-                <path d="M240 87 Q191 100 153 155" fill="none" stroke="#b9ecff" stroke-width="1.6" stroke-dasharray="4 5" opacity=".78"/>
+                <text x="310" y="91" fill="#fff" text-anchor="middle" font-size="10" font-weight="850">왼손 중지 · 위 고정</text>
+                <path d="M240 87 Q176 98 130 137" fill="none" stroke="#b9ecff" stroke-width="1.6" stroke-dasharray="4 5" opacity=".78"/>
               </g>
 
               <!-- 렌즈를 든 손: 손바닥에서 중지와 검지가 자연스럽게 이어진다. -->
               <g id="sideLensHandPalm" filter="url(#sideSoftShadow)">
-                <path d="M400 259 C368 263 342 279 332 302 C321 327 332 353 356 370 C368 378 383 383 400 385Z" fill="url(#sideFinger)" stroke="#a86c60" stroke-width="3"/>
-                <path d="M400 329 Q370 311 338 310" fill="none" stroke="#bd796a" stroke-width="2.5" stroke-linecap="round" opacity=".6"/>
-                <path d="M363 326 C318 320 270 310 218 298 L178 289 C162 286 148 295 144 308 C141 321 150 334 165 338 L211 343 C263 348 314 358 361 371 C374 368 379 339 363 326Z" fill="url(#sideFinger)" stroke="#a86c60" stroke-width="3"/>
-                <path d="M211 305 Q226 320 217 340 M268 318 Q283 334 274 352" fill="none" stroke="#bd796a" stroke-width="2.4" stroke-linecap="round" opacity=".56"/>
-                <path d="M150 304 Q163 296 176 301 M147 312 Q162 304 178 309 M148 320 Q163 313 176 317" fill="none" stroke="#c98573" stroke-width="2" stroke-linecap="round" opacity=".66"/>
-                <path d="M238 305 Q270 319 301 325" fill="none" stroke="#ffd7c1" stroke-width="3" stroke-linecap="round" opacity=".34"/>
+                <path d="M237 500 C247 450 272 413 311 391 C341 374 370 369 400 377 V500Z" fill="url(#sideFinger)" stroke="#a86c60" stroke-width="3"/>
+                <path d="M382 378 C330 370 276 359 218 345 L148 323 C132 318 117 326 113 339 C109 352 119 365 135 368 L210 374 C268 382 325 397 378 417 C395 412 400 388 382 378Z" fill="url(#sideFinger)" stroke="#a86c60" stroke-width="3"/>
+                <path d="M205 351 Q222 360 214 373 M267 365 Q282 378 276 391 M327 383 Q342 393 337 407" fill="none" stroke="#bd796a" stroke-width="2.4" stroke-linecap="round" opacity=".58"/>
+                <path d="M118 336 Q133 329 148 336 M115 344 Q132 337 150 344 M117 352 Q133 346 148 352" fill="none" stroke="#c98573" stroke-width="2" stroke-linecap="round" opacity=".68"/>
+                <path d="M246 353 Q278 364 307 369" fill="none" stroke="#ffd7c1" stroke-width="3" stroke-linecap="round" opacity=".34"/>
+                <path d="M291 431 Q326 410 365 413" fill="none" stroke="#bd796a" stroke-width="3" stroke-linecap="round" opacity=".52"/>
               </g>
               <g pointer-events="none">
-                <path d="M160 312 L160 338" fill="none" stroke="#83e4ff" stroke-width="3" stroke-linecap="round" marker-end="url(#sideArrow)"/>
-                <rect x="14" y="361" width="150" height="30" rx="11" fill="#0a3552" fill-opacity=".82" stroke="#b9ecff" stroke-opacity=".48"/>
-                <text x="89" y="380" fill="#fff" text-anchor="middle" font-size="10" font-weight="850">착용 손 중지 · 아래 고정</text>
+                <path d="M130 341 L130 369" fill="none" stroke="#83e4ff" stroke-width="3" stroke-linecap="round" marker-end="url(#sideArrow)"/>
+                <rect x="14" y="394" width="164" height="30" rx="11" fill="#0a3552" fill-opacity=".82" stroke="#b9ecff" stroke-opacity=".48"/>
+                <text x="96" y="413" fill="#fff" text-anchor="middle" font-size="10" font-weight="850">오른손 중지 · 아래 고정</text>
               </g>
 
               <path d="M183 142 V358" fill="none" stroke="#b7eeff" stroke-width="3" stroke-dasharray="8 8"/>
@@ -1199,11 +1199,11 @@
               <text x="300" y="210" fill="#fff" text-anchor="middle" font-size="11" font-weight="850">일직선 접근</text>
 
               <g id="sideInsertionAssembly" transform="translate(0 0) rotate(15 287 250)">
-                <path d="M402 220 C365 216 329 217 298 222 C281 225 270 236 270 250 C270 264 281 275 298 278 C331 283 366 284 402 280 C418 269 418 231 402 220Z" fill="url(#sideFinger)" stroke="#a86c60" stroke-width="3" filter="url(#sideSoftShadow)"/>
-                <ellipse cx="286" cy="250" rx="20" ry="25" fill="#f2b99c" opacity=".92"/>
-                <path d="M318 225 Q337 219 356 223 Q364 233 360 244 Q340 252 320 245Z" fill="url(#sideNail)" stroke="#d28e7d" stroke-width="1.8" opacity=".82"/>
-                <path d="M371 226 Q386 223 399 228 M370 274 Q385 278 399 273" fill="none" stroke="#bd796a" stroke-width="2.2" stroke-linecap="round" opacity=".6"/>
-                <path d="M278 241 Q288 234 299 239 M276 249 Q288 242 300 247 M278 257 Q289 251 299 255" fill="none" stroke="#c98573" stroke-width="1.8" stroke-linecap="round" opacity=".56"/>
+                <path d="M427 505 C402 448 383 391 369 329 L354 272 C350 255 339 244 325 243 C311 242 300 253 299 268 C299 282 307 294 320 300 L332 344 C347 406 357 459 363 505Z" fill="url(#sideFinger)" stroke="#a86c60" stroke-width="3" filter="url(#sideSoftShadow)"/>
+                <ellipse cx="322" cy="264" rx="22" ry="24" transform="rotate(-12 322 264)" fill="#f2b99c" opacity=".94"/>
+                <path d="M329 298 Q342 313 339 331 M344 351 Q359 365 355 383 M360 409 Q374 423 371 441" fill="none" stroke="#bd796a" stroke-width="2.3" stroke-linecap="round" opacity=".58"/>
+                <path d="M335 309 Q346 303 355 310 L363 341 Q357 353 344 352 Q334 347 332 334Z" fill="url(#sideNail)" stroke="#d28e7d" stroke-width="1.8" opacity=".78"/>
+                <path d="M306 253 Q320 246 333 253 M304 261 Q319 254 335 261 M305 269 Q320 263 333 269" fill="none" stroke="#c98573" stroke-width="1.8" stroke-linecap="round" opacity=".62"/>
                 <path id="sideLensShape" d="M258 190 Q322 250 258 310" fill="#75d8ee" fill-opacity=".14" stroke="url(#sideLens)" stroke-width="9" stroke-linecap="round" filter="url(#sideGlow)"/>
                 <path d="M258 190 L258 310" fill="none" stroke="#e5fbff" stroke-width="2" stroke-dasharray="5 6" opacity=".72"/>
                 <path d="M263 202 Q307 250 263 298" fill="none" stroke="#fff" stroke-width="3" opacity=".62"/>
@@ -1212,7 +1212,7 @@
               </g>
               <g pointer-events="none">
                 <rect x="257" y="145" width="127" height="30" rx="11" fill="#0a3552" fill-opacity=".82" stroke="#b9ecff" stroke-opacity=".48"/>
-                <text x="320" y="164" fill="#fff" text-anchor="middle" font-size="10" font-weight="850">착용 손 검지 · 렌즈 받침</text>
+                <text x="320" y="164" fill="#fff" text-anchor="middle" font-size="10" font-weight="850">오른손 검지 · 렌즈 받침</text>
               </g>
 
               <g id="sideContactSuccess" opacity="0" pointer-events="none">
@@ -2117,13 +2117,13 @@
           feedback: '두 렌즈 중 올바른 앞면 모양을 선택하세요.'
         },
         2: {
-          title: '위·아래 눈꺼풀을 원하는 만큼 벌려보세요',
-          body: '파란 손잡이를 각각 위와 아래로 드래그하세요. 벌린 정도는 그대로 유지됩니다.',
-          feedback: '조금만 벌린 상태로도 시도할 수 있지만 속눈썹에 닿을 수 있어요.'
+          title: '왼손 중지와 오른손 중지로 눈꺼풀을 벌리세요',
+          body: '왼손 중지는 윗눈꺼풀 위 피부를 위로, 오른손 중지는 아랫눈꺼풀 아래 피부를 아래로 당기세요.',
+          feedback: '위 파란 원은 왼손 중지, 아래 파란 원은 오른손 중지로 드래그하세요.'
         },
         3: {
           title: '측면에서 렌즈와 각막을 일직선으로 맞추세요',
-          body: '반대손 검지로 윗눈꺼풀을, 착용 손 중지로 아랫눈꺼풀을 고정한 뒤 렌즈를 든 검지의 각도를 맞추세요.',
+          body: '왼손 중지로 윗눈꺼풀, 오른손 중지로 아랫눈꺼풀을 고정하고 오른손 검지 위 렌즈의 각도를 맞추세요.',
           feedback: '눈꺼풀 고정 손가락은 그대로 두고, 렌즈를 든 검지만 각막 중심으로 움직이세요.'
         },
         4: {
@@ -2195,10 +2195,10 @@
         const upperHandleY = topInner;
         const lowerHandleY = bottomInner;
         wearUpperHandle.setAttribute('cy', upperHandleY);
-        wearUpperHandleText.setAttribute('y', upperHandleY + 4);
+        wearUpperHandleText.setAttribute('y', upperHandleY - 4);
         wearUpperArrow.setAttribute('d', `M200 ${upperHandleY - 27} L200 ${upperHandleY - 55}`);
         wearLowerHandle.setAttribute('cy', lowerHandleY);
-        wearLowerHandleText.setAttribute('y', lowerHandleY + 4);
+        wearLowerHandleText.setAttribute('y', lowerHandleY - 4);
         wearLowerArrow.setAttribute('d', `M200 ${lowerHandleY + 27} L200 ${lowerHandleY + 55}`);
 
         const percent = openingPercent();
