@@ -946,8 +946,8 @@
       <section class="practice-panel" id="wearPractice">
         <ol class="progress-list" id="directWearProgress" aria-label="직접 착용 연습 진행 단계">
           <li class="active" data-direct-wear-progress="1">1. 앞뒤 확인</li>
-          <li data-direct-wear-progress="2">2. 렌즈 넣기</li>
-          <li data-direct-wear-progress="3">3. 안착</li>
+          <li data-direct-wear-progress="2">2. 눈 벌리기</li>
+          <li data-direct-wear-progress="3">3. 렌즈 넣기</li>
         </ol>
 
         <section class="coach" aria-labelledby="wearInstructionTitle">
@@ -1131,11 +1131,11 @@
               <defs>
                 <linearGradient id="sideBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d9edf4"/><stop offset=".48" stop-color="#8bb1c2"/><stop offset="1" stop-color="#17394f"/></linearGradient>
                 <radialGradient id="sideSkin" cx="62%" cy="45%" r="75%"><stop offset="0" stop-color="#f4c7ac"/><stop offset=".48" stop-color="#dfa184"/><stop offset=".82" stop-color="#bd7867"/><stop offset="1" stop-color="#8f554d"/></radialGradient>
-                <radialGradient id="sideEyeWhite" cx="67%" cy="42%" r="76%"><stop offset="0" stop-color="#fffefb"/><stop offset=".67" stop-color="#f7ede8"/><stop offset="1" stop-color="#d8b8b0"/></radialGradient>
-                <radialGradient id="sideIris" cx="38%" cy="40%" r="70%"><stop offset="0" stop-color="#d8aa63"/><stop offset=".42" stop-color="#855127"/><stop offset=".76" stop-color="#432819"/><stop offset="1" stop-color="#1c1511"/></radialGradient>
+                <radialGradient id="sideEyeWhite" cx="61%" cy="44%" r="78%"><stop offset="0" stop-color="#fffefc"/><stop offset=".48" stop-color="#fffaf6"/><stop offset=".78" stop-color="#f0dfda"/><stop offset="1" stop-color="#cfa8a2"/></radialGradient>
+                <radialGradient id="sideIris" cx="34%" cy="35%" r="76%"><stop offset="0" stop-color="#ecc981"/><stop offset=".22" stop-color="#bc823c"/><stop offset=".48" stop-color="#805022"/><stop offset=".72" stop-color="#4b2c18"/><stop offset=".9" stop-color="#241812"/><stop offset="1" stop-color="#100d0b"/></radialGradient>
                 <linearGradient id="sideLens" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d9fbff" stop-opacity=".98"/><stop offset=".45" stop-color="#77dff4" stop-opacity=".82"/><stop offset="1" stop-color="#2ba8d2" stop-opacity=".62"/></linearGradient>
-                <linearGradient id="sideFinger" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7c7ab"/><stop offset=".52" stop-color="#e9a889"/><stop offset="1" stop-color="#bd7564"/></linearGradient>
-                <linearGradient id="sideNail" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe1d1"/><stop offset=".55" stop-color="#efbba5"/><stop offset="1" stop-color="#d89583"/></linearGradient>
+                <linearGradient id="sideFinger" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd8bf"/><stop offset=".25" stop-color="#f6bea1"/><stop offset=".58" stop-color="#e9a184"/><stop offset=".83" stop-color="#ce826d"/><stop offset="1" stop-color="#aa6258"/></linearGradient>
+                <radialGradient id="sideNail" cx="35%" cy="28%" r="82%"><stop offset="0" stop-color="#fff0e5"/><stop offset=".52" stop-color="#f3c6b2"/><stop offset=".82" stop-color="#dfa08d"/><stop offset="1" stop-color="#c77f72"/></radialGradient>
                 <filter id="sideGlow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
                 <filter id="sideSoftShadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#173047" flood-opacity=".28"/></filter>
                 <filter id="sideSkinTexture" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".7" numOctaves="2" seed="8"/><feColorMatrix type="matrix" values="1 0 0 0 0  0 .72 0 0 0  0 0 .62 0 0  0 0 0 .09 0"/></filter>
@@ -1159,8 +1159,11 @@
               <g clip-path="url(#sideApertureClip)">
                 <path id="sideEyeWhiteShape" d="M24 250 C66 191 120 178 166 198 Q210 250 166 302 C120 322 66 309 24 250Z" fill="url(#sideEyeWhite)" filter="url(#sideSoftShadow)"/>
                 <g clip-path="url(#sideEyeClip)">
-                  <ellipse cx="158" cy="250" rx="30" ry="46" fill="url(#sideIris)" stroke="#40291b" stroke-width="5"/>
-                  <ellipse cx="181" cy="250" rx="7" ry="25" fill="#070b0d"/>
+                  <path d="M39 246 Q75 236 108 242 M45 267 Q78 274 111 264" fill="none" stroke="#d88f94" stroke-width="1.4" stroke-linecap="round" opacity=".27"/>
+                  <ellipse cx="158" cy="250" rx="30" ry="46" fill="url(#sideIris)" stroke="#342118" stroke-width="3.6"/>
+                  <ellipse cx="158" cy="250" rx="25" ry="40" fill="none" stroke="#d5a259" stroke-width="1" opacity=".18"/>
+                  <path d="M149 208 Q156 228 158 246 M138 221 Q149 237 157 247 M137 279 Q149 265 158 254 M151 291 Q157 271 160 255" fill="none" stroke="#efc77c" stroke-width="1" stroke-linecap="round" opacity=".18"/>
+                  <ellipse cx="181" cy="250" rx="7.5" ry="25" fill="#06090a"/>
                   <ellipse cx="145" cy="228" rx="7" ry="13" fill="#fff" opacity=".76"/>
                   <ellipse cx="182" cy="241" rx="3" ry="5" fill="#fff" opacity=".58"/>
                 </g>
@@ -1168,18 +1171,18 @@
               <path id="sideEyeOpeningOutline" d="M24 250 C66 213 120 210 166 220 M24 250 C66 287 120 290 166 280" fill="none" stroke="#784a42" stroke-width="8" filter="url(#sideSoftShadow)"/>
               <path id="sideUpperRim" d="M34 250 C73 220 120 214 166 226" fill="none" stroke="#efb9a2" stroke-width="7" stroke-linecap="round"/>
               <path id="sideLowerRim" d="M34 252 C73 280 120 286 166 274" fill="none" stroke="#edb49e" stroke-width="7" stroke-linecap="round"/>
-              <g id="sideUpperLashes" transform="translate(-10 0)" fill="none" stroke="#382824" stroke-width="5" stroke-linecap="round" opacity=".88">
+              <g id="sideUpperLashes" transform="translate(-10 0)" fill="none" stroke="#342522" stroke-width="4.2" stroke-linecap="round" opacity=".9">
                 <path d="M151 190 Q170 166 180 151"/><path d="M165 198 Q189 178 201 165"/><path d="M176 210 Q199 195 214 185"/>
               </g>
-              <g id="sideLowerLashes" transform="translate(-10 0)" fill="none" stroke="#5a3b36" stroke-width="3" stroke-linecap="round" opacity=".62">
+              <g id="sideLowerLashes" transform="translate(-10 0)" fill="none" stroke="#553a35" stroke-width="2.6" stroke-linecap="round" opacity=".58">
                 <path d="M157 303 Q177 322 184 337"/><path d="M173 293 Q197 308 209 321"/>
               </g>
 
               <!-- 왼손 중지: 윗눈꺼풀 위 피부에 닿는 손끝과 한 관절만 보인다. -->
-              <g id="sideUpperHoldingHand" filter="url(#sideSoftShadow)" opacity=".94">
-                <path d="M78 -16 C95 -23 113 -14 120 3 L159 94 C167 114 162 133 147 142 C132 151 114 142 108 125 L70 35 C63 15 65 -10 78 -16Z" fill="url(#sideFinger)" stroke="#a86c60" stroke-width="3"/>
+              <g id="sideUpperHoldingHand" filter="url(#sideSoftShadow)" opacity=".97">
+                <path d="M78 -16 C95 -23 113 -14 120 3 L159 94 C167 114 162 133 147 142 C132 151 114 142 108 125 L70 35 C63 15 65 -10 78 -16Z" fill="url(#sideFinger)" stroke="#9d6058" stroke-width="2.4"/>
                 <path d="M94 40 Q109 33 124 40 M104 67 Q120 60 135 67" fill="none" stroke="#bd796a" stroke-width="2.3" stroke-linecap="round" opacity=".62"/>
-                <path d="M111 82 Q125 72 139 80 L151 106 Q147 122 133 125 Q119 122 114 110Z" fill="url(#sideNail)" stroke="#d28e7d" stroke-width="1.7"/>
+                <path d="M111 82 Q125 72 139 80 L151 106 Q147 122 133 125 Q119 122 114 110Z" fill="url(#sideNail)" stroke="#cb8878" stroke-width="1.35"/>
                 <path d="M113 129 Q129 121 146 129 M114 137 Q130 129 145 137" fill="none" stroke="#c98573" stroke-width="1.9" stroke-linecap="round" opacity=".66"/>
               </g>
               <g id="sideUpperHoldingGuide" pointer-events="none">
@@ -1187,10 +1190,10 @@
               </g>
 
               <!-- 오른손 중지: 렌즈를 든 검지보다 뒤쪽에서 하안검 아래 피부를 내린다. -->
-              <g id="sideLensHandPalm" filter="url(#sideSoftShadow)" opacity=".9">
-                <path d="M318 500 C329 456 350 424 382 407 L400 403 V500Z" fill="url(#sideFinger)" stroke="#a86c60" stroke-width="3"/>
-                <path d="M386 401 C358 387 332 375 304 367 L144 315 C125 309 107 318 101 334 C95 350 107 366 127 370 L293 404 C322 411 350 423 376 438Z" fill="url(#sideFinger)" stroke="#a86c60" stroke-width="3"/>
-                <path d="M118 325 Q134 316 150 323 L168 339 Q165 354 150 359 Q133 357 120 347Z" fill="url(#sideNail)" stroke="#d28e7d" stroke-width="1.7"/>
+              <g id="sideLensHandPalm" filter="url(#sideSoftShadow)" opacity=".94">
+                <path d="M318 500 C329 456 350 424 382 407 L400 403 V500Z" fill="url(#sideFinger)" stroke="#9d6058" stroke-width="2.4"/>
+                <path d="M386 401 C358 387 332 375 304 367 L144 315 C125 309 107 318 101 334 C95 350 107 366 127 370 L293 404 C322 411 350 423 376 438Z" fill="url(#sideFinger)" stroke="#9d6058" stroke-width="2.4"/>
+                <path d="M118 325 Q134 316 150 323 L168 339 Q165 354 150 359 Q133 357 120 347Z" fill="url(#sideNail)" stroke="#cb8878" stroke-width="1.35"/>
                 <path d="M109 338 Q126 329 145 336 M110 347 Q128 338 146 346" fill="none" stroke="#c98573" stroke-width="2" stroke-linecap="round" opacity=".65"/>
                 <path d="M202 337 Q218 349 213 363 M272 360 Q288 372 283 386 M333 381 Q349 393 344 407" fill="none" stroke="#bd796a" stroke-width="2.3" stroke-linecap="round" opacity=".58"/>
               </g>
@@ -1204,7 +1207,7 @@
               <g id="sideInsertionAssembly" transform="translate(0 0) rotate(15 287 250)">
                 <!-- 오른손 검지: 지문 면이 렌즈 뒤를 직접 받치고, 손톱은 오른쪽 측면에만 보인다. -->
                 <g transform="translate(-12 -2)">
-                  <path d="M399 505 C371 475 348 441 331 404 L290 309 C282 291 285 270 297 257 C304 249 312 247 320 250 C331 254 338 265 341 278 L380 372 C393 401 405 429 416 455Z" fill="url(#sideFinger)" stroke="#a86c60" stroke-width="2.6" filter="url(#sideSoftShadow)"/>
+                  <path d="M399 505 C371 475 348 441 331 404 L290 309 C282 291 285 270 297 257 C304 249 312 247 320 250 C331 254 338 265 341 278 L380 372 C393 401 405 429 416 455Z" fill="url(#sideFinger)" stroke="#9d6058" stroke-width="2.3" filter="url(#sideSoftShadow)"/>
                   <path d="M327 263 C334 269 337 278 336 287 C336 295 332 301 327 305 C329 291 329 276 327 263Z" fill="url(#sideNail)" stroke="#cf8978" stroke-width="1.35"/>
                   <path d="M322 356 Q336 349 348 356 M338 397 Q352 390 363 397" fill="none" stroke="#bd796a" stroke-width="2" stroke-linecap="round" opacity=".38"/>
                 </g>
@@ -2279,6 +2282,7 @@
           angleValue.style.background = '#ffe8e9';
           angleValue.style.color = '#a82f3a';
         }
+        updateDirectWearPhaseUI();
       }
 
       function setAngle(value) {
@@ -2312,9 +2316,34 @@
         openingMeter.hidden = DIRECT_SIDE_WEAR || !(wearState.step === 2 || (wearState.step === 3 && !sideActive));
       }
 
+      function directDisplayStep() {
+        if (wearState.step === 1) return 1;
+        if (wearState.step === 2) return wearState.upper >= 42 && wearState.lower >= 42 ? 3 : 2;
+        return 3;
+      }
+
+      function updateDirectWearPhaseUI() {
+        if (!DIRECT_SIDE_WEAR) return;
+        const displayStep = directDisplayStep();
+        wearStepNumber.textContent = displayStep;
+        directWearProgress.forEach((item, index) => {
+          const number = index + 1;
+          item.classList.toggle('active', number === displayStep);
+          item.classList.toggle('done', number < displayStep || wearState.success);
+        });
+
+        if (wearState.step === 2 && displayStep === 2) {
+          wearInstructionTitle.textContent = '측면에서 위·아래 눈꺼풀을 충분히 벌리세요';
+          wearInstructionBody.textContent = '왼손 중지는 위로, 오른손 중지는 아래로 드래그하세요. 손을 떼어도 벌린 위치가 유지됩니다.';
+        } else if (wearState.step === 2 && displayStep === 3) {
+          wearInstructionTitle.textContent = '렌즈를 든 오른손 검지를 각막 중심으로 움직이세요';
+          wearInstructionBody.textContent = '검지를 왼쪽으로 천천히 드래그하고, 위아래 움직임으로 렌즈 면이 각막 정면과 나란해지도록 맞추세요.';
+        }
+      }
+
       function renderWearStep() {
         const current = wearCopy[wearState.step];
-        const displayStep = DIRECT_SIDE_WEAR ? (wearState.step === 4 ? 3 : Math.min(wearState.step, 2)) : wearState.step;
+        const displayStep = DIRECT_SIDE_WEAR ? directDisplayStep() : wearState.step;
         wearStepNumber.textContent = displayStep;
         wearInstructionTitle.textContent = current.title;
         wearInstructionBody.textContent = current.body;
@@ -2362,6 +2391,7 @@
         wearLens.style.opacity = '0';
         wearContactLens.style.opacity = wearState.step === 4 || wearState.success ? '.76' : '0';
         if (sidePracticeStep) renderSideGeometry();
+        updateDirectWearPhaseUI();
       }
 
       function goWearStep(step) {
