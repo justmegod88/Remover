@@ -329,7 +329,8 @@
 
     .practice-panel[hidden] { display: none; }
 
-    #wearEyeScene {
+    #wearEyeScene,
+    #sideViewScene {
       display: block;
       width: 100%;
       aspect-ratio: 4 / 5;
@@ -341,6 +342,19 @@
     }
 
     #wearEyeScene:active { cursor: grabbing; }
+
+    #wearEyeScene[hidden],
+    .side-view-stage[hidden],
+    .video-pip[hidden] { display: none; }
+
+    .side-view-stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      max-height: 640px;
+      overflow: hidden;
+      background: #173047;
+    }
 
     .video-pip {
       position: absolute;
@@ -411,9 +425,83 @@
       color: #fff;
     }
 
+    .wear-action:disabled {
+      cursor: wait;
+      opacity: .68;
+    }
+
     .orientation-actions .wear-action {
       flex: 1 1 0;
       padding: 10px 8px;
+    }
+
+    .angle-actions {
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .angle-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 3px 5px 0;
+      color: #243d55;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .angle-value {
+      min-width: 52px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #dcefff;
+      color: #075993;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .angle-adjust-row,
+    .angle-button-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .angle-nudge {
+      width: 48px;
+      height: 42px;
+      flex: 0 0 48px;
+      border: 1px solid #b8d4e8;
+      border-radius: 12px;
+      background: #fff;
+      color: #0b4f7d;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    #angleSlider {
+      width: 100%;
+      accent-color: #1479b8;
+      cursor: grab;
+    }
+
+    .angle-button-row .wear-action { flex: 1 1 0; }
+
+    .side-view-label {
+      position: absolute;
+      z-index: 5;
+      top: 14px;
+      left: 14px;
+      padding: 7px 11px;
+      border: 1px solid rgba(255,255,255,.4);
+      border-radius: 999px;
+      background: rgba(6,42,70,.78);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .05em;
     }
 
     .orientation-icon {
@@ -753,7 +841,7 @@
         <ol class="progress-list" id="wearProgress" aria-label="착용 연습 진행 단계">
           <li class="active" data-wear-progress="1">1. 앞뒤 확인</li>
           <li data-wear-progress="2">2. 눈 벌리기</li>
-          <li data-wear-progress="3">3. 렌즈 착용</li>
+          <li data-wear-progress="3">3. 수직 맞추기</li>
           <li data-wear-progress="4">4. 안착</li>
         </ol>
 
@@ -771,10 +859,22 @@
             <button class="wear-action" id="correctOrientation" type="button"><span class="orientation-icon">∪</span>둥근 그릇 모양 렌즈</button>
           </div>
           <div class="wear-actions" id="openingActions" hidden>
-            <button class="wear-action" id="tryOpening" type="button">이 정도로 착용해보기</button>
+            <button class="wear-action" id="tryOpening" type="button">렌즈 넣기 시도</button>
           </div>
-          <div class="wear-actions" id="lensActions" hidden>
-            <button class="wear-action secondary" id="adjustOpening" type="button">눈 벌림 다시 조절</button>
+          <div class="wear-actions angle-actions" id="lensActions" hidden>
+            <div class="angle-summary">
+              <span id="angleStatus">렌즈 면을 각막의 정면과 평행하게 맞추세요</span>
+              <span class="angle-value" id="angleValue">0°</span>
+            </div>
+            <div class="angle-adjust-row">
+              <button class="angle-nudge" id="angleMinus" type="button" aria-label="렌즈 각도 5도 줄이기">−5°</button>
+              <input id="angleSlider" type="range" min="-25" max="25" step="1" value="15" aria-label="손가락과 렌즈 기울기 조절">
+              <button class="angle-nudge" id="anglePlus" type="button" aria-label="렌즈 각도 5도 늘리기">+5°</button>
+            </div>
+            <div class="angle-button-row">
+              <button class="wear-action secondary" id="adjustOpening" type="button">눈 벌림 다시 조절</button>
+              <button class="wear-action" id="insertLensButton" type="button">이 각도로 넣기</button>
+            </div>
           </div>
           <div class="wear-actions" id="blinkActions" hidden>
             <button class="wear-action" id="blinkButton" type="button">천천히 눈 깜빡이기</button>
@@ -877,6 +977,56 @@
             </g>
           </svg>
 
+          <div class="side-view-stage" id="sideViewStage" hidden>
+            <span class="side-view-label">SIDE VIEW · 측면</span>
+            <svg id="sideViewScene" viewBox="0 0 400 500" role="img" aria-labelledby="sideViewTitle sideViewDesc">
+              <title id="sideViewTitle">각막과 렌즈의 측면 정렬 연습</title>
+              <desc id="sideViewDesc">손가락 위 렌즈의 각도를 조절하여 렌즈 전체가 각막 정면에 수직으로 고르게 닿도록 연습합니다.</desc>
+              <defs>
+                <linearGradient id="sideBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#234963"/><stop offset="1" stop-color="#102b40"/></linearGradient>
+                <linearGradient id="sideSkin" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b87561"/><stop offset="1" stop-color="#edb69a"/></linearGradient>
+                <radialGradient id="sideEyeWhite" cx="70%" cy="48%" r="75%"><stop offset="0" stop-color="#fffefc"/><stop offset=".8" stop-color="#f4e5e0"/><stop offset="1" stop-color="#d2afa7"/></radialGradient>
+                <linearGradient id="sideLens" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b9f5ff" stop-opacity=".95"/><stop offset="1" stop-color="#4dc5ea" stop-opacity=".55"/></linearGradient>
+                <filter id="sideGlow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                <marker id="sideArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#fff"/></marker>
+              </defs>
+
+              <rect width="400" height="500" fill="url(#sideBg)"/>
+              <path d="M0 0 H120 C138 62 119 118 127 158 C133 188 151 214 153 250 C151 286 133 312 127 342 C119 382 138 438 120 500 H0Z" fill="url(#sideSkin)"/>
+              <ellipse cx="52" cy="250" rx="112" ry="132" fill="url(#sideEyeWhite)" stroke="#8f5d52" stroke-width="8"/>
+              <path d="M101 165 Q191 250 101 335 Q148 250 101 165Z" fill="#e8fbff" fill-opacity=".42" stroke="#bfeff7" stroke-width="5"/>
+              <path d="M108 181 Q169 250 108 319" fill="none" stroke="#8c6335" stroke-width="17" opacity=".82"/>
+              <path d="M112 207 Q151 250 112 293" fill="none" stroke="#17110d" stroke-width="16"/>
+              <ellipse cx="122" cy="222" rx="10" ry="25" fill="#fff" opacity=".62"/>
+
+              <path d="M191 140 V360" fill="none" stroke="#83d9f6" stroke-width="3" stroke-dasharray="8 8"/>
+              <text x="183" y="127" fill="#aee8ff" text-anchor="middle" font-size="12" font-weight="800">각막 정면 기준선</text>
+              <path d="M348 250 H225" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" marker-end="url(#sideArrow)" opacity=".76"/>
+              <text x="290" y="232" fill="#fff" text-anchor="middle" font-size="12" font-weight="800">정면으로 접근</text>
+
+              <g id="sideInsertionAssembly" transform="translate(0 0) rotate(15 280 250)">
+                <rect x="286" y="219" width="155" height="62" rx="31" fill="#e9b293" stroke="#a76556" stroke-width="7"/>
+                <ellipse cx="291" cy="250" rx="22" ry="31" fill="#f4c3a7"/>
+                <path id="sideLensShape" d="M280 190 Q248 250 280 310" fill="none" stroke="url(#sideLens)" stroke-width="10" stroke-linecap="round" filter="url(#sideGlow)"/>
+                <path d="M280 190 L280 310" fill="none" stroke="#dffaff" stroke-width="2" stroke-dasharray="5 6" opacity=".7"/>
+                <circle id="sideTopContact" cx="280" cy="190" r="13" fill="#ff5964" opacity="0"/>
+                <circle id="sideBottomContact" cx="280" cy="310" r="13" fill="#ff5964" opacity="0"/>
+              </g>
+
+              <g id="sideContactSuccess" opacity="0" pointer-events="none">
+                <path d="M204 190 Q172 250 204 310" fill="none" stroke="#76e3bd" stroke-width="12" stroke-linecap="round" filter="url(#sideGlow)"/>
+                <text x="270" y="385" fill="#bdf8df" text-anchor="middle" font-size="16" font-weight="900">전체 면이 고르게 닿았어요</text>
+              </g>
+
+              <g id="sideLashWarning" opacity="0" pointer-events="none">
+                <path id="sideLashWarningLine" d="M145 182 Q181 205 203 236" fill="none" stroke="#ff5964" stroke-width="10" stroke-linecap="round"/>
+                <text x="235" y="405" fill="#ffced2" text-anchor="middle" font-size="15" font-weight="900">눈꺼풀을 충분히 벌려야 해요</text>
+              </g>
+
+              <text x="200" y="420" fill="#d8edfa" text-anchor="middle" font-size="13" font-weight="700">렌즈 곡면이 기준선과 나란해지도록 손가락 각도를 조절하세요.</text>
+            </svg>
+          </div>
+
           <div class="feedback" id="wearFeedback" aria-live="polite">두 렌즈 중 올바른 앞면 모양을 선택하세요.</div>
 
           <div class="attempt-guide" id="wearAttemptGuide" hidden>
@@ -891,7 +1041,7 @@
           <div class="completion" id="wearCompletion" aria-hidden="true">
             <div class="checkmark" aria-hidden="true">✓</div>
             <h2>착용 성공!</h2>
-            <p>속눈썹에 닿지 않도록 눈을 충분히 벌린 뒤 렌즈를 안정적으로 안착했어요.</p>
+            <p>눈을 충분히 벌리고 렌즈 면을 각막 정면과 평행하게 맞춰 안정적으로 안착했어요.</p>
             <button class="again-button" id="wearAgainButton" type="button">한 번 더 연습하기</button>
           </div>
         </section>
@@ -1743,6 +1893,18 @@
       const wearAttemptTitle = document.getElementById('wearAttemptTitle');
       const wearAttemptBody = document.getElementById('wearAttemptBody');
       const wearCompletion = document.getElementById('wearCompletion');
+      const wearVideoPip = wearPractice.querySelector('.video-pip');
+      const sideViewStage = document.getElementById('sideViewStage');
+      const sideInsertionAssembly = document.getElementById('sideInsertionAssembly');
+      const sideTopContact = document.getElementById('sideTopContact');
+      const sideBottomContact = document.getElementById('sideBottomContact');
+      const sideContactSuccess = document.getElementById('sideContactSuccess');
+      const sideLashWarning = document.getElementById('sideLashWarning');
+      const sideLashWarningLine = document.getElementById('sideLashWarningLine');
+      const angleSlider = document.getElementById('angleSlider');
+      const angleValue = document.getElementById('angleValue');
+      const angleStatus = document.getElementById('angleStatus');
+      const insertLensButton = document.getElementById('insertLensButton');
 
       const wearCopy = {
         1: {
@@ -1756,9 +1918,9 @@
           feedback: '조금만 벌린 상태로도 시도할 수 있지만 속눈썹에 닿을 수 있어요.'
         },
         3: {
-          title: '검지 위 렌즈를 눈 중앙으로 가져가세요',
-          body: '눈꺼풀을 벌린 상태가 유지됩니다. 렌즈를 위로 드래그해 직접 착용해보세요.',
-          feedback: '아래의 투명한 렌즈를 눈동자 중앙까지 천천히 올리세요.'
+          title: '측면에서 렌즈와 각막을 일직선으로 맞추세요',
+          body: '손가락 각도를 조절해 렌즈 면이 각막의 정면과 평행하도록 맞춘 뒤 넣어보세요.',
+          feedback: '렌즈가 기울면 한쪽 가장자리가 먼저 닿아 밀려날 수 있어요.'
         },
         4: {
           title: '손가락을 떼고 천천히 눈을 깜빡이세요',
@@ -1777,7 +1939,11 @@
         failures: 0,
         attemptLocked: false,
         success: false,
-        blinking: false
+        blinking: false,
+        angle: 15,
+        approach: 0,
+        inserting: false,
+        lastFail: 'lid'
       };
 
       function vibrate(pattern = 20) {
@@ -1835,6 +2001,42 @@
         openingMeterFill.style.width = `${percent}%`;
       }
 
+      function renderSideGeometry() {
+        sideInsertionAssembly.setAttribute('transform', `translate(${wearState.approach} 0) rotate(${wearState.angle} 280 250)`);
+        angleSlider.value = String(wearState.angle);
+        angleValue.textContent = `${wearState.angle > 0 ? '+' : ''}${wearState.angle}°`;
+
+        const absoluteAngle = Math.abs(wearState.angle);
+        if (absoluteAngle <= 6) {
+          angleStatus.textContent = '정렬 양호 · 각막 정면과 거의 평행해요';
+          angleValue.style.background = '#dff7ed';
+          angleValue.style.color = '#087353';
+        } else if (wearState.angle < 0) {
+          angleStatus.textContent = '윗부분이 먼저 닿을 수 있어요';
+          angleValue.style.background = '#ffe8e9';
+          angleValue.style.color = '#a82f3a';
+        } else {
+          angleStatus.textContent = '아랫부분이 먼저 닿을 수 있어요';
+          angleValue.style.background = '#ffe8e9';
+          angleValue.style.color = '#a82f3a';
+        }
+      }
+
+      function setAngle(value) {
+        if (wearState.inserting) return;
+        wearState.angle = Math.max(-25, Math.min(25, Math.round(Number(value))));
+        sideTopContact.style.opacity = '0';
+        sideBottomContact.style.opacity = '0';
+        sideContactSuccess.style.opacity = '0';
+        sideLashWarning.style.opacity = '0';
+        renderSideGeometry();
+      }
+
+      function randomStartAngle() {
+        const choices = [-20, -15, -10, 10, 15, 20];
+        return choices[Math.floor(Math.random() * choices.length)];
+      }
+
       function renderWearStep() {
         const current = wearCopy[wearState.step];
         wearStepNumber.textContent = wearState.step;
@@ -1852,20 +2054,32 @@
         openingActions.hidden = wearState.step !== 2;
         lensActions.hidden = wearState.step !== 3;
         blinkActions.hidden = wearState.step !== 4;
-        openingMeter.hidden = wearState.step !== 2 && wearState.step !== 3;
+        openingMeter.hidden = wearState.step !== 2;
+        wearVideoPip.hidden = wearState.step === 3;
+        wearSvg.hidden = wearState.step === 3;
+        sideViewStage.hidden = wearState.step !== 3;
         wearLidGuides.style.opacity = wearState.step === 2 ? '1' : '0';
-        wearLensGuide.style.opacity = wearState.step === 3 ? '1' : '0';
-        wearLens.style.opacity = wearState.step === 3 ? '1' : '0';
+        wearLensGuide.style.opacity = '0';
+        wearLens.style.opacity = '0';
         wearContactLens.style.opacity = wearState.step === 4 || wearState.success ? '.76' : '0';
+        if (wearState.step === 3) renderSideGeometry();
       }
 
       function goWearStep(step) {
+        const previousStep = wearState.step;
         wearState.step = step;
         wearState.drag = null;
         wearState.attemptLocked = false;
         if (step === 3) {
           wearState.lensX = 200;
           wearState.lensY = 420;
+          wearState.approach = 0;
+          wearState.inserting = false;
+          if (previousStep !== 3) wearState.angle = randomStartAngle();
+          sideTopContact.style.opacity = '0';
+          sideBottomContact.style.opacity = '0';
+          sideContactSuccess.style.opacity = '0';
+          sideLashWarning.style.opacity = '0';
         }
         if (step === 4) {
           wearState.lensX = 200;
@@ -1887,7 +2101,15 @@
         wearState.attemptLocked = false;
         wearState.success = false;
         wearState.blinking = false;
+        wearState.angle = 15;
+        wearState.approach = 0;
+        wearState.inserting = false;
+        wearState.lastFail = 'lid';
         wearCollision.style.opacity = '0';
+        sideTopContact.style.opacity = '0';
+        sideBottomContact.style.opacity = '0';
+        sideContactSuccess.style.opacity = '0';
+        sideLashWarning.style.opacity = '0';
         wearAttemptGuide.hidden = true;
         wearCompletion.classList.remove('visible');
         wearCompletion.setAttribute('aria-hidden', 'true');
@@ -1898,7 +2120,13 @@
       function showWearAttemptGuide() {
         if (wearState.failures !== 2 && wearState.failures !== 4) return;
         wearAttemptBadge.textContent = `${wearState.failures}회`;
-        if (wearState.failures === 2) {
+        if (wearState.lastFail === 'angle' && wearState.failures === 2) {
+          wearAttemptTitle.textContent = '렌즈 면과 각막 정면을 나란히 맞추세요';
+          wearAttemptBody.textContent = '손가락이 기울면 렌즈의 위쪽 또는 아래쪽 가장자리가 먼저 닿아 렌즈가 밀려나요. 측면 기준선과 렌즈가 나란해지도록 0°에 가깝게 조절한 뒤 다시 넣어보세요.';
+        } else if (wearState.lastFail === 'angle') {
+          wearAttemptTitle.textContent = '손가락 끝을 세운 상태부터 다시 확인하세요';
+          wearAttemptBody.textContent = '잠시 쉬었다가 손가락 끝의 렌즈가 기울지 않았는지 옆에서 확인하세요. 렌즈 전체가 각막에 동시에 닿도록 각도를 맞춘 뒤 정면 방향으로 천천히 접근하세요.';
+        } else if (wearState.failures === 2) {
           wearAttemptTitle.textContent = '속눈썹 뿌리 쪽을 잡아보세요';
           wearAttemptBody.textContent = '눈꺼풀 가장자리만 잡으면 손가락이 미끄러지고 눈이 충분히 열리지 않아요. 위·아래 속눈썹 뿌리에 가깝게 잡고 서로 반대 방향으로 더 벌린 뒤 다시 시도하세요.';
         } else {
@@ -1943,6 +2171,106 @@
           wearCollision.style.opacity = '0';
           showWearAttemptGuide();
         }, 650);
+      }
+
+      function animateSideReturn(callback) {
+        const startApproach = wearState.approach;
+        const start = performance.now();
+        const duration = 420;
+        function animate(now) {
+          const progress = Math.min(1, (now - start) / duration);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          wearState.approach = startApproach * (1 - eased);
+          renderSideGeometry();
+          if (progress < 1) requestAnimationFrame(animate);
+          else {
+            wearState.approach = 0;
+            wearState.inserting = false;
+            insertLensButton.disabled = false;
+            insertLensButton.textContent = '이 각도로 넣기';
+            renderSideGeometry();
+            if (callback) callback();
+          }
+        }
+        requestAnimationFrame(animate);
+      }
+
+      function recordSideFailure(type) {
+        wearState.failures += 1;
+        wearState.lastFail = type;
+        const count = wearState.failures;
+
+        sideTopContact.style.opacity = '0';
+        sideBottomContact.style.opacity = '0';
+        sideContactSuccess.style.opacity = '0';
+        sideLashWarning.style.opacity = '0';
+
+        if (type === 'lid') {
+          const lowerShort = wearState.lower < 42 && wearState.lower <= wearState.upper;
+          sideLashWarningLine.setAttribute('d', lowerShort ? 'M145 318 Q181 295 203 264' : 'M145 182 Q181 205 203 236');
+          sideLashWarning.style.opacity = '1';
+          const location = lowerShort ? '아래 속눈썹' : '위 속눈썹';
+          setWearFeedback(`${count}회 실패 · 눈을 충분히 벌리지 않아 렌즈가 ${location}에 닿았어요.`, 'error');
+        } else {
+          const topFirst = wearState.angle < 0;
+          sideTopContact.style.opacity = topFirst ? '1' : '0';
+          sideBottomContact.style.opacity = topFirst ? '0' : '1';
+          const edge = topFirst ? '위쪽' : '아래쪽';
+          setWearFeedback(`${count}회 실패 · 렌즈가 기울어 ${edge} 가장자리가 먼저 닿고 밀려났어요.`, 'error');
+        }
+        vibrate([35, 45, 35]);
+
+        setTimeout(() => {
+          animateSideReturn(() => {
+            sideTopContact.style.opacity = '0';
+            sideBottomContact.style.opacity = '0';
+            sideLashWarning.style.opacity = '0';
+            showWearAttemptGuide();
+          });
+        }, 720);
+      }
+
+      function attemptSideInsertion() {
+        if (wearState.step !== 3 || wearState.inserting || wearState.success) return;
+        wearState.inserting = true;
+        wearState.approach = 0;
+        sideTopContact.style.opacity = '0';
+        sideBottomContact.style.opacity = '0';
+        sideContactSuccess.style.opacity = '0';
+        sideLashWarning.style.opacity = '0';
+        insertLensButton.disabled = true;
+        insertLensButton.textContent = '각막으로 접근 중…';
+        setWearFeedback('손가락의 각도를 유지하면서 각막 정면으로 천천히 접근합니다.');
+
+        const start = performance.now();
+        const duration = 620;
+        function animate(now) {
+          const progress = Math.min(1, (now - start) / duration);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          wearState.approach = -76 * eased;
+          renderSideGeometry();
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+            return;
+          }
+
+          if (wearState.upper < 42 || wearState.lower < 42) {
+            recordSideFailure('lid');
+          } else if (Math.abs(wearState.angle) > 6) {
+            recordSideFailure('angle');
+          } else {
+            sideContactSuccess.style.opacity = '1';
+            setWearFeedback('정확해요! 렌즈 면이 각막 정면과 평행하게 고르게 닿았습니다.', 'success');
+            vibrate([30, 35, 55]);
+            setTimeout(() => {
+              wearState.inserting = false;
+              insertLensButton.disabled = false;
+              insertLensButton.textContent = '이 각도로 넣기';
+              goWearStep(4);
+            }, 650);
+          }
+        }
+        requestAnimationFrame(animate);
       }
 
       function finishWear() {
@@ -2007,11 +2335,23 @@
       });
       document.getElementById('tryOpening').addEventListener('click', () => goWearStep(3));
       document.getElementById('adjustOpening').addEventListener('click', () => goWearStep(2));
+      document.getElementById('angleMinus').addEventListener('click', () => setAngle(wearState.angle - 5));
+      document.getElementById('anglePlus').addEventListener('click', () => setAngle(wearState.angle + 5));
+      angleSlider.addEventListener('input', event => setAngle(event.target.value));
+      insertLensButton.addEventListener('click', attemptSideInsertion);
       document.getElementById('blinkButton').addEventListener('click', blinkAndFinish);
       document.getElementById('wearAgainButton').addEventListener('click', resetWear);
       document.getElementById('wearAttemptClose').addEventListener('click', () => {
         wearAttemptGuide.hidden = true;
-        goWearStep(2);
+        if (wearState.lastFail === 'angle') {
+          wearState.step = 3;
+          wearState.inserting = false;
+          wearState.approach = 0;
+          renderSideGeometry();
+          renderWearStep();
+        } else {
+          goWearStep(2);
+        }
       });
 
       wearSvg.addEventListener('pointerdown', event => {
