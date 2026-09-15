@@ -400,6 +400,8 @@
       box-shadow: 0 6px 18px rgba(25, 74, 111, .07);
     }
 
+    .wear-control-dock[hidden] { display: none; }
+
     .wear-actions {
       position: static;
       display: flex;
@@ -941,11 +943,17 @@
       </nav>
 
       <section class="practice-panel" id="wearPractice">
-        <ol class="progress-list" id="wearProgress" aria-label="착용 연습 진행 단계">
+        <!-- 기존 버튼형 착용 진행 표시는 삭제하지 않고 숨겨 보존한다. -->
+        <ol class="progress-list" id="wearProgress" aria-label="기존 착용 연습 진행 단계" hidden>
           <li class="active" data-wear-progress="1">1. 앞뒤 확인</li>
           <li data-wear-progress="2">2. 눈 벌리기</li>
           <li data-wear-progress="3">3. 수직 맞추기</li>
           <li data-wear-progress="4">4. 안착</li>
+        </ol>
+        <ol class="progress-list" id="directWearProgress" aria-label="직접 착용 연습 진행 단계">
+          <li class="active" data-direct-wear-progress="1">1. 렌즈 선택</li>
+          <li data-direct-wear-progress="2">2. 직접 착용</li>
+          <li data-direct-wear-progress="3">3. 안착</li>
         </ol>
 
         <section class="coach" aria-labelledby="wearInstructionTitle">
@@ -956,7 +964,7 @@
           </div>
         </section>
 
-        <div class="wear-control-dock" aria-label="착용 단계 조작 버튼">
+        <div class="wear-control-dock" id="wearControlDock" aria-label="착용 단계 조작 버튼">
           <div class="wear-actions orientation-actions" id="orientationActions">
             <button class="wear-action orientation-card correct" id="correctOrientation" type="button" aria-label="가장자리가 위로 선 올바른 렌즈 앞면 선택">
               <span class="orientation-card-title">렌즈 앞면 <small>FRONT</small></span>
@@ -1180,7 +1188,7 @@
                 <path d="M111 82 Q125 72 139 80 L151 106 Q147 122 133 125 Q119 122 114 110Z" fill="url(#sideNail)" stroke="#d28e7d" stroke-width="1.7"/>
                 <path d="M113 129 Q129 121 146 129 M114 137 Q130 129 145 137" fill="none" stroke="#c98573" stroke-width="1.9" stroke-linecap="round" opacity=".66"/>
               </g>
-              <g pointer-events="none">
+              <g id="sideUpperHoldingGuide" pointer-events="none">
                 <path d="M136 152 L136 125" fill="none" stroke="#83e4ff" stroke-width="3" stroke-linecap="round" marker-end="url(#sideArrow)"/>
               </g>
 
@@ -1192,7 +1200,7 @@
                 <path d="M109 338 Q126 329 145 336 M110 347 Q128 338 146 346" fill="none" stroke="#c98573" stroke-width="2" stroke-linecap="round" opacity=".65"/>
                 <path d="M202 337 Q218 349 213 363 M272 360 Q288 372 283 386 M333 381 Q349 393 344 407" fill="none" stroke="#bd796a" stroke-width="2.3" stroke-linecap="round" opacity=".58"/>
               </g>
-              <g pointer-events="none">
+              <g id="sideLowerHoldingGuide" pointer-events="none">
                 <path d="M121 337 L121 368" fill="none" stroke="#83e4ff" stroke-width="3" stroke-linecap="round" marker-end="url(#sideArrow)"/>
               </g>
 
@@ -2080,6 +2088,8 @@
       const wearInstructionTitle = document.getElementById('wearInstructionTitle');
       const wearInstructionBody = document.getElementById('wearInstructionBody');
       const wearProgress = [...document.querySelectorAll('[data-wear-progress]')];
+      const directWearProgress = [...document.querySelectorAll('[data-direct-wear-progress]')];
+      const wearControlDock = document.getElementById('wearControlDock');
       const orientationActions = document.getElementById('orientationActions');
       const openingActions = document.getElementById('openingActions');
       const lensActions = document.getElementById('lensActions');
@@ -2094,12 +2104,17 @@
       const wearCompletion = document.getElementById('wearCompletion');
       const wearVideoPip = wearPractice.querySelector('.video-pip');
       const sideViewStage = document.getElementById('sideViewStage');
+      const sideViewScene = document.getElementById('sideViewScene');
       const sideApertureClipPath = document.getElementById('sideApertureClipPath');
       const sideEyeOpeningOutline = document.getElementById('sideEyeOpeningOutline');
       const sideUpperRim = document.getElementById('sideUpperRim');
       const sideLowerRim = document.getElementById('sideLowerRim');
       const sideUpperLashes = document.getElementById('sideUpperLashes');
       const sideLowerLashes = document.getElementById('sideLowerLashes');
+      const sideUpperHoldingHand = document.getElementById('sideUpperHoldingHand');
+      const sideLowerHoldingHand = document.getElementById('sideLensHandPalm');
+      const sideUpperHoldingGuide = document.getElementById('sideUpperHoldingGuide');
+      const sideLowerHoldingGuide = document.getElementById('sideLowerHoldingGuide');
       const sideInsertionAssembly = document.getElementById('sideInsertionAssembly');
       const sideTopContact = document.getElementById('sideTopContact');
       const sideBottomContact = document.getElementById('sideBottomContact');
@@ -2113,6 +2128,11 @@
       const frontViewButton = document.getElementById('frontViewButton');
       const sideViewButton = document.getElementById('sideViewButton');
 
+      // 기존 버튼형 착용 버전은 아래 로직과 DOM에 그대로 보존하고,
+      // 새 기본 버전에서는 렌즈 선택 뒤 측면 한 화면에서 직접 드래그한다.
+      const DIRECT_SIDE_WEAR = true;
+      const sidePointerDrags = new Map();
+
       const wearCopy = {
         1: {
           title: '렌즈의 앞뒤를 먼저 확인하세요',
@@ -2120,9 +2140,9 @@
           feedback: '두 렌즈 중 올바른 앞면 모양을 선택하세요.'
         },
         2: {
-          title: '왼손 중지와 오른손 중지로 눈꺼풀을 벌리세요',
-          body: '왼손 중지는 윗눈꺼풀 위 피부를 위로, 오른손 중지는 아랫눈꺼풀 아래 피부를 아래로 당기세요.',
-          feedback: '위 파란 원은 왼손 중지, 아래 파란 원은 오른손 중지로 드래그하세요.'
+          title: DIRECT_SIDE_WEAR ? '측면에서 눈꺼풀을 벌리고 렌즈를 직접 넣으세요' : '왼손 중지와 오른손 중지로 눈꺼풀을 벌리세요',
+          body: DIRECT_SIDE_WEAR ? '왼손 중지는 위로, 오른손 중지는 아래로 드래그해 고정하고 오른손 검지의 렌즈를 각막 중심으로 움직이세요.' : '왼손 중지는 윗눈꺼풀 위 피부를 위로, 오른손 중지는 아랫눈꺼풀 아래 피부를 아래로 당기세요.',
+          feedback: DIRECT_SIDE_WEAR ? '위 손가락은 위로, 아래 손가락은 아래로 움직인 뒤 렌즈를 든 검지를 왼쪽으로 드래그하세요.' : '위 파란 원은 왼손 중지, 아래 파란 원은 오른손 중지로 드래그하세요.'
         },
         3: {
           title: '측면에서 렌즈와 각막을 일직선으로 맞추세요',
@@ -2163,6 +2183,14 @@
         point.x = event.clientX;
         point.y = event.clientY;
         const matrix = wearSvg.getScreenCTM();
+        return matrix ? point.matrixTransform(matrix.inverse()) : { x: 0, y: 0 };
+      }
+
+      function toSidePoint(event) {
+        const point = sideViewScene.createSVGPoint();
+        point.x = event.clientX;
+        point.y = event.clientY;
+        const matrix = sideViewScene.getScreenCTM();
         return matrix ? point.matrixTransform(matrix.inverse()) : { x: 0, y: 0 };
       }
 
@@ -2231,6 +2259,14 @@
         sideUpperLashes.setAttribute('transform', `translate(-10 ${(60 - wearState.upper) * .25})`);
         sideLowerLashes.setAttribute('transform', `translate(-10 ${-(60 - wearState.lower) * .25})`);
 
+        // 눈꺼풀을 잡은 손가락도 드래그한 거리만큼 함께 움직여 고정된 느낌을 준다.
+        const upperHandOffset = -upperRatio * 22;
+        const lowerHandOffset = lowerRatio * 22;
+        sideUpperHoldingHand.setAttribute('transform', `translate(0 ${upperHandOffset})`);
+        sideUpperHoldingGuide.setAttribute('transform', `translate(0 ${upperHandOffset})`);
+        sideLowerHoldingHand.setAttribute('transform', `translate(0 ${lowerHandOffset})`);
+        sideLowerHoldingGuide.setAttribute('transform', `translate(0 ${lowerHandOffset})`);
+
         sideInsertionAssembly.setAttribute('transform', `translate(${wearState.approach} 0) rotate(${wearState.angle} 287 250)`);
         angleSlider.value = String(wearState.angle);
         angleValue.textContent = `${wearState.angle > 0 ? '+' : ''}${wearState.angle}°`;
@@ -2268,7 +2304,7 @@
 
       function setPracticeView(mode) {
         wearState.viewMode = mode;
-        const sideActive = wearState.step === 3 && mode === 'side';
+        const sideActive = (DIRECT_SIDE_WEAR && wearState.step === 2) || (wearState.step === 3 && mode === 'side');
         frontViewButton.classList.toggle('active', !sideActive);
         sideViewButton.classList.toggle('active', sideActive);
         frontViewButton.setAttribute('aria-pressed', String(!sideActive));
@@ -2279,12 +2315,13 @@
         wearSvg.style.display = sideActive ? 'none' : 'block';
         sideViewStage.hidden = !sideActive;
         sideViewStage.style.display = sideActive ? 'block' : 'none';
-        openingMeter.hidden = !(wearState.step === 2 || (wearState.step === 3 && !sideActive));
+        openingMeter.hidden = DIRECT_SIDE_WEAR || !(wearState.step === 2 || (wearState.step === 3 && !sideActive));
       }
 
       function renderWearStep() {
         const current = wearCopy[wearState.step];
-        wearStepNumber.textContent = wearState.step;
+        const displayStep = DIRECT_SIDE_WEAR ? (wearState.step === 4 ? 3 : Math.min(wearState.step, 2)) : wearState.step;
+        wearStepNumber.textContent = displayStep;
         wearInstructionTitle.textContent = current.title;
         wearInstructionBody.textContent = current.body;
         setWearFeedback(current.feedback);
@@ -2295,14 +2332,24 @@
           item.classList.toggle('done', number < wearState.step || wearState.success);
         });
 
+        directWearProgress.forEach((item, index) => {
+          const number = index + 1;
+          item.classList.toggle('active', number === displayStep);
+          item.classList.toggle('done', number < displayStep || wearState.success);
+        });
+
         orientationActions.hidden = wearState.step !== 1;
-        openingActions.hidden = wearState.step !== 2;
-        lensActions.hidden = wearState.step !== 3;
+        openingActions.hidden = DIRECT_SIDE_WEAR || wearState.step !== 2;
+        lensActions.hidden = DIRECT_SIDE_WEAR || wearState.step !== 3;
         blinkActions.hidden = wearState.step !== 4;
-        openingMeter.hidden = wearState.step !== 2;
-        wearVideoPip.hidden = wearState.step === 3;
-        wearVideoPip.style.display = wearState.step === 3 ? 'none' : '';
-        if (wearState.step === 3) {
+        wearControlDock.hidden = DIRECT_SIDE_WEAR && wearState.step === 2;
+        openingMeter.hidden = DIRECT_SIDE_WEAR || wearState.step !== 2;
+        const sidePracticeStep = (DIRECT_SIDE_WEAR && wearState.step === 2) || wearState.step === 3;
+        wearVideoPip.hidden = sidePracticeStep;
+        wearVideoPip.style.display = sidePracticeStep ? 'none' : '';
+        if (DIRECT_SIDE_WEAR && wearState.step === 2) {
+          setPracticeView('side');
+        } else if (wearState.step === 3) {
           setPracticeView(wearState.viewMode);
         } else {
           wearSvg.hidden = false;
@@ -2314,14 +2361,25 @@
         wearLensGuide.style.opacity = '0';
         wearLens.style.opacity = '0';
         wearContactLens.style.opacity = wearState.step === 4 || wearState.success ? '.76' : '0';
-        if (wearState.step === 3) renderSideGeometry();
+        if (sidePracticeStep) renderSideGeometry();
       }
 
       function goWearStep(step) {
         const previousStep = wearState.step;
         wearState.step = step;
         wearState.drag = null;
+        sidePointerDrags.clear();
         wearState.attemptLocked = false;
+        if (DIRECT_SIDE_WEAR && step === 2) {
+          wearState.approach = 0;
+          wearState.inserting = false;
+          wearState.viewMode = 'side';
+          if (previousStep !== 2) wearState.angle = randomStartAngle();
+          sideTopContact.style.opacity = '0';
+          sideBottomContact.style.opacity = '0';
+          sideContactSuccess.style.opacity = '0';
+          sideLashWarning.style.opacity = '0';
+        }
         if (step === 3) {
           wearState.lensX = 200;
           wearState.lensY = 420;
@@ -2359,6 +2417,7 @@
         wearState.inserting = false;
         wearState.lastFail = 'lid';
         wearState.viewMode = 'side';
+        sidePointerDrags.clear();
         wearCollision.style.opacity = '0';
         sideTopContact.style.opacity = '0';
         sideBottomContact.style.opacity = '0';
@@ -2440,6 +2499,7 @@
           else {
             wearState.approach = 0;
             wearState.inserting = false;
+            wearState.attemptLocked = false;
             insertLensButton.disabled = false;
             insertLensButton.textContent = '이 각도로 넣기';
             renderSideGeometry();
@@ -2557,6 +2617,10 @@
           item.classList.add('done');
           item.classList.remove('active');
         });
+        directWearProgress.forEach(item => {
+          item.classList.add('done');
+          item.classList.remove('active');
+        });
         setWearFeedback('착용 성공! 눈을 충분히 벌려 속눈썹 접촉 없이 렌즈를 안착했어요.', 'success');
         wearLens.style.opacity = '0';
         wearContactLens.style.opacity = '.76';
@@ -2627,7 +2691,9 @@
       document.getElementById('wearAgainButton').addEventListener('click', resetWear);
       document.getElementById('wearAttemptClose').addEventListener('click', () => {
         wearAttemptGuide.hidden = true;
-        if (wearState.lastFail === 'angle') {
+        if (DIRECT_SIDE_WEAR) {
+          goWearStep(2);
+        } else if (wearState.lastFail === 'angle') {
           wearState.step = 3;
           wearState.inserting = false;
           wearState.approach = 0;
@@ -2637,6 +2703,124 @@
           goWearStep(2);
         }
       });
+
+      function directWearPrompt() {
+        if (wearState.upper < 42) {
+          setWearFeedback('왼손 중지를 위로 드래그해 윗눈꺼풀을 충분히 올려주세요.');
+        } else if (wearState.lower < 42) {
+          setWearFeedback('오른손 중지를 아래로 드래그해 아랫눈꺼풀을 충분히 내려주세요.');
+        } else {
+          setWearFeedback('눈 벌림이 고정됐어요. 오른손 검지를 왼쪽으로 드래그하고, 위아래 움직임으로 렌즈 각도를 맞추세요.');
+        }
+      }
+
+      function completeDirectSideAttempt() {
+        if (wearState.inserting || wearState.success || wearState.step !== 2) return;
+        wearState.inserting = true;
+        wearState.attemptLocked = true;
+        sidePointerDrags.clear();
+
+        if (wearState.upper < 42 || wearState.lower < 42) {
+          recordSideFailure('lid');
+          return;
+        }
+        if (Math.abs(wearState.angle) > 6) {
+          recordSideFailure('angle');
+          return;
+        }
+
+        wearState.angle = 0;
+        wearState.approach = -92;
+        renderSideGeometry();
+        sideContactSuccess.style.opacity = '1';
+        setWearFeedback('정확해요! 직접 움직인 렌즈가 각막 정면에 고르게 닿았습니다.', 'success');
+        vibrate([30, 35, 55]);
+        setTimeout(() => {
+          wearState.inserting = false;
+          wearState.attemptLocked = false;
+          goWearStep(4);
+        }, 650);
+      }
+
+      sideViewScene.addEventListener('pointerdown', event => {
+        if (!DIRECT_SIDE_WEAR || wearState.step !== 2 || wearState.inserting || wearState.success) return;
+        const point = toSidePoint(event);
+        let type = '';
+        if (point.x < 205 && point.y < 185) type = 'upper';
+        else if (point.x < 235 && point.y > 285) type = 'lower';
+        else if (point.x >= 215 && point.y > 180) type = 'lens';
+
+        if (!type) {
+          directWearPrompt();
+          return;
+        }
+
+        event.preventDefault();
+        sideViewScene.setPointerCapture?.(event.pointerId);
+        sidePointerDrags.set(event.pointerId, {
+          type,
+          startX: point.x,
+          startY: point.y,
+          startUpper: wearState.upper,
+          startLower: wearState.lower,
+          startApproach: wearState.approach,
+          startAngle: wearState.angle
+        });
+
+        if (type === 'upper') setWearFeedback('왼손 중지를 위로 움직여 윗눈꺼풀을 올리세요.');
+        else if (type === 'lower') setWearFeedback('오른손 중지를 아래로 움직여 아랫눈꺼풀을 내리세요.');
+        else setWearFeedback('오른손 검지를 왼쪽으로 천천히 움직이세요. 위아래 이동으로 렌즈 기울기가 바뀝니다.');
+      }, { passive: false });
+
+      sideViewScene.addEventListener('pointermove', event => {
+        const drag = sidePointerDrags.get(event.pointerId);
+        if (!drag || wearState.step !== 2 || wearState.inserting || wearState.success) return;
+        event.preventDefault();
+        const point = toSidePoint(event);
+
+        if (drag.type === 'upper') {
+          wearState.upper = Math.max(0, Math.min(60, drag.startUpper + (drag.startY - point.y) * 1.25));
+          renderSideGeometry();
+          setWearFeedback(`윗눈꺼풀 ${Math.round(wearState.upper / 60 * 100)}% · 손을 떼어도 이 위치에 고정됩니다.`);
+          return;
+        }
+
+        if (drag.type === 'lower') {
+          wearState.lower = Math.max(0, Math.min(60, drag.startLower + (point.y - drag.startY) * 1.25));
+          renderSideGeometry();
+          setWearFeedback(`아랫눈꺼풀 ${Math.round(wearState.lower / 60 * 100)}% · 손을 떼어도 이 위치에 고정됩니다.`);
+          return;
+        }
+
+        const rawApproach = Math.max(-120, Math.min(0, drag.startApproach + (point.x - drag.startX) * 1.08));
+        wearState.angle = Math.max(-25, Math.min(25, Math.round(drag.startAngle + (point.y - drag.startY) * .3)));
+        const lidIsShort = wearState.upper < 42 || wearState.lower < 42;
+        const firstContact = firstSideContactApproach();
+        const contactApproach = lidIsShort ? Math.max(firstContact, -76) : firstContact;
+        wearState.approach = Math.max(rawApproach, contactApproach);
+        renderSideGeometry();
+        setWearFeedback(`렌즈 각도 ${wearState.angle > 0 ? '+' : ''}${wearState.angle}° · 0°에 가깝게 맞추며 왼쪽으로 이동하세요.`);
+
+        if (rawApproach <= contactApproach) completeDirectSideAttempt();
+      }, { passive: false });
+
+      function releaseDirectSidePointer(event) {
+        const drag = sidePointerDrags.get(event.pointerId);
+        if (!drag) return;
+        sidePointerDrags.delete(event.pointerId);
+        sideViewScene.releasePointerCapture?.(event.pointerId);
+
+        if (drag.type === 'lens' && !wearState.inserting && !wearState.success && wearState.step === 2) {
+          wearState.approach = 0;
+          renderSideGeometry();
+          setWearFeedback('렌즈가 각막까지 닿지 않았어요. 검지를 조금 더 왼쪽으로 움직여주세요.', 'error');
+        } else if (!wearState.inserting && wearState.step === 2) {
+          directWearPrompt();
+        }
+      }
+
+      sideViewScene.addEventListener('pointerup', releaseDirectSidePointer);
+      sideViewScene.addEventListener('pointercancel', releaseDirectSidePointer);
 
       wearSvg.addEventListener('pointerdown', event => {
         if (wearState.success || wearState.blinking) return;
