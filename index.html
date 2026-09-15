@@ -1160,24 +1160,24 @@
                 <path id="sideEyeWhiteShape" d="M24 250 C66 191 120 178 166 198 Q210 250 166 302 C120 322 66 309 24 250Z" fill="url(#sideEyeWhite)" filter="url(#sideSoftShadow)"/>
                 <g clip-path="url(#sideEyeClip)">
                   <path d="M39 246 Q75 236 108 242 M45 267 Q78 274 111 264" fill="none" stroke="#d88f94" stroke-width="1.4" stroke-linecap="round" opacity=".27"/>
-                  <ellipse cx="158" cy="250" rx="30" ry="46" fill="url(#sideIris)" stroke="#342118" stroke-width="3.6"/>
-                  <ellipse cx="158" cy="250" rx="25" ry="40" fill="none" stroke="#d5a259" stroke-width="1" opacity=".18"/>
-                  <path d="M149 208 Q156 228 158 246 M138 221 Q149 237 157 247 M137 279 Q149 265 158 254 M151 291 Q157 271 160 255" fill="none" stroke="#efc77c" stroke-width="1" stroke-linecap="round" opacity=".18"/>
-                  <ellipse cx="181" cy="250" rx="7.5" ry="25" fill="#06090a"/>
-                  <ellipse cx="145" cy="228" rx="7" ry="13" fill="#fff" opacity=".76"/>
-                  <ellipse cx="182" cy="241" rx="3" ry="5" fill="#fff" opacity=".58"/>
+                  <ellipse cx="160" cy="250" rx="34" ry="47" fill="url(#sideIris)" stroke="#342118" stroke-width="3.4"/>
+                  <ellipse cx="160" cy="250" rx="29" ry="41" fill="none" stroke="#d5a259" stroke-width="1" opacity=".18"/>
+                  <path d="M151 207 Q158 228 160 246 M139 220 Q151 237 159 247 M138 280 Q151 265 160 254 M153 292 Q159 271 162 255" fill="none" stroke="#efc77c" stroke-width="1" stroke-linecap="round" opacity=".18"/>
+                  <ellipse cx="184" cy="250" rx="8" ry="25" fill="#06090a"/>
+                  <ellipse cx="147" cy="228" rx="7" ry="13" fill="#fff" opacity=".7"/>
+                  <ellipse cx="185" cy="241" rx="2.8" ry="4.8" fill="#fff" opacity=".52"/>
                 </g>
               </g>
               <path id="sideEyeOpeningOutline" d="M24 250 C66 213 120 210 166 220 M24 250 C66 287 120 290 166 280" fill="none" stroke="#784a42" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" filter="url(#sideSoftShadow)"/>
               <path id="sideUpperLidDetail" d="M55 228 C88 212 124 215 153 216" fill="none" stroke="#c98777" stroke-width="2.1" stroke-linecap="round" opacity=".42"/>
               <path id="sideLowerLidDetail" d="M55 272 C88 288 124 285 153 284" fill="none" stroke="#c98777" stroke-width="2.1" stroke-linecap="round" opacity=".38"/>
-              <path id="sideUpperRim" d="M34 250 C73 220 120 214 161 225" fill="none" stroke="#f2c0aa" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path id="sideLowerRim" d="M34 252 C73 280 120 286 161 275" fill="none" stroke="#efb9a4" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/>
-              <g id="sideUpperLashes" transform="translate(-10 0)" fill="none" stroke="#342522" stroke-width="4.2" stroke-linecap="round" opacity=".9">
-                <path d="M151 190 Q170 166 180 151"/><path d="M165 198 Q189 178 201 165"/><path d="M176 210 Q199 195 214 185"/>
+              <path id="sideUpperRim" d="M30 250 C68 222 120 214 165 222" fill="none" stroke="#e3a08f" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path id="sideLowerRim" d="M30 250 C68 278 120 286 165 278" fill="none" stroke="#df9a8b" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <g id="sideUpperLashes" fill="none" stroke="#342522" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round" opacity=".92">
+                <path d="M132 214 Q149 188 163 173"/><path d="M148 216 Q169 193 184 181"/><path d="M161 219 Q183 204 199 194"/>
               </g>
-              <g id="sideLowerLashes" transform="translate(-10 0)" fill="none" stroke="#553a35" stroke-width="2.6" stroke-linecap="round" opacity=".58">
-                <path d="M157 303 Q177 322 184 337"/><path d="M173 293 Q197 308 209 321"/>
+              <g id="sideLowerLashes" fill="none" stroke="#553a35" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity=".62">
+                <path d="M135 286 Q154 306 164 321"/><path d="M152 283 Q176 300 189 313"/>
               </g>
 
               <!-- 왼손 중지: 윗눈꺼풀 위 피부에 닿는 손끝과 한 관절만 보인다. -->
@@ -2256,10 +2256,10 @@
         sideEyeOpeningOutline.setAttribute('d', lidOutline);
         sideUpperLidDetail.setAttribute('d', `M55 ${upperC1 + 10} C88 ${upperC2 + 2} 124 ${upperC2 + 5} 153 ${upperShoulder - 4}`);
         sideLowerLidDetail.setAttribute('d', `M55 ${lowerC1 - 10} C88 ${lowerC2 - 2} 124 ${lowerC2 - 5} 153 ${lowerShoulder + 4}`);
-        sideUpperRim.setAttribute('d', `M34 250 C73 ${225 - upperRatio * 20} 120 ${220 - upperRatio * 30} 161 ${upperShoulder + 5}`);
-        sideLowerRim.setAttribute('d', `M34 252 C73 ${275 + lowerRatio * 20} 120 ${280 + lowerRatio * 30} 161 ${lowerShoulder - 5}`);
-        sideUpperLashes.setAttribute('transform', `translate(-10 ${(60 - wearState.upper) * .25})`);
-        sideLowerLashes.setAttribute('transform', `translate(-10 ${-(60 - wearState.lower) * .25})`);
+        sideUpperRim.setAttribute('d', `M30 250 C68 ${upperC1 + 4} 120 ${upperC2 + 4} 165 ${upperShoulder + 2}`);
+        sideLowerRim.setAttribute('d', `M30 250 C68 ${lowerC1 - 4} 120 ${lowerC2 - 4} 165 ${lowerShoulder - 2}`);
+        sideUpperLashes.setAttribute('transform', `translate(0 ${-upperRatio * 30})`);
+        sideLowerLashes.setAttribute('transform', `translate(0 ${lowerRatio * 30})`);
 
         // 눈꺼풀을 잡은 손가락도 드래그한 거리만큼 함께 움직여 고정된 느낌을 준다.
         const upperHandOffset = -upperRatio * 22;
