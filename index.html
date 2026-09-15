@@ -956,43 +956,42 @@
           <div class="wear-actions orientation-actions" id="orientationActions">
             <button class="wear-action orientation-card correct" id="correctOrientation" type="button" aria-label="가장자리가 위로 선 올바른 렌즈 앞면 선택">
               <span class="orientation-card-title">렌즈 앞면 <small>FRONT</small></span>
-              <svg class="orientation-visual" viewBox="0 0 170 112" role="img" aria-label="손가락 위에서 가장자리가 곧게 선 그릇 모양 렌즈">
+              <svg class="orientation-visual" viewBox="0 0 170 112" role="img" aria-label="가장자리가 곧게 선 깊고 둥근 그릇 모양 렌즈">
                 <defs>
-                  <linearGradient id="orientationFingerFront" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd2ba"/><stop offset=".62" stop-color="#e7a084"/><stop offset="1" stop-color="#b96d5d"/></linearGradient>
-                  <linearGradient id="orientationLensFront" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e8fdff"/><stop offset=".48" stop-color="#76daed"/><stop offset="1" stop-color="#1598c4"/></linearGradient>
+                  <linearGradient id="orientationLensFront" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9fbff"/><stop offset=".45" stop-color="#9fd8ea"/><stop offset=".78" stop-color="#4aa9c9"/><stop offset="1" stop-color="#197ba5"/></linearGradient>
+                  <linearGradient id="orientationRimFront" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2b7397"/><stop offset=".5" stop-color="#e4f9ff"/><stop offset="1" stop-color="#2b7397"/></linearGradient>
                   <filter id="orientationGlowFront" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#168db6" flood-opacity=".34"/></filter>
                 </defs>
-                <ellipse cx="85" cy="101" rx="69" ry="20" fill="#123c57" opacity=".1"/>
-                <path d="M9 113 C19 83 47 74 85 74 C123 74 151 83 161 113Z" fill="url(#orientationFingerFront)" stroke="#a95f52" stroke-width="3"/>
-                <path d="M28 102 Q50 88 85 88 Q120 88 142 102" fill="none" stroke="#f5bea6" stroke-width="3" opacity=".72"/>
-                <path d="M48 24 C50 48 58 65 70 73 C78 79 92 79 100 73 C112 65 120 48 122 24" fill="#8de8f5" fill-opacity=".19" stroke="url(#orientationLensFront)" stroke-width="6" stroke-linecap="round" filter="url(#orientationGlowFront)"/>
-                <path d="M53 27 C56 47 63 60 73 66 C80 71 90 71 97 66 C107 60 114 47 117 27" fill="none" stroke="#fff" stroke-width="2.5" opacity=".78"/>
-                <ellipse cx="48" cy="24" rx="5" ry="3" fill="#c9f8ff" stroke="#43bdd8" stroke-width="2"/>
-                <ellipse cx="122" cy="24" rx="5" ry="3" fill="#c9f8ff" stroke="#43bdd8" stroke-width="2"/>
-                <path d="M39 42 V18 M131 42 V18" fill="none" stroke="#1489b8" stroke-width="3" stroke-linecap="round"/>
-                <path d="M35 22 L39 17 L43 22 M127 22 L131 17 L135 22" fill="none" stroke="#1489b8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <ellipse cx="85" cy="94" rx="58" ry="8" fill="#123c57" opacity=".12"/>
+                <path d="M26 27 C30 53 44 72 66 82 C76 87 94 87 104 82 C126 72 140 53 144 27 Q85 38 26 27Z" fill="url(#orientationLensFront)" stroke="#267fa5" stroke-width="2.4" filter="url(#orientationGlowFront)"/>
+                <ellipse cx="85" cy="27" rx="59" ry="10" fill="#d9f5fc" fill-opacity=".78" stroke="url(#orientationRimFront)" stroke-width="3"/>
+                <ellipse cx="85" cy="29" rx="51" ry="6.5" fill="#f8feff" fill-opacity=".44" stroke="#7ec7df" stroke-width="1.4"/>
+                <path d="M35 39 C44 60 57 72 71 77 C79 80 91 80 99 77 C113 72 126 60 135 39" fill="none" stroke="#fff" stroke-width="3" opacity=".38"/>
+                <path d="M42 29 C49 45 56 58 67 67" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".48"/>
+                <circle cx="142" cy="83" r="13" fill="#19a99a"/>
+                <path d="M136 83 L141 88 L149 77" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
               <span class="orientation-caption">가장자리가 곧게 위로<small>깊고 둥근 그릇 모양</small></span>
             </button>
             <button class="wear-action orientation-card wrong" id="wrongOrientation" type="button" aria-label="가장자리가 바깥으로 벌어진 뒤집힌 렌즈 선택">
               <span class="orientation-card-title">뒤집힌 렌즈 <small>INSIDE OUT</small></span>
-              <svg class="orientation-visual" viewBox="0 0 170 112" role="img" aria-label="손가락 위에서 가장자리가 바깥으로 퍼진 접시 모양 렌즈">
+              <svg class="orientation-visual" viewBox="0 0 170 112" role="img" aria-label="가장자리가 바깥으로 벌어진 얕은 접시 모양의 뒤집힌 렌즈">
                 <defs>
-                  <linearGradient id="orientationFingerBack" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd2ba"/><stop offset=".62" stop-color="#e7a084"/><stop offset="1" stop-color="#b96d5d"/></linearGradient>
-                  <linearGradient id="orientationLensBack" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f1fdff"/><stop offset=".48" stop-color="#8addec"/><stop offset="1" stop-color="#398fae"/></linearGradient>
+                  <linearGradient id="orientationLensBack" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eefcff"/><stop offset=".5" stop-color="#a8d7e5"/><stop offset=".82" stop-color="#589db8"/><stop offset="1" stop-color="#347c9a"/></linearGradient>
+                  <linearGradient id="orientationRimBack" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#347f9d"/><stop offset=".5" stop-color="#e8faff"/><stop offset="1" stop-color="#347f9d"/></linearGradient>
                   <filter id="orientationGlowBack" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#39859e" flood-opacity=".28"/></filter>
                 </defs>
-                <ellipse cx="85" cy="101" rx="69" ry="20" fill="#123c57" opacity=".1"/>
-                <path d="M9 113 C19 83 47 74 85 74 C123 74 151 83 161 113Z" fill="url(#orientationFingerBack)" stroke="#a95f52" stroke-width="3"/>
-                <path d="M28 102 Q50 88 85 88 Q120 88 142 102" fill="none" stroke="#f5bea6" stroke-width="3" opacity=".72"/>
-                <path d="M24 32 Q34 27 43 31 C52 50 63 64 74 71 C81 76 89 76 96 71 C107 64 118 50 127 31 Q136 27 146 32" fill="#93e7f3" fill-opacity=".16" stroke="url(#orientationLensBack)" stroke-width="6" stroke-linecap="round" filter="url(#orientationGlowBack)"/>
-                <path d="M33 33 Q39 31 45 34 C55 50 65 60 76 66 C82 69 88 69 94 66 C105 60 115 50 125 34 Q131 31 137 33" fill="none" stroke="#fff" stroke-width="2.5" opacity=".72"/>
-                <ellipse cx="24" cy="32" rx="5" ry="3" fill="#d8f8fc" stroke="#66b8ca" stroke-width="2"/>
-                <ellipse cx="146" cy="32" rx="5" ry="3" fill="#d8f8fc" stroke="#66b8ca" stroke-width="2"/>
-                <path d="M39 18 L21 27 M131 18 L149 27" fill="none" stroke="#c54b55" stroke-width="3" stroke-linecap="round"/>
-                <path d="M26 21 L20 27 L28 29 M144 21 L150 27 L142 29" fill="none" stroke="#c54b55" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <ellipse cx="85" cy="93" rx="61" ry="8" fill="#123c57" opacity=".11"/>
+                <path d="M21 36 C36 39 44 48 52 63 C58 74 65 82 75 86 C81 89 89 89 95 86 C105 82 112 74 118 63 C126 48 134 39 149 36 Q85 51 21 36Z" fill="url(#orientationLensBack)" stroke="#3d88a4" stroke-width="2.2" stroke-linejoin="round"/>
+                <path d="M21 36 Q85 20 149 36 Q85 50 21 36Z" fill="#e8f9fd" fill-opacity=".72" stroke="url(#orientationRimBack)" stroke-width="2.5" stroke-linejoin="round"/>
+                <path d="M49 48 C55 66 64 78 75 82" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".42"/>
+                <path d="M75 85 Q85 88 95 85" fill="none" stroke="#d9f6fc" stroke-width="2" stroke-linecap="round" opacity=".42"/>
+                <path d="M16 21 L8 32 M154 21 L162 32" fill="none" stroke="#e15d48" stroke-width="4" stroke-linecap="round"/>
+                <path d="M8 32 L9 24 M8 32 L16 31 M162 32 L161 24 M162 32 L154 31" fill="none" stroke="#e15d48" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="143" cy="83" r="13" fill="#e95f45"/>
+                <path d="M138 78 L148 88 M148 78 L138 88" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
               </svg>
-              <span class="orientation-caption">가장자리가 바깥으로 벌어짐<small>얕고 퍼진 접시 모양</small></span>
+              <span class="orientation-caption">가장자리가 바깥으로 벌어짐<small>둥근 곡률은 남아 있는 뒤집힌 모양</small></span>
             </button>
           </div>
           <div class="wear-actions" id="openingActions" hidden>
@@ -1135,26 +1134,28 @@
                 <filter id="sideSoftShadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#173047" flood-opacity=".28"/></filter>
                 <filter id="sideSkinTexture" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".7" numOctaves="2" seed="8"/><feColorMatrix type="matrix" values="1 0 0 0 0  0 .72 0 0 0  0 0 .62 0 0  0 0 0 .09 0"/></filter>
                 <marker id="sideArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#fff"/></marker>
+                <clipPath id="sideEyeClip"><path d="M24 250 C66 191 122 176 158 197 C170 211 176 229 176 250 C176 271 170 289 158 303 C122 324 66 309 24 250Z"/></clipPath>
               </defs>
 
               <rect width="400" height="500" fill="url(#sideBg)"/>
               <ellipse cx="312" cy="96" rx="180" ry="130" fill="#fff" opacity=".12"/>
 
-              <path d="M0 0 H180 C203 40 192 92 177 132 C164 166 166 193 190 221 C202 235 205 265 190 279 C166 307 164 334 177 368 C192 408 203 460 180 500 H0Z" fill="url(#sideSkin)"/>
-              <path d="M0 0 H180 C203 40 192 92 177 132 C164 166 166 193 190 221 C202 235 205 265 190 279 C166 307 164 334 177 368 C192 408 203 460 180 500 H0Z" fill="#8e5b50" opacity=".15" filter="url(#sideSkinTexture)"/>
+              <path d="M0 0 H171 C193 43 190 94 176 137 C164 176 164 193 172 219 C175 231 176 242 176 250 C176 258 175 269 172 281 C164 307 164 338 176 377 C190 420 193 457 171 500 H0Z" fill="url(#sideSkin)"/>
+              <path d="M0 0 H171 C193 43 190 94 176 137 C164 176 164 193 172 219 C175 231 176 242 176 250 C176 258 175 269 172 281 C164 307 164 338 176 377 C190 420 193 457 171 500 H0Z" fill="#8e5b50" opacity=".15" filter="url(#sideSkinTexture)"/>
               <path d="M25 126 Q105 76 181 135" fill="none" stroke="#77483f" stroke-width="13" stroke-linecap="round" opacity=".48"/>
               <path d="M35 143 Q111 103 174 151" fill="none" stroke="#efbea5" stroke-width="5" opacity=".42"/>
 
-              <path d="M40 250 C76 190 131 171 177 208 C194 222 203 237 207 250 C203 263 194 278 177 292 C131 329 76 310 40 250Z" fill="url(#sideEyeWhite)" stroke="#784a42" stroke-width="8" filter="url(#sideSoftShadow)"/>
-              <path d="M48 250 C82 205 127 188 174 218" fill="none" stroke="#efb9a2" stroke-width="8" stroke-linecap="round"/>
-              <path d="M48 252 C84 298 130 312 174 282" fill="none" stroke="#edb49e" stroke-width="8" stroke-linecap="round"/>
+              <path d="M24 250 C66 191 122 176 158 197 C170 211 176 229 176 250 C176 271 170 289 158 303 C122 324 66 309 24 250Z" fill="url(#sideEyeWhite)" stroke="#784a42" stroke-width="8" filter="url(#sideSoftShadow)"/>
+              <path d="M34 250 C73 205 119 193 158 210" fill="none" stroke="#efb9a2" stroke-width="8" stroke-linecap="round"/>
+              <path d="M34 252 C73 294 120 307 158 290" fill="none" stroke="#edb49e" stroke-width="8" stroke-linecap="round"/>
 
-              <ellipse cx="164" cy="250" rx="29" ry="66" fill="url(#sideIris)" stroke="#40291b" stroke-width="7"/>
-              <ellipse cx="176" cy="250" rx="12" ry="39" fill="#070b0d"/>
-              <ellipse cx="158" cy="221" rx="9" ry="20" fill="#fff" opacity=".76"/>
-              <ellipse cx="180" cy="238" rx="5" ry="8" fill="#fff" opacity=".58"/>
-              <path d="M177 190 Q236 250 177 310 Q207 250 177 190Z" fill="#dff9ff" fill-opacity=".38" stroke="#a8e8f4" stroke-width="5"/>
-              <path d="M182 204 Q217 250 182 296" fill="none" stroke="#fff" stroke-width="3" opacity=".58"/>
+              <g clip-path="url(#sideEyeClip)">
+                <ellipse cx="154" cy="250" rx="22" ry="47" fill="url(#sideIris)" stroke="#40291b" stroke-width="5"/>
+                <ellipse cx="165" cy="250" rx="7" ry="26" fill="#070b0d"/>
+                <ellipse cx="147" cy="228" rx="6" ry="13" fill="#fff" opacity=".76"/>
+                <ellipse cx="167" cy="241" rx="3" ry="5" fill="#fff" opacity=".58"/>
+              </g>
+              <path d="M176 202 Q226 250 176 298" fill="none" stroke="#a8e8f4" stroke-width="5"/>
 
               <g fill="none" stroke="#382824" stroke-width="5" stroke-linecap="round" opacity=".88">
                 <path d="M151 190 Q170 166 180 151"/><path d="M165 198 Q189 178 201 165"/><path d="M176 210 Q199 195 214 185"/>
@@ -1163,56 +1164,43 @@
                 <path d="M157 303 Q177 322 184 337"/><path d="M173 293 Q197 308 209 321"/>
               </g>
 
-              <!-- 반대손 검지: 윗눈꺼풀을 속눈썹 위에서 들어 올린다. -->
-              <g id="sideUpperHoldingHand" transform="translate(-24 -18)" filter="url(#sideSoftShadow)">
-                <path d="M22 -9 H214 C219 11 212 31 196 44 C182 55 166 59 151 68 C143 73 140 83 142 95 L158 154 C163 172 156 187 143 193 C129 199 114 191 110 176 L92 100 C88 83 79 74 64 70 L22 62Z" fill="url(#sideFinger)" stroke="#a86c60" stroke-width="3"/>
-                <path d="M39 21 Q77 38 112 28 M48 48 Q79 57 104 51 M104 111 Q123 104 141 110" fill="none" stroke="#be7b6c" stroke-width="2.5" stroke-linecap="round" opacity=".58"/>
-                <path d="M128 101 Q139 93 149 101 L156 132 Q150 144 136 143 Q126 138 125 125Z" fill="url(#sideNail)" stroke="#d28e7d" stroke-width="1.8" opacity=".72"/>
-                <path d="M127 161 Q142 151 156 160 M124 169 Q141 160 157 169 M123 178 Q140 170 154 177" fill="none" stroke="#c98573" stroke-width="2" stroke-linecap="round" opacity=".66"/>
-                <path d="M29 4 Q86 22 141 8" fill="none" stroke="#ffe0cd" stroke-width="5" stroke-linecap="round" opacity=".22"/>
+              <!-- 왼손 중지: 윗눈꺼풀 위 피부에 닿는 손끝과 한 관절만 보인다. -->
+              <g id="sideUpperHoldingHand" filter="url(#sideSoftShadow)" opacity=".94">
+                <path d="M78 -16 C95 -23 113 -14 120 3 L159 94 C167 114 162 133 147 142 C132 151 114 142 108 125 L70 35 C63 15 65 -10 78 -16Z" fill="url(#sideFinger)" stroke="#a86c60" stroke-width="3"/>
+                <path d="M94 40 Q109 33 124 40 M104 67 Q120 60 135 67" fill="none" stroke="#bd796a" stroke-width="2.3" stroke-linecap="round" opacity=".62"/>
+                <path d="M111 82 Q125 72 139 80 L151 106 Q147 122 133 125 Q119 122 114 110Z" fill="url(#sideNail)" stroke="#d28e7d" stroke-width="1.7"/>
+                <path d="M113 129 Q129 121 146 129 M114 137 Q130 129 145 137" fill="none" stroke="#c98573" stroke-width="1.9" stroke-linecap="round" opacity=".66"/>
               </g>
               <g pointer-events="none">
-                <path d="M121 166 L121 140" fill="none" stroke="#83e4ff" stroke-width="3" stroke-linecap="round" marker-end="url(#sideArrow)"/>
-                <rect x="240" y="72" width="140" height="30" rx="11" fill="#0a3552" fill-opacity=".82" stroke="#b9ecff" stroke-opacity=".48"/>
-                <text x="310" y="91" fill="#fff" text-anchor="middle" font-size="10" font-weight="850">왼손 중지 · 위 고정</text>
-                <path d="M240 87 Q176 98 130 137" fill="none" stroke="#b9ecff" stroke-width="1.6" stroke-dasharray="4 5" opacity=".78"/>
+                <path d="M136 152 L136 125" fill="none" stroke="#83e4ff" stroke-width="3" stroke-linecap="round" marker-end="url(#sideArrow)"/>
               </g>
 
-              <!-- 렌즈를 든 손: 손바닥에서 중지와 검지가 자연스럽게 이어진다. -->
-              <g id="sideLensHandPalm" filter="url(#sideSoftShadow)">
-                <path d="M237 500 C247 450 272 413 311 391 C341 374 370 369 400 377 V500Z" fill="url(#sideFinger)" stroke="#a86c60" stroke-width="3"/>
-                <path d="M382 378 C330 370 276 359 218 345 L148 323 C132 318 117 326 113 339 C109 352 119 365 135 368 L210 374 C268 382 325 397 378 417 C395 412 400 388 382 378Z" fill="url(#sideFinger)" stroke="#a86c60" stroke-width="3"/>
-                <path d="M205 351 Q222 360 214 373 M267 365 Q282 378 276 391 M327 383 Q342 393 337 407" fill="none" stroke="#bd796a" stroke-width="2.4" stroke-linecap="round" opacity=".58"/>
-                <path d="M118 336 Q133 329 148 336 M115 344 Q132 337 150 344 M117 352 Q133 346 148 352" fill="none" stroke="#c98573" stroke-width="2" stroke-linecap="round" opacity=".68"/>
-                <path d="M246 353 Q278 364 307 369" fill="none" stroke="#ffd7c1" stroke-width="3" stroke-linecap="round" opacity=".34"/>
-                <path d="M291 431 Q326 410 365 413" fill="none" stroke="#bd796a" stroke-width="3" stroke-linecap="round" opacity=".52"/>
+              <!-- 오른손 중지: 렌즈를 든 검지보다 뒤쪽에서 하안검 아래 피부를 내린다. -->
+              <g id="sideLensHandPalm" filter="url(#sideSoftShadow)" opacity=".9">
+                <path d="M318 500 C329 456 350 424 382 407 L400 403 V500Z" fill="url(#sideFinger)" stroke="#a86c60" stroke-width="3"/>
+                <path d="M386 401 C358 387 332 375 304 367 L144 315 C125 309 107 318 101 334 C95 350 107 366 127 370 L293 404 C322 411 350 423 376 438Z" fill="url(#sideFinger)" stroke="#a86c60" stroke-width="3"/>
+                <path d="M118 325 Q134 316 150 323 L168 339 Q165 354 150 359 Q133 357 120 347Z" fill="url(#sideNail)" stroke="#d28e7d" stroke-width="1.7"/>
+                <path d="M109 338 Q126 329 145 336 M110 347 Q128 338 146 346" fill="none" stroke="#c98573" stroke-width="2" stroke-linecap="round" opacity=".65"/>
+                <path d="M202 337 Q218 349 213 363 M272 360 Q288 372 283 386 M333 381 Q349 393 344 407" fill="none" stroke="#bd796a" stroke-width="2.3" stroke-linecap="round" opacity=".58"/>
               </g>
               <g pointer-events="none">
-                <path d="M130 341 L130 369" fill="none" stroke="#83e4ff" stroke-width="3" stroke-linecap="round" marker-end="url(#sideArrow)"/>
-                <rect x="14" y="394" width="164" height="30" rx="11" fill="#0a3552" fill-opacity=".82" stroke="#b9ecff" stroke-opacity=".48"/>
-                <text x="96" y="413" fill="#fff" text-anchor="middle" font-size="10" font-weight="850">오른손 중지 · 아래 고정</text>
+                <path d="M121 337 L121 368" fill="none" stroke="#83e4ff" stroke-width="3" stroke-linecap="round" marker-end="url(#sideArrow)"/>
               </g>
 
               <path d="M183 142 V358" fill="none" stroke="#b7eeff" stroke-width="3" stroke-dasharray="8 8"/>
-              <text x="183" y="126" fill="#d9f6ff" text-anchor="middle" font-size="12" font-weight="850">각막 중심 수직선</text>
               <path d="M354 250 H235" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" marker-end="url(#sideArrow)" opacity=".78"/>
-              <text x="300" y="210" fill="#fff" text-anchor="middle" font-size="11" font-weight="850">일직선 접근</text>
 
               <g id="sideInsertionAssembly" transform="translate(0 0) rotate(15 287 250)">
-                <path d="M427 505 C402 448 383 391 369 329 L354 272 C350 255 339 244 325 243 C311 242 300 253 299 268 C299 282 307 294 320 300 L332 344 C347 406 357 459 363 505Z" fill="url(#sideFinger)" stroke="#a86c60" stroke-width="3" filter="url(#sideSoftShadow)"/>
-                <ellipse cx="322" cy="264" rx="22" ry="24" transform="rotate(-12 322 264)" fill="#f2b99c" opacity=".94"/>
-                <path d="M329 298 Q342 313 339 331 M344 351 Q359 365 355 383 M360 409 Q374 423 371 441" fill="none" stroke="#bd796a" stroke-width="2.3" stroke-linecap="round" opacity=".58"/>
-                <path d="M335 309 Q346 303 355 310 L363 341 Q357 353 344 352 Q334 347 332 334Z" fill="url(#sideNail)" stroke="#d28e7d" stroke-width="1.8" opacity=".78"/>
-                <path d="M306 253 Q320 246 333 253 M304 261 Q319 254 335 261 M305 269 Q320 263 333 269" fill="none" stroke="#c98573" stroke-width="1.8" stroke-linecap="round" opacity=".62"/>
+                <path d="M399 505 C371 475 348 441 331 404 L290 315 C281 296 285 277 300 267 C314 258 332 265 340 283 L380 372 C393 401 405 429 416 455Z" fill="url(#sideFinger)" stroke="#a86c60" stroke-width="3" filter="url(#sideSoftShadow)"/>
+                <path d="M301 267 C287 276 282 292 289 309 C294 320 304 325 315 321 C323 318 329 311 330 301 C331 287 322 271 311 266 C308 265 304 265 301 267Z" fill="#f2b99c" opacity=".96"/>
+                <path d="M318 271 C327 276 333 286 334 296 C335 306 331 315 324 321 C327 306 324 288 318 271Z" fill="url(#sideNail)" stroke="#d28e7d" stroke-width="1.6"/>
+                <path d="M289 284 Q300 279 309 284 M287 292 Q298 287 308 292 M289 300 Q299 295 308 300" fill="none" stroke="#c98573" stroke-width="1.8" stroke-linecap="round" opacity=".72"/>
+                <path d="M322 356 Q336 349 348 356 M338 397 Q352 390 363 397" fill="none" stroke="#bd796a" stroke-width="2.3" stroke-linecap="round" opacity=".6"/>
                 <path id="sideLensShape" d="M258 190 Q322 250 258 310" fill="#75d8ee" fill-opacity=".14" stroke="url(#sideLens)" stroke-width="9" stroke-linecap="round" filter="url(#sideGlow)"/>
                 <path d="M258 190 L258 310" fill="none" stroke="#e5fbff" stroke-width="2" stroke-dasharray="5 6" opacity=".72"/>
                 <path d="M263 202 Q307 250 263 298" fill="none" stroke="#fff" stroke-width="3" opacity=".62"/>
                 <circle id="sideTopContact" cx="258" cy="190" r="13" fill="#ff5964" opacity="0"/>
                 <circle id="sideBottomContact" cx="258" cy="310" r="13" fill="#ff5964" opacity="0"/>
-              </g>
-              <g pointer-events="none">
-                <rect x="257" y="145" width="127" height="30" rx="11" fill="#0a3552" fill-opacity=".82" stroke="#b9ecff" stroke-opacity=".48"/>
-                <text x="320" y="164" fill="#fff" text-anchor="middle" font-size="10" font-weight="850">오른손 검지 · 렌즈 받침</text>
               </g>
 
               <g id="sideContactSuccess" opacity="0" pointer-events="none">
@@ -1225,7 +1213,6 @@
                 <text x="270" y="405" fill="#ffced2" text-anchor="middle" font-size="15" font-weight="900">속눈썹에 걸리지 않게 더 벌려주세요</text>
               </g>
 
-              <text x="202" y="438" fill="#eefaff" text-anchor="middle" font-size="12" font-weight="750">눈꺼풀을 고정하고, 렌즈를 든 검지만 각막 중심으로 움직이세요.</text>
             </svg>
           </div>
 
@@ -2570,7 +2557,7 @@
         void wrongCard.offsetWidth;
         wrongCard.classList.add('invalid');
         window.setTimeout(() => wrongCard.classList.remove('invalid'), 700);
-        setWearFeedback('가장자리가 벌어진 접시 모양은 뒤집힌 상태예요. 둥근 그릇 모양을 선택하세요.', 'error');
+        setWearFeedback('가장자리가 바깥으로 벌어진 렌즈는 뒤집힌 상태예요. 가장자리가 곧게 선 둥근 그릇 모양을 선택하세요.', 'error');
         vibrate([25, 35, 25]);
       });
       document.getElementById('tryOpening').addEventListener('click', () => goWearStep(3));
