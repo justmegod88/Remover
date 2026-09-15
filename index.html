@@ -1138,7 +1138,7 @@
                 <filter id="sideSoftShadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#173047" flood-opacity=".28"/></filter>
                 <filter id="sideSkinTexture" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".7" numOctaves="2" seed="8"/><feColorMatrix type="matrix" values="1 0 0 0 0  0 .72 0 0 0  0 0 .62 0 0  0 0 0 .09 0"/></filter>
                 <marker id="sideArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#fff"/></marker>
-              <clipPath id="sideEyeClip"><path id="sideEyeClipPath" d="M24 250 C66 191 124 176 176 195 Q233 250 176 305 C124 324 66 309 24 250Z"/></clipPath>
+              <clipPath id="sideEyeClip"><path id="sideEyeClipPath" d="M24 250 C66 191 120 178 166 198 Q210 250 166 302 C120 322 66 309 24 250Z"/></clipPath>
               </defs>
 
               <rect width="400" height="500" fill="url(#sideBg)"/>
@@ -1149,20 +1149,20 @@
               <path d="M25 126 Q105 76 181 135" fill="none" stroke="#77483f" stroke-width="13" stroke-linecap="round" opacity=".48"/>
               <path d="M35 143 Q111 103 174 151" fill="none" stroke="#efbea5" stroke-width="5" opacity=".42"/>
 
-              <path id="sideEyeWhiteShape" d="M24 250 C66 191 124 176 176 195 Q233 250 176 305 C124 324 66 309 24 250Z" fill="url(#sideEyeWhite)" stroke="#784a42" stroke-width="8" filter="url(#sideSoftShadow)"/>
-              <path id="sideUpperRim" d="M34 250 C73 205 124 188 176 202" fill="none" stroke="#efb9a2" stroke-width="8" stroke-linecap="round"/>
-              <path id="sideLowerRim" d="M34 252 C73 295 124 312 176 298" fill="none" stroke="#edb49e" stroke-width="8" stroke-linecap="round"/>
+              <path id="sideEyeWhiteShape" d="M24 250 C66 191 120 178 166 198 Q210 250 166 302 C120 322 66 309 24 250Z" fill="url(#sideEyeWhite)" stroke="#784a42" stroke-width="8" filter="url(#sideSoftShadow)"/>
+              <path id="sideUpperRim" d="M34 250 C73 205 120 190 166 204" fill="none" stroke="#efb9a2" stroke-width="8" stroke-linecap="round"/>
+              <path id="sideLowerRim" d="M34 252 C73 295 120 310 166 296" fill="none" stroke="#edb49e" stroke-width="8" stroke-linecap="round"/>
 
               <g clip-path="url(#sideEyeClip)">
-                <ellipse cx="174" cy="250" rx="31" ry="47" fill="url(#sideIris)" stroke="#40291b" stroke-width="5"/>
-                <ellipse cx="197" cy="250" rx="8" ry="26" fill="#070b0d"/>
-                <ellipse cx="160" cy="228" rx="7" ry="13" fill="#fff" opacity=".76"/>
-                <ellipse cx="199" cy="241" rx="3" ry="5" fill="#fff" opacity=".58"/>
+                <ellipse cx="158" cy="250" rx="30" ry="46" fill="url(#sideIris)" stroke="#40291b" stroke-width="5"/>
+                <ellipse cx="181" cy="250" rx="7" ry="25" fill="#070b0d"/>
+                <ellipse cx="145" cy="228" rx="7" ry="13" fill="#fff" opacity=".76"/>
+                <ellipse cx="182" cy="241" rx="3" ry="5" fill="#fff" opacity=".58"/>
               </g>
-              <g id="sideUpperLashes" fill="none" stroke="#382824" stroke-width="5" stroke-linecap="round" opacity=".88">
+              <g id="sideUpperLashes" transform="translate(-10 0)" fill="none" stroke="#382824" stroke-width="5" stroke-linecap="round" opacity=".88">
                 <path d="M151 190 Q170 166 180 151"/><path d="M165 198 Q189 178 201 165"/><path d="M176 210 Q199 195 214 185"/>
               </g>
-              <g id="sideLowerLashes" fill="none" stroke="#5a3b36" stroke-width="3" stroke-linecap="round" opacity=".62">
+              <g id="sideLowerLashes" transform="translate(-10 0)" fill="none" stroke="#5a3b36" stroke-width="3" stroke-linecap="round" opacity=".62">
                 <path d="M157 303 Q177 322 184 337"/><path d="M173 293 Q197 308 209 321"/>
               </g>
 
@@ -1189,7 +1189,7 @@
                 <path d="M121 337 L121 368" fill="none" stroke="#83e4ff" stroke-width="3" stroke-linecap="round" marker-end="url(#sideArrow)"/>
               </g>
 
-              <path d="M183 142 V358" fill="none" stroke="#b7eeff" stroke-width="3" stroke-dasharray="8 8"/>
+              <path d="M166 142 V358" fill="none" stroke="#b7eeff" stroke-width="3" stroke-dasharray="8 8"/>
               <path d="M354 250 H235" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" marker-end="url(#sideArrow)" opacity=".78"/>
 
               <g id="sideInsertionAssembly" transform="translate(0 0) rotate(15 287 250)">
@@ -1198,15 +1198,15 @@
                 <path d="M318 271 C327 276 333 286 334 296 C335 306 331 315 324 321 C327 306 324 288 318 271Z" fill="url(#sideNail)" stroke="#d28e7d" stroke-width="1.6"/>
                 <path d="M289 284 Q300 279 309 284 M287 292 Q298 287 308 292 M289 300 Q299 295 308 300" fill="none" stroke="#c98573" stroke-width="1.8" stroke-linecap="round" opacity=".72"/>
                 <path d="M322 356 Q336 349 348 356 M338 397 Q352 390 363 397" fill="none" stroke="#bd796a" stroke-width="2.3" stroke-linecap="round" opacity=".6"/>
-                <path id="sideLensShape" d="M258 195 Q315 250 258 305" fill="#75d8ee" fill-opacity=".14" stroke="url(#sideLens)" stroke-width="9" stroke-linecap="round" filter="url(#sideGlow)"/>
-                <path d="M258 195 L258 305" fill="none" stroke="#e5fbff" stroke-width="2" stroke-dasharray="5 6" opacity=".72"/>
-                <path d="M263 205 Q310 250 263 295" fill="none" stroke="#fff" stroke-width="3" opacity=".62"/>
-                <circle id="sideTopContact" cx="258" cy="195" r="13" fill="#ff5964" opacity="0"/>
-                <circle id="sideBottomContact" cx="258" cy="305" r="13" fill="#ff5964" opacity="0"/>
+                <path id="sideLensShape" d="M258 198 Q302 250 258 302" fill="#75d8ee" fill-opacity=".14" stroke="url(#sideLens)" stroke-width="9" stroke-linecap="round" filter="url(#sideGlow)"/>
+                <path d="M258 198 L258 302" fill="none" stroke="#e5fbff" stroke-width="2" stroke-dasharray="5 6" opacity=".72"/>
+                <path d="M263 207 Q297 250 263 293" fill="none" stroke="#fff" stroke-width="3" opacity=".62"/>
+                <circle id="sideTopContact" cx="258" cy="198" r="13" fill="#ff5964" opacity="0"/>
+                <circle id="sideBottomContact" cx="258" cy="302" r="13" fill="#ff5964" opacity="0"/>
               </g>
 
               <g id="sideContactSuccess" opacity="0" pointer-events="none">
-                <path d="M176 195 Q233 250 176 305" fill="none" stroke="#76e3bd" stroke-width="11" stroke-linecap="round" filter="url(#sideGlow)"/>
+                <path d="M166 198 Q210 250 166 302" fill="none" stroke="#76e3bd" stroke-width="11" stroke-linecap="round" filter="url(#sideGlow)"/>
                 <text x="276" y="382" fill="#c9f9e7" text-anchor="middle" font-size="16" font-weight="900">렌즈 면이 고르게 안착했어요</text>
               </g>
 
@@ -2206,19 +2206,19 @@
         const upperRatio = Math.max(0, Math.min(1, wearState.upper / 60));
         const lowerRatio = Math.max(0, Math.min(1, wearState.lower / 60));
         const upperC1 = 242 - upperRatio * 51;
-        const upperC2 = 228 - upperRatio * 52;
-        const upperShoulder = 235 - upperRatio * 40;
+        const upperC2 = 228 - upperRatio * 50;
+        const upperShoulder = 235 - upperRatio * 37;
         const lowerC1 = 258 + lowerRatio * 51;
-        const lowerC2 = 272 + lowerRatio * 52;
-        const lowerShoulder = 265 + lowerRatio * 40;
-        const sideOpening = `M24 250 C66 ${upperC1} 124 ${upperC2} 176 ${upperShoulder} Q233 250 176 ${lowerShoulder} C124 ${lowerC2} 66 ${lowerC1} 24 250Z`;
+        const lowerC2 = 272 + lowerRatio * 50;
+        const lowerShoulder = 265 + lowerRatio * 37;
+        const sideOpening = `M24 250 C66 ${upperC1} 120 ${upperC2} 166 ${upperShoulder} Q210 250 166 ${lowerShoulder} C120 ${lowerC2} 66 ${lowerC1} 24 250Z`;
 
         sideEyeWhiteShape.setAttribute('d', sideOpening);
         sideEyeClipPath.setAttribute('d', sideOpening);
-        sideUpperRim.setAttribute('d', `M34 250 C73 ${242 - upperRatio * 37} 124 ${226 - upperRatio * 38} 176 ${upperShoulder + 7}`);
-        sideLowerRim.setAttribute('d', `M34 252 C73 ${258 + lowerRatio * 37} 124 ${274 + lowerRatio * 38} 176 ${lowerShoulder - 7}`);
-        sideUpperLashes.setAttribute('transform', `translate(0 ${(60 - wearState.upper) * .65})`);
-        sideLowerLashes.setAttribute('transform', `translate(0 ${-(60 - wearState.lower) * .65})`);
+        sideUpperRim.setAttribute('d', `M34 250 C73 ${242 - upperRatio * 37} 120 ${228 - upperRatio * 38} 166 ${upperShoulder + 6}`);
+        sideLowerRim.setAttribute('d', `M34 252 C73 ${258 + lowerRatio * 37} 120 ${272 + lowerRatio * 38} 166 ${lowerShoulder - 6}`);
+        sideUpperLashes.setAttribute('transform', `translate(-10 ${(60 - wearState.upper) * .65})`);
+        sideLowerLashes.setAttribute('transform', `translate(-10 ${-(60 - wearState.lower) * .65})`);
 
         sideInsertionAssembly.setAttribute('transform', `translate(${wearState.approach} 0) rotate(${wearState.angle} 287 250)`);
         angleSlider.value = String(wearState.angle);
@@ -2495,7 +2495,7 @@
         function animate(now) {
           const progress = Math.min(1, (now - start) / duration);
           const eased = 1 - Math.pow(1 - progress, 3);
-          wearState.approach = -82 * eased;
+          wearState.approach = -92 * eased;
           renderSideGeometry();
           if (progress < 1) {
             requestAnimationFrame(animate);
