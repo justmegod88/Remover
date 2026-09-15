@@ -432,7 +432,88 @@
 
     .orientation-actions .wear-action {
       flex: 1 1 0;
-      padding: 10px 8px;
+      min-width: 0;
+      min-height: 190px;
+      overflow: hidden;
+      padding: 0;
+      border: 1px solid #c2d9e9;
+      background: linear-gradient(180deg, #fff 0%, #f4faff 100%);
+      text-align: left;
+      box-shadow: 0 7px 18px rgba(10, 55, 88, .1);
+    }
+
+    .orientation-card-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 38px;
+      padding: 8px 10px;
+      background: linear-gradient(135deg, #0b3d67, #1374aa);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .orientation-card.wrong .orientation-card-title {
+      background: linear-gradient(135deg, #5a6570, #7d8995);
+    }
+
+    .orientation-card-title small {
+      padding: 3px 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.18);
+      font-size: 9px;
+      letter-spacing: .02em;
+    }
+
+    .orientation-visual {
+      display: block;
+      width: 100%;
+      height: 112px;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(149, 227, 248, .22), transparent 42%),
+        linear-gradient(180deg, #fafeff, #e8f4fa);
+    }
+
+    .orientation-caption {
+      display: block;
+      padding: 8px 8px 9px;
+      color: #19364d;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.25;
+      text-align: center;
+    }
+
+    .orientation-caption small {
+      display: block;
+      margin-top: 3px;
+      color: #6b7f90;
+      font-size: 9px;
+      font-weight: 750;
+    }
+
+    .orientation-card.correct:active {
+      border-color: #2aa67c;
+      box-shadow: 0 0 0 3px rgba(42,166,124,.18);
+    }
+
+    .orientation-card.wrong:active {
+      border-color: #cf555f;
+      box-shadow: 0 0 0 3px rgba(207,85,95,.16);
+    }
+
+    .orientation-card.wrong.invalid {
+      border-color: #d34c59;
+      background: #fff1f2;
+      box-shadow: 0 0 0 3px rgba(211,76,89,.16);
+      animation: orientationWrong 360ms ease;
+    }
+
+    @keyframes orientationWrong {
+      0%, 100% { transform: translateX(0); }
+      30% { transform: translateX(-5px); }
+      65% { transform: translateX(5px); }
     }
 
     .angle-actions {
@@ -528,14 +609,6 @@
       font-size: 11px;
       font-weight: 900;
       letter-spacing: .05em;
-    }
-
-    .orientation-icon {
-      display: block;
-      height: 19px;
-      margin-bottom: 3px;
-      font-size: 21px;
-      line-height: 16px;
     }
 
     .opening-meter {
@@ -881,8 +954,46 @@
 
         <div class="wear-control-dock" aria-label="착용 단계 조작 버튼">
           <div class="wear-actions orientation-actions" id="orientationActions">
-            <button class="wear-action" id="wrongOrientation" type="button"><span class="orientation-icon">⌒</span>가장자리가 벌어진 렌즈</button>
-            <button class="wear-action" id="correctOrientation" type="button"><span class="orientation-icon">∪</span>둥근 그릇 모양 렌즈</button>
+            <button class="wear-action orientation-card correct" id="correctOrientation" type="button" aria-label="가장자리가 위로 선 올바른 렌즈 앞면 선택">
+              <span class="orientation-card-title">렌즈 앞면 <small>FRONT</small></span>
+              <svg class="orientation-visual" viewBox="0 0 170 112" role="img" aria-label="손가락 위에서 가장자리가 곧게 선 그릇 모양 렌즈">
+                <defs>
+                  <linearGradient id="orientationFingerFront" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd2ba"/><stop offset=".62" stop-color="#e7a084"/><stop offset="1" stop-color="#b96d5d"/></linearGradient>
+                  <linearGradient id="orientationLensFront" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e8fdff"/><stop offset=".48" stop-color="#76daed"/><stop offset="1" stop-color="#1598c4"/></linearGradient>
+                  <filter id="orientationGlowFront" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#168db6" flood-opacity=".34"/></filter>
+                </defs>
+                <ellipse cx="85" cy="101" rx="69" ry="20" fill="#123c57" opacity=".1"/>
+                <path d="M9 113 C19 83 47 74 85 74 C123 74 151 83 161 113Z" fill="url(#orientationFingerFront)" stroke="#a95f52" stroke-width="3"/>
+                <path d="M28 102 Q50 88 85 88 Q120 88 142 102" fill="none" stroke="#f5bea6" stroke-width="3" opacity=".72"/>
+                <path d="M48 24 C50 48 58 65 70 73 C78 79 92 79 100 73 C112 65 120 48 122 24" fill="#8de8f5" fill-opacity=".19" stroke="url(#orientationLensFront)" stroke-width="6" stroke-linecap="round" filter="url(#orientationGlowFront)"/>
+                <path d="M53 27 C56 47 63 60 73 66 C80 71 90 71 97 66 C107 60 114 47 117 27" fill="none" stroke="#fff" stroke-width="2.5" opacity=".78"/>
+                <ellipse cx="48" cy="24" rx="5" ry="3" fill="#c9f8ff" stroke="#43bdd8" stroke-width="2"/>
+                <ellipse cx="122" cy="24" rx="5" ry="3" fill="#c9f8ff" stroke="#43bdd8" stroke-width="2"/>
+                <path d="M39 42 V18 M131 42 V18" fill="none" stroke="#1489b8" stroke-width="3" stroke-linecap="round"/>
+                <path d="M35 22 L39 17 L43 22 M127 22 L131 17 L135 22" fill="none" stroke="#1489b8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="orientation-caption">가장자리가 곧게 위로<small>깊고 둥근 그릇 모양</small></span>
+            </button>
+            <button class="wear-action orientation-card wrong" id="wrongOrientation" type="button" aria-label="가장자리가 바깥으로 벌어진 뒤집힌 렌즈 선택">
+              <span class="orientation-card-title">뒤집힌 렌즈 <small>INSIDE OUT</small></span>
+              <svg class="orientation-visual" viewBox="0 0 170 112" role="img" aria-label="손가락 위에서 가장자리가 바깥으로 퍼진 접시 모양 렌즈">
+                <defs>
+                  <linearGradient id="orientationFingerBack" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd2ba"/><stop offset=".62" stop-color="#e7a084"/><stop offset="1" stop-color="#b96d5d"/></linearGradient>
+                  <linearGradient id="orientationLensBack" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f1fdff"/><stop offset=".48" stop-color="#8addec"/><stop offset="1" stop-color="#398fae"/></linearGradient>
+                  <filter id="orientationGlowBack" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#39859e" flood-opacity=".28"/></filter>
+                </defs>
+                <ellipse cx="85" cy="101" rx="69" ry="20" fill="#123c57" opacity=".1"/>
+                <path d="M9 113 C19 83 47 74 85 74 C123 74 151 83 161 113Z" fill="url(#orientationFingerBack)" stroke="#a95f52" stroke-width="3"/>
+                <path d="M28 102 Q50 88 85 88 Q120 88 142 102" fill="none" stroke="#f5bea6" stroke-width="3" opacity=".72"/>
+                <path d="M24 32 Q34 27 43 31 C52 50 63 64 74 71 C81 76 89 76 96 71 C107 64 118 50 127 31 Q136 27 146 32" fill="#93e7f3" fill-opacity=".16" stroke="url(#orientationLensBack)" stroke-width="6" stroke-linecap="round" filter="url(#orientationGlowBack)"/>
+                <path d="M33 33 Q39 31 45 34 C55 50 65 60 76 66 C82 69 88 69 94 66 C105 60 115 50 125 34 Q131 31 137 33" fill="none" stroke="#fff" stroke-width="2.5" opacity=".72"/>
+                <ellipse cx="24" cy="32" rx="5" ry="3" fill="#d8f8fc" stroke="#66b8ca" stroke-width="2"/>
+                <ellipse cx="146" cy="32" rx="5" ry="3" fill="#d8f8fc" stroke="#66b8ca" stroke-width="2"/>
+                <path d="M39 18 L21 27 M131 18 L149 27" fill="none" stroke="#c54b55" stroke-width="3" stroke-linecap="round"/>
+                <path d="M26 21 L20 27 L28 29 M144 21 L150 27 L142 29" fill="none" stroke="#c54b55" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="orientation-caption">가장자리가 바깥으로 벌어짐<small>얕고 퍼진 접시 모양</small></span>
+            </button>
           </div>
           <div class="wear-actions" id="openingActions" hidden>
             <button class="wear-action" id="tryOpening" type="button">렌즈 넣기 시도</button>
@@ -1011,7 +1122,7 @@
             <span class="side-view-label">SIDE VIEW · 측면</span>
             <svg id="sideViewScene" viewBox="0 0 400 500" role="img" aria-labelledby="sideViewTitle sideViewDesc">
               <title id="sideViewTitle">각막과 렌즈의 측면 정렬 연습</title>
-              <desc id="sideViewDesc">손가락 위 렌즈의 각도를 조절하여 렌즈 전체가 각막 정면에 수직으로 고르게 닿도록 연습합니다.</desc>
+              <desc id="sideViewDesc">반대손 검지로 윗눈꺼풀을 올리고, 렌즈를 든 손의 중지로 아랫눈꺼풀을 내린 채, 같은 손 검지 위 렌즈의 각도를 조절하여 각막 정면에 고르게 닿도록 연습합니다.</desc>
               <defs>
                 <linearGradient id="sideBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d9edf4"/><stop offset=".48" stop-color="#8bb1c2"/><stop offset="1" stop-color="#17394f"/></linearGradient>
                 <radialGradient id="sideSkin" cx="62%" cy="45%" r="75%"><stop offset="0" stop-color="#f4c7ac"/><stop offset=".48" stop-color="#dfa184"/><stop offset=".82" stop-color="#bd7867"/><stop offset="1" stop-color="#8f554d"/></radialGradient>
@@ -1019,6 +1130,7 @@
                 <radialGradient id="sideIris" cx="38%" cy="40%" r="70%"><stop offset="0" stop-color="#d8aa63"/><stop offset=".42" stop-color="#855127"/><stop offset=".76" stop-color="#432819"/><stop offset="1" stop-color="#1c1511"/></radialGradient>
                 <linearGradient id="sideLens" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d9fbff" stop-opacity=".98"/><stop offset=".45" stop-color="#77dff4" stop-opacity=".82"/><stop offset="1" stop-color="#2ba8d2" stop-opacity=".62"/></linearGradient>
                 <linearGradient id="sideFinger" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7c7ab"/><stop offset=".52" stop-color="#e9a889"/><stop offset="1" stop-color="#bd7564"/></linearGradient>
+                <linearGradient id="sideNail" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe1d1"/><stop offset=".55" stop-color="#efbba5"/><stop offset="1" stop-color="#d89583"/></linearGradient>
                 <filter id="sideGlow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
                 <filter id="sideSoftShadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#173047" flood-opacity=".28"/></filter>
                 <filter id="sideSkinTexture" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".7" numOctaves="2" seed="8"/><feColorMatrix type="matrix" values="1 0 0 0 0  0 .72 0 0 0  0 0 .62 0 0  0 0 0 .09 0"/></filter>
@@ -1051,6 +1163,39 @@
                 <path d="M157 303 Q177 322 184 337"/><path d="M173 293 Q197 308 209 321"/>
               </g>
 
+              <!-- 반대손 검지: 윗눈꺼풀을 속눈썹 위에서 들어 올린다. -->
+              <g id="sideUpperHoldingHand" filter="url(#sideSoftShadow)">
+                <path d="M67 -22 C86 15 103 52 116 91 C126 119 136 151 143 174" fill="none" stroke="#a96457" stroke-width="53" stroke-linecap="round"/>
+                <path d="M67 -22 C86 15 103 52 116 91 C126 119 136 151 143 174" fill="none" stroke="url(#sideFinger)" stroke-width="45" stroke-linecap="round"/>
+                <ellipse cx="146" cy="179" rx="24" ry="27" transform="rotate(-14 146 179)" fill="url(#sideFinger)" stroke="#a96457" stroke-width="5"/>
+                <path d="M130 158 Q143 146 157 158 Q163 169 156 180 Q143 188 132 177Z" fill="url(#sideNail)" stroke="#d28e7d" stroke-width="2" opacity=".9"/>
+                <path d="M113 87 Q127 79 139 87" fill="none" stroke="#c77f6e" stroke-width="3" stroke-linecap="round" opacity=".65"/>
+              </g>
+              <g pointer-events="none">
+                <path d="M149 184 L149 151" fill="none" stroke="#83e4ff" stroke-width="4" stroke-linecap="round" marker-end="url(#sideArrow)"/>
+                <rect x="211" y="66" width="165" height="48" rx="14" fill="#0a3552" fill-opacity=".86" stroke="#b9ecff" stroke-opacity=".55"/>
+                <text x="224" y="86" fill="#fff" font-size="11" font-weight="900">반대손 검지</text>
+                <text x="224" y="103" fill="#c9f2ff" font-size="11" font-weight="750">윗눈꺼풀을 위로 고정</text>
+                <path d="M211 91 Q183 106 157 151" fill="none" stroke="#b9ecff" stroke-width="2" stroke-dasharray="5 5"/>
+              </g>
+
+              <!-- 렌즈를 든 손: 손바닥에서 중지와 검지가 자연스럽게 이어진다. -->
+              <g id="sideLensHandPalm" filter="url(#sideSoftShadow)">
+                <path d="M400 279 C359 283 333 303 312 329 C291 355 282 392 291 431 C302 467 337 492 400 504Z" fill="url(#sideFinger)" stroke="#a96457" stroke-width="7"/>
+                <path d="M392 352 Q361 326 323 319" fill="none" stroke="#c77f6e" stroke-width="4" stroke-linecap="round" opacity=".66"/>
+                <path d="M364 378 C315 363 265 340 205 312 C190 305 177 302 164 305" fill="none" stroke="#a96457" stroke-width="51" stroke-linecap="round"/>
+                <path d="M364 378 C315 363 265 340 205 312 C190 305 177 302 164 305" fill="none" stroke="url(#sideFinger)" stroke-width="43" stroke-linecap="round"/>
+                <ellipse cx="164" cy="305" rx="25" ry="22" transform="rotate(12 164 305)" fill="url(#sideFinger)" stroke="#a96457" stroke-width="5"/>
+                <path d="M145 296 Q158 287 173 294 Q180 303 173 311 Q158 317 147 308Z" fill="url(#sideNail)" stroke="#d28e7d" stroke-width="2" opacity=".86"/>
+                <path d="M270 344 Q278 329 291 326" fill="none" stroke="#f6c9b2" stroke-width="4" stroke-linecap="round" opacity=".55"/>
+              </g>
+              <g pointer-events="none">
+                <path d="M166 309 L166 342" fill="none" stroke="#83e4ff" stroke-width="4" stroke-linecap="round" marker-end="url(#sideArrow)"/>
+                <rect x="14" y="356" width="184" height="48" rx="14" fill="#0a3552" fill-opacity=".86" stroke="#b9ecff" stroke-opacity=".55"/>
+                <text x="27" y="376" fill="#fff" font-size="11" font-weight="900">착용 손 중지</text>
+                <text x="27" y="393" fill="#c9f2ff" font-size="11" font-weight="750">아랫눈꺼풀을 아래로 고정</text>
+              </g>
+
               <path d="M183 142 V358" fill="none" stroke="#b7eeff" stroke-width="3" stroke-dasharray="8 8"/>
               <text x="183" y="126" fill="#d9f6ff" text-anchor="middle" font-size="12" font-weight="850">각막 중심 수직선</text>
               <path d="M354 250 H235" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" marker-end="url(#sideArrow)" opacity=".82"/>
@@ -1060,11 +1205,18 @@
                 <rect x="286" y="214" width="170" height="72" rx="36" fill="url(#sideFinger)" stroke="#a96457" stroke-width="7" filter="url(#sideSoftShadow)"/>
                 <ellipse cx="290" cy="250" rx="27" ry="35" fill="#f4c1a3"/>
                 <ellipse cx="300" cy="238" rx="15" ry="21" fill="#ffd8c2" opacity=".42"/>
+                <path d="M305 225 Q326 214 346 222 Q356 235 349 251 Q328 263 307 251Z" fill="url(#sideNail)" stroke="#d28e7d" stroke-width="2" opacity=".9"/>
+                <path d="M365 235 Q380 228 395 235" fill="none" stroke="#c77f6e" stroke-width="3" stroke-linecap="round" opacity=".68"/>
                 <path id="sideLensShape" d="M258 190 Q322 250 258 310" fill="#75d8ee" fill-opacity=".14" stroke="url(#sideLens)" stroke-width="9" stroke-linecap="round" filter="url(#sideGlow)"/>
                 <path d="M258 190 L258 310" fill="none" stroke="#e5fbff" stroke-width="2" stroke-dasharray="5 6" opacity=".72"/>
                 <path d="M263 202 Q307 250 263 298" fill="none" stroke="#fff" stroke-width="3" opacity=".62"/>
                 <circle id="sideTopContact" cx="258" cy="190" r="13" fill="#ff5964" opacity="0"/>
                 <circle id="sideBottomContact" cx="258" cy="310" r="13" fill="#ff5964" opacity="0"/>
+              </g>
+              <g pointer-events="none">
+                <rect x="260" y="132" width="126" height="42" rx="13" fill="#0a3552" fill-opacity=".82" stroke="#b9ecff" stroke-opacity=".48"/>
+                <text x="273" y="150" fill="#fff" font-size="11" font-weight="900">착용 손 검지</text>
+                <text x="273" y="166" fill="#c9f2ff" font-size="10" font-weight="750">렌즈를 그릇 모양으로 받치기</text>
               </g>
 
               <g id="sideContactSuccess" opacity="0" pointer-events="none">
@@ -1077,7 +1229,7 @@
                 <text x="270" y="405" fill="#ffced2" text-anchor="middle" font-size="15" font-weight="900">속눈썹에 걸리지 않게 더 벌려주세요</text>
               </g>
 
-              <text x="218" y="438" fill="#eefaff" text-anchor="middle" font-size="13" font-weight="750">렌즈 가장자리가 눈을 향한 그릇 모양으로 접근해야 합니다.</text>
+              <text x="202" y="438" fill="#eefaff" text-anchor="middle" font-size="12" font-weight="750">눈꺼풀을 고정하고, 렌즈를 든 검지만 각막 중심으로 움직이세요.</text>
             </svg>
           </div>
 
@@ -1975,8 +2127,8 @@
         },
         3: {
           title: '측면에서 렌즈와 각막을 일직선으로 맞추세요',
-          body: '손가락 각도를 조절해 렌즈 면이 각막의 정면과 평행하도록 맞춘 뒤 넣어보세요.',
-          feedback: '렌즈가 기울면 한쪽 가장자리가 먼저 닿아 밀려날 수 있어요.'
+          body: '반대손 검지로 윗눈꺼풀을, 착용 손 중지로 아랫눈꺼풀을 고정한 뒤 렌즈를 든 검지의 각도를 맞추세요.',
+          feedback: '눈꺼풀 고정 손가락은 그대로 두고, 렌즈를 든 검지만 각막 중심으로 움직이세요.'
         },
         4: {
           title: '손가락을 떼고 천천히 눈을 깜빡이세요',
@@ -2417,6 +2569,11 @@
 
       document.getElementById('correctOrientation').addEventListener('click', () => goWearStep(2));
       document.getElementById('wrongOrientation').addEventListener('click', () => {
+        const wrongCard = document.getElementById('wrongOrientation');
+        wrongCard.classList.remove('invalid');
+        void wrongCard.offsetWidth;
+        wrongCard.classList.add('invalid');
+        window.setTimeout(() => wrongCard.classList.remove('invalid'), 700);
         setWearFeedback('가장자리가 벌어진 접시 모양은 뒤집힌 상태예요. 둥근 그릇 모양을 선택하세요.', 'error');
         vibrate([25, 35, 25]);
       });
