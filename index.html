@@ -1205,7 +1205,7 @@
               <path d="M166 142 V358" fill="none" stroke="#b7eeff" stroke-width="3" stroke-dasharray="8 8"/>
               <path d="M354 250 H235" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" marker-end="url(#sideArrow)" opacity=".78"/>
 
-              <g id="sideInsertionAssembly" transform="translate(0 0) rotate(15 287 250)">
+              <g id="sideInsertionAssembly" transform="translate(0 0) rotate(15 287 238)">
                 <!-- 오른손 검지: 지문 면이 렌즈 뒤를 직접 받치고, 손톱은 오른쪽 측면에만 보인다. -->
                 <g transform="translate(-12 -2)">
                   <path d="M399 505 C371 475 348 441 331 404 L290 309 C282 291 285 270 297 257 C304 249 312 247 320 250 C331 254 338 265 341 278 L380 372 C393 401 405 429 416 455Z" fill="url(#sideFinger)" stroke="#9d6058" stroke-width="2.3" filter="url(#sideSoftShadow)"/>
@@ -2156,6 +2156,9 @@
         }
       };
 
+      const SIDE_ROTATION_PIVOT_X = 287;
+      const SIDE_ROTATION_PIVOT_Y = 238;
+
       const wearState = {
         step: 1,
         upper: 0,
@@ -2269,7 +2272,7 @@
         sideLowerHoldingHand.setAttribute('transform', `translate(0 ${lowerHandOffset})`);
         sideLowerHoldingGuide.setAttribute('transform', `translate(0 ${lowerHandOffset})`);
 
-        sideInsertionAssembly.setAttribute('transform', `translate(${wearState.approach} 0) rotate(${wearState.angle} 287 250)`);
+        sideInsertionAssembly.setAttribute('transform', `translate(${wearState.approach} 0) rotate(${wearState.angle} ${SIDE_ROTATION_PIVOT_X} ${SIDE_ROTATION_PIVOT_Y})`);
         angleSlider.value = String(wearState.angle);
         angleValue.textContent = `${wearState.angle > 0 ? '+' : ''}${wearState.angle}°`;
 
@@ -2583,9 +2586,9 @@
         if (Math.abs(wearState.angle) < .01) return -92;
         const radians = wearState.angle * Math.PI / 180;
         const contactY = wearState.angle > 0 ? 302 : 198;
-        const dx = 258 - 287;
-        const dy = contactY - 250;
-        const rotatedContactX = 287 + dx * Math.cos(radians) - dy * Math.sin(radians);
+        const dx = 258 - SIDE_ROTATION_PIVOT_X;
+        const dy = contactY - SIDE_ROTATION_PIVOT_Y;
+        const rotatedContactX = SIDE_ROTATION_PIVOT_X + dx * Math.cos(radians) - dy * Math.sin(radians);
         return 166 - rotatedContactX;
       }
 
