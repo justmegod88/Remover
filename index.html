@@ -953,7 +953,7 @@
         <section class="coach" aria-labelledby="wearInstructionTitle">
           <div class="step-number" id="wearStepNumber">1</div>
           <div>
-            <strong id="wearInstructionTitle">렌즈의 앞뒤를 먼저 확인 후 적절한 렌즈를 선택해 주세요</strong>
+            <strong id="wearInstructionTitle">렌즈의 앞뒤를 먼저 확인하세요</strong>
             <p id="wearInstructionBody">가장자리가 위로 선 둥근 그릇 모양이 올바른 방향입니다.</p>
           </div>
         </section>
@@ -1140,6 +1140,7 @@
                 <filter id="sideSoftShadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#173047" flood-opacity=".28"/></filter>
                 <filter id="sideSkinTexture" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".7" numOctaves="2" seed="8"/><feColorMatrix type="matrix" values="1 0 0 0 0  0 .72 0 0 0  0 0 .62 0 0  0 0 0 .09 0"/></filter>
                 <marker id="sideArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#fff"/></marker>
+                <marker id="sideAngleArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#7fe4ff"/></marker>
                 <clipPath id="sideFaceClip"><path d="M0 0 H171 C193 43 190 94 176 137 C164 176 164 193 172 219 C175 231 176 242 176 250 C176 258 175 269 172 281 C164 307 164 338 176 377 C190 420 193 457 171 500 H0Z"/></clipPath>
                 <clipPath id="sideEyeClip"><path d="M24 250 C66 191 120 178 166 198 Q210 250 166 302 C120 322 66 309 24 250Z"/></clipPath>
                 <clipPath id="sideApertureClip"><path id="sideApertureClipPath" d="M24 250 C66 213 120 210 166 220 Q194 250 166 280 C120 290 66 287 24 250Z"/></clipPath>
@@ -1219,14 +1220,19 @@
                 <circle id="sideBottomContact" cx="258" cy="302" r="13" fill="#ff5964" opacity="0"/>
               </g>
 
+              <g id="sideAngleGuide" opacity="0" pointer-events="none">
+                <path d="M343 214 C369 232 370 268 343 287" fill="none" stroke="#7fe4ff" stroke-width="3.2" stroke-linecap="round" marker-start="url(#sideAngleArrow)" marker-end="url(#sideAngleArrow)" filter="url(#sideGlow)"/>
+              </g>
+
               <g id="sideContactSuccess" opacity="0" pointer-events="none">
                 <path d="M166 198 Q210 250 166 302" fill="none" stroke="#76e3bd" stroke-width="11" stroke-linecap="round" filter="url(#sideGlow)"/>
                 <text x="276" y="382" fill="#c9f9e7" text-anchor="middle" font-size="16" font-weight="900">렌즈 면이 고르게 안착했어요</text>
               </g>
 
               <g id="sideLashWarning" opacity="0" pointer-events="none">
-                <path id="sideLashWarningLine" d="M145 189 Q180 198 205 225" fill="none" stroke="#ff5964" stroke-width="10" stroke-linecap="round"/>
-                <text x="270" y="405" fill="#ffced2" text-anchor="middle" font-size="15" font-weight="900">속눈썹에 걸리지 않게 더 벌려주세요</text>
+                <path id="sideUpperLashWarningLine" d="M130 214 Q166 203 198 217" fill="none" stroke="#ff5964" stroke-width="9" stroke-linecap="round" filter="url(#sideGlow)" opacity="0"/>
+                <path id="sideLowerLashWarningLine" d="M132 286 Q166 297 196 282" fill="none" stroke="#ff5964" stroke-width="9" stroke-linecap="round" filter="url(#sideGlow)" opacity="0"/>
+                <text id="sideLashWarningText" x="270" y="405" fill="#ffced2" text-anchor="middle" font-size="15" font-weight="900">속눈썹에 걸리지 않게 더 벌려주세요</text>
               </g>
 
             </svg>
@@ -2116,11 +2122,14 @@
       const sideUpperHoldingGuide = document.getElementById('sideUpperHoldingGuide');
       const sideLowerHoldingGuide = document.getElementById('sideLowerHoldingGuide');
       const sideInsertionAssembly = document.getElementById('sideInsertionAssembly');
+      const sideAngleGuide = document.getElementById('sideAngleGuide');
       const sideTopContact = document.getElementById('sideTopContact');
       const sideBottomContact = document.getElementById('sideBottomContact');
       const sideContactSuccess = document.getElementById('sideContactSuccess');
       const sideLashWarning = document.getElementById('sideLashWarning');
-      const sideLashWarningLine = document.getElementById('sideLashWarningLine');
+      const sideUpperLashWarningLine = document.getElementById('sideUpperLashWarningLine');
+      const sideLowerLashWarningLine = document.getElementById('sideLowerLashWarningLine');
+      const sideLashWarningText = document.getElementById('sideLashWarningText');
       const angleSlider = document.getElementById('angleSlider');
       const angleValue = document.getElementById('angleValue');
       const angleStatus = document.getElementById('angleStatus');
@@ -2263,6 +2272,8 @@
         sideLowerRim.setAttribute('d', `M30 250 C68 ${lowerC1 - 4} 120 ${lowerC2 - 4} 165 ${lowerShoulder - 2}`);
         sideUpperLashes.setAttribute('transform', `translate(0 ${-upperRatio * 30})`);
         sideLowerLashes.setAttribute('transform', `translate(0 ${lowerRatio * 30})`);
+        sideUpperLashWarningLine.setAttribute('transform', `translate(0 ${-upperRatio * 30})`);
+        sideLowerLashWarningLine.setAttribute('transform', `translate(0 ${lowerRatio * 30})`);
 
         // 눈꺼풀을 잡은 손가락도 드래그한 거리만큼 함께 움직여 고정된 느낌을 준다.
         const upperHandOffset = -upperRatio * 22;
@@ -2273,6 +2284,11 @@
         sideLowerHoldingGuide.setAttribute('transform', `translate(0 ${lowerHandOffset})`);
 
         sideInsertionAssembly.setAttribute('transform', `translate(${wearState.approach} 0) rotate(${wearState.angle} ${SIDE_ROTATION_PIVOT_X} ${SIDE_ROTATION_PIVOT_Y})`);
+        sideAngleGuide.setAttribute('transform', `translate(${wearState.approach} 0)`);
+        const showAngleGuide = DIRECT_SIDE_WEAR
+          ? wearState.step === 2 && wearState.upper >= 42 && wearState.lower >= 42 && !wearState.inserting && !wearState.success
+          : wearState.step === 3 && wearState.viewMode === 'side' && !wearState.inserting && !wearState.success;
+        sideAngleGuide.style.opacity = showAngleGuide ? '.72' : '0';
         angleSlider.value = String(wearState.angle);
         angleValue.textContent = `${wearState.angle > 0 ? '+' : ''}${wearState.angle}°`;
 
@@ -2558,10 +2574,14 @@
         sideLashWarning.style.opacity = '0';
 
         if (type === 'lid') {
-          const lowerShort = wearState.lower < 42 && wearState.lower <= wearState.upper;
-          sideLashWarningLine.setAttribute('d', lowerShort ? 'M145 311 Q180 302 205 275' : 'M145 189 Q180 198 205 225');
+          const upperShort = wearState.upper < 42;
+          const lowerShort = wearState.lower < 42;
+          sideUpperLashWarningLine.style.opacity = upperShort ? '1' : '0';
+          sideLowerLashWarningLine.style.opacity = lowerShort ? '1' : '0';
           sideLashWarning.style.opacity = '1';
-          const location = lowerShort ? '아래 속눈썹' : '위 속눈썹';
+          const bothShort = upperShort && lowerShort;
+          const location = bothShort ? '위·아래 속눈썹' : upperShort ? '위 속눈썹' : '아래 속눈썹';
+          sideLashWarningText.textContent = bothShort ? '위·아래 눈꺼풀을 모두 더 벌려주세요' : `${location}에 걸리지 않게 더 벌려주세요`;
           setWearFeedback(`${count}회 실패 · 눈을 충분히 벌리지 않아 렌즈가 ${location}에 닿았어요.`, 'error');
         } else {
           const topFirst = wearState.angle < 0;
