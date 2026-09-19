@@ -411,23 +411,16 @@
  * Replicate API 토큰을 이 index.html 안에 직접 넣지 마세요.
  * GitHub Pages에 공개하면 토큰이 그대로 노출됩니다.
  *
- * 아래 API_ENDPOINT에는 본인이 따로 만들어 둔 서버리스 프록시 주소를 넣으세요.
- * 이 페이지는 기본적으로 POST JSON:
- *   { image: "data:image/jpeg;base64,..." }
- * 를 전송합니다.
- *
- * 응답은 아래 중 하나를 지원합니다.
- *   { output: "https://result-image-url" }
- *   { output: ["https://result-image-url"] }
- *   { url: "https://result-image-url" }
- *   { image: "https://result-image-url" }
- *
- * API_ENDPOINT가 빈 문자열이면 화면 흐름 테스트용 DEMO 모드로 작동하며
- * AFTER에는 원본 사진을 그대로 표시합니다.
+ * Replicate 토큰은 이 HTML에 넣지 않습니다.
+ * Vercel 프록시(https://remover-rho.vercel.app)가 토큰을 서버 쪽에서 보관하고,
+ * 이 페이지는 /api/predict 및 /api/status만 호출합니다.
  */
 const CONFIG = {
-  API_ENDPOINT: "",       // 예: "https://your-domain.com/api/remove-glasses"
-  API_TIMEOUT_MS: 90000
+  API_BASE: "https://remover-rho.vercel.app",
+  PREDICT_PATH: "/api/predict",
+  STATUS_PATH: "/api/status",
+  API_TIMEOUT_MS: 120000,
+  POLL_INTERVAL_MS: 1800
 };
 
 const screens = [...document.querySelectorAll('.screen')];
@@ -546,32 +539,117 @@ document.querySelectorAll('[data-back]').forEach(btn=>{
   });
 });
 
-async function callRemovalApi(imageDataUrl){
-  if(!CONFIG.API_ENDPOINT){
-    // UI flow demo only.
-    await new Promise(r=>setTimeout(r,1500));
-    return {url:imageDataUrl, demo:true};
+function extractResultUrl(data){
+  const d = data?.prediction ?? data?.result ?? data ?? {};
+  let url = d.output ?? d.url ?? d.image ?? data?.output ?? data?.url ?? data?.image;
+  if(Array.isArray(url)) url = url[0];
+  if(url && typeof url === 'object') {
+    url = url.url ?? url.href ?? url.path ?? null;
   }
+  return typeof url === 'string' ? url : null;
+}
 
+function extractPredictionId(data){
+  return data?.id
+    ?? data?.predictionId
+    ?? data?.prediction_id
+    ?? data?.prediction?.id
+    ?? data?.result?.id
+    ?? null;
+}
+
+function extractStatus(data){
+  return String(
+    data?.status
+    ?? data?.prediction?.status
+    ?? data?.result?.status
+    ?? ''
+  ).toLowerCase();
+}
+
+async function fetchJson(url, options = {}){
+  const res = await fetch(url, options);
+  const raw = await res.text();
+  let data = {};
+  try { data = raw ? JSON.parse(raw) : {}; }
+  catch { throw new Error(raw || `API 응답을 읽지 못했습니다. (${res.status})`); }
+
+  if(!res.ok){
+    const msg = data?.detail ?? data?.error ?? data?.message ?? raw ?? `HTTP ${res.status}`;
+    throw new Error(String(msg));
+  }
+  return data;
+}
+
+async function callRemovalApi(imageDataUrl){
   const controller = new AbortController();
   const timer = setTimeout(()=>controller.abort(), CONFIG.API_TIMEOUT_MS);
+  const base = CONFIG.API_BASE.replace(/\/+$/,'');
+  const predictUrl = base + CONFIG.PREDICT_PATH;
 
   try{
-    const res = await fetch(CONFIG.API_ENDPOINT,{
+    // Vercel이 Replicate 토큰을 숨긴 상태에서 이 요청을 Replicate로 전달합니다.
+    let data = await fetchJson(predictUrl,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({image:imageDataUrl}),
       signal:controller.signal
     });
-    if(!res.ok){
-      const txt = await res.text().catch(()=> '');
-      throw new Error(`API 오류 (${res.status}) ${txt}`.trim());
+
+    let output = extractResultUrl(data);
+    let status = extractStatus(data);
+
+    if(output && (!status || ['succeeded','success','completed','complete'].includes(status))){
+      return {url:output, demo:false};
     }
-    const data = await res.json();
-    let url = data.output ?? data.url ?? data.image;
-    if(Array.isArray(url)) url = url[0];
-    if(!url) throw new Error('API 응답에서 결과 이미지 URL을 찾지 못했습니다.');
-    return {url, demo:false};
+
+    const id = extractPredictionId(data);
+    if(!id){
+      if(output) return {url:output, demo:false};
+      throw new Error('예측 ID 또는 결과 이미지 URL을 받지 못했습니다.');
+    }
+
+    while(true){
+      await new Promise(r=>setTimeout(r, CONFIG.POLL_INTERVAL_MS));
+
+      // 이전에 만든 Vercel 프록시 구현 차이를 흡수하기 위해
+      // 흔히 쓰는 status URL 두 형태를 순서대로 시도합니다.
+      const candidates = [
+        `${base}${CONFIG.STATUS_PATH}?id=${encodeURIComponent(id)}`,
+        `${base}${CONFIG.STATUS_PATH}?predictionId=${encodeURIComponent(id)}`,
+        `${base}${CONFIG.STATUS_PATH}/${encodeURIComponent(id)}`
+      ];
+
+      let polled = null;
+      let lastError = null;
+
+      for(const url of candidates){
+        try{
+          polled = await fetchJson(url,{signal:controller.signal});
+          break;
+        }catch(err){
+          lastError = err;
+        }
+      }
+
+      if(!polled) throw lastError || new Error('상태 조회에 실패했습니다.');
+
+      status = extractStatus(polled);
+      output = extractResultUrl(polled);
+
+      if(output && (!status || ['succeeded','success','completed','complete'].includes(status))){
+        return {url:output, demo:false};
+      }
+
+      if(['failed','error','canceled','cancelled'].includes(status)){
+        const reason =
+          polled?.error
+          ?? polled?.prediction?.error
+          ?? polled?.result?.error
+          ?? 'AI 처리에 실패했습니다.';
+        throw new Error(String(reason));
+      }
+    }
   } finally {
     clearTimeout(timer);
   }
