@@ -1162,15 +1162,15 @@
                 <marker id="sideArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#fff"/></marker>
                 <marker id="sideAngleArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#7fe4ff"/></marker>
                 <clipPath id="sideFaceClip"><path d="M0 0 H171 C193 43 190 94 176 137 C164 176 164 193 172 219 C175 231 176 242 176 250 C176 258 175 269 172 281 C164 307 164 338 176 377 C190 420 193 457 171 500 H0Z"/></clipPath>
-                <clipPath id="sideEyeClip"><path d="M24 250 C66 191 120 178 166 198 Q210 250 166 302 C120 322 66 309 24 250Z"/></clipPath>
-                <clipPath id="sideApertureClip"><path id="sideApertureClipPath" d="M24 250 C66 213 120 210 166 220 Q194 250 166 280 C120 290 66 287 24 250Z"/></clipPath>
+                <clipPath id="sideEyeClip"><path d="M76 250 C102 191 120 178 166 198 Q210 250 166 302 C120 322 102 309 76 250Z"/></clipPath>
+                <clipPath id="sideApertureClip"><path id="sideApertureClipPath" d="M76 250 C102 213 120 210 166 220 Q194 250 166 280 C120 290 102 287 76 250Z"/></clipPath>
               </defs>
 
               <rect width="400" height="500" fill="url(#sideBg)"/>
               <ellipse cx="312" cy="96" rx="180" ry="130" fill="#fff" opacity=".12"/>
 
               <defs>
-                <path id="humanProfile" d="M0 0 H139 C165 18 185 57 186 104 C188 143 176 170 171 190 C167 209 173 227 177 249 C180 276 196 301 212 322 C221 335 224 344 216 351 C207 359 193 353 184 355 C179 362 181 369 190 375 C198 380 195 385 188 388 C194 393 191 400 183 403 C178 406 185 417 182 429 C179 445 166 452 146 453 L134 500 H0Z"/>
+                <path id="humanProfile" d="M0 0 H159 C188 20 211 61 215 105 C218 143 209 166 204 183 C199 203 204 222 212 243 C220 264 230 276 242 284 C251 297 254 306 246 313 C237 321 223 315 214 317 C209 324 211 331 220 337 C228 342 225 347 218 350 C224 355 221 362 213 365 C208 368 215 379 212 391 C209 413 188 426 161 435 C149 451 145 478 146 500 H0Z"/>
                 <radialGradient id="cheekLight"><stop stop-color="#ffe3cd" stop-opacity=".8"/><stop offset="1" stop-color="#edb396" stop-opacity="0"/></radialGradient>
                 <linearGradient id="nosePlane"><stop stop-color="#a96759" stop-opacity=".05"/><stop offset=".55" stop-color="#ffe0c5" stop-opacity=".85"/><stop offset="1" stop-color="#d5947a"/></linearGradient>
                 <linearGradient id="lipTone" x2="0" y2="1"><stop stop-color="#a55c59"/><stop offset=".5" stop-color="#d8978b"/><stop offset="1" stop-color="#b87169"/></linearGradient>
@@ -1180,7 +1180,8 @@
               <use href="#humanProfile" fill="url(#sideSkin)"/>
               <g clip-path="url(#humanProfileClip)" pointer-events="none">
                 <ellipse cx="89" cy="338" rx="112" ry="159" fill="url(#cheekLight)"/>
-                <path d="M171 191 C160 237 179 298 205 325 Q225 347 207 351 L175 343 Q182 326 161 289 Q144 252 151 224Z" fill="url(#nosePlane)"/>
+                <g transform="translate(30 -38)">
+                <path d="M171 191 C160 237 179 298 205 325 Q225 347 207 351 L175 343 Q182 326 161 289 Q144 252 151 224Z" fill="url(#nosePlane)" filter="url(#portraitSoft)"/>
                 <path d="M166 283 Q171 312 190 333 Q198 343 207 342" fill="none" stroke="#ffe8d0" stroke-width="5" opacity=".55" filter="url(#portraitSoft)"/>
                 <path d="M161 326 C174 320 187 333 190 345 Q180 355 168 346" fill="#ce927d"/>
                 <path d="M175 343 Q183 337 192 346 Q184 350 175 346Z" fill="#70433c" opacity=".8"/>
@@ -1193,7 +1194,8 @@
                 <path d="M158 409 Q172 404 181 412" fill="none" stroke="#a96958" stroke-width="3" opacity=".3" filter="url(#portraitSoft)"/>
                 <ellipse cx="149" cy="428" rx="29" ry="15" fill="url(#cheekLight)"/>
                 <path d="M44 407 Q80 461 149 453" fill="none" stroke="#9d6659" stroke-width="10" opacity=".18" filter="url(#portraitSoft)"/>
-                <rect width="240" height="500" filter="url(#sideSkinTexture)" opacity=".22"/>
+                </g>
+                <rect width="270" height="500" filter="url(#sideSkinTexture)" opacity=".22"/>
               </g>
               <use href="#humanProfile" fill="none" stroke="#895d50" stroke-width=".8" opacity=".42"/>
               <g clip-path="url(#sideFaceClip)">
@@ -1203,18 +1205,18 @@
 
               <!-- 눈알과 홍채는 항상 같은 모양을 유지하고, 움직이는 안검 틈으로만 노출한다. -->
               <g clip-path="url(#sideApertureClip)">
-                <path id="sideEyeWhiteShape" d="M24 250 C66 191 120 178 166 198 Q210 250 166 302 C120 322 66 309 24 250Z" fill="url(#sideEyeWhite)" filter="url(#sideSoftShadow)"/>
+                <path id="sideEyeWhiteShape" d="M76 250 C102 191 120 178 166 198 Q210 250 166 302 C120 322 102 309 76 250Z" fill="url(#sideEyeWhite)" filter="url(#sideSoftShadow)"/>
                 <g clip-path="url(#sideEyeClip)">
-                  <path d="M39 246 Q75 236 108 242 M45 267 Q78 274 111 264" fill="none" stroke="#d88f94" stroke-width="1.4" stroke-linecap="round" opacity=".27"/>
-                  <ellipse cx="160" cy="250" rx="34" ry="47" fill="url(#sideIris)" stroke="#342118" stroke-width="3.4"/>
-                  <ellipse cx="160" cy="250" rx="29" ry="41" fill="none" stroke="#d5a259" stroke-width="1" opacity=".18"/>
-                  <path d="M151 207 Q158 228 160 246 M139 220 Q151 237 159 247 M138 280 Q151 265 160 254 M153 292 Q159 271 162 255" fill="none" stroke="#efc77c" stroke-width="1" stroke-linecap="round" opacity=".18"/>
-                  <ellipse cx="184" cy="250" rx="8" ry="25" fill="#06090a"/>
-                  <ellipse cx="147" cy="228" rx="7" ry="13" fill="#fff" opacity=".7"/>
-                  <ellipse cx="185" cy="241" rx="2.8" ry="4.8" fill="#fff" opacity=".52"/>
+                  <path d="M83 248 Q106 239 130 244 M87 262 Q107 267 130 260" fill="none" stroke="#d88f94" stroke-width="1.4" stroke-linecap="round" opacity=".27"/>
+                  <ellipse id="sideIrisFixed" cx="162" cy="250" rx="22" ry="37" fill="url(#sideIris)" stroke="#342118" stroke-width="3.4"/>
+                  <ellipse cx="162" cy="250" rx="19" ry="34" fill="none" stroke="#d5a259" stroke-width="1" opacity=".18"/>
+
+                  <ellipse id="sidePupilFixed" cx="176" cy="250" rx="7" ry="20" fill="#06090a"/>
+                  <ellipse cx="157" cy="231" rx="4" ry="8" fill="#fff" opacity=".7"/>
+                  <ellipse cx="177" cy="242" rx="2" ry="3" fill="#fff" opacity=".52"/>
                 </g>
               </g>
-              <path id="sideEyeOpeningOutline" d="M24 250 C66 213 120 210 166 220 M24 250 C66 287 120 290 166 280" fill="none" stroke="#784a42" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" filter="url(#sideSoftShadow)"/>
+              <path id="sideEyeOpeningOutline" d="M76 250 C102 213 120 210 166 220 M76 250 C102 287 120 290 166 280" fill="none" stroke="#784a42" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" filter="url(#sideSoftShadow)"/>
               <path id="sideUpperLidDetail" d="M55 228 C88 212 124 215 153 216" fill="none" stroke="#c98777" stroke-width="2.1" stroke-linecap="round" opacity=".42"/>
               <path id="sideLowerLidDetail" d="M55 272 C88 288 124 285 153 284" fill="none" stroke="#c98777" stroke-width="2.1" stroke-linecap="round" opacity=".38"/>
               <path id="sideUpperRim" d="M30 250 C68 222 120 214 165 222" fill="none" stroke="#e3a08f" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/>
@@ -2299,29 +2301,29 @@
         const upperRatio = Math.max(0, Math.min(1, wearState.upper / 60));
         const lowerRatio = Math.max(0, Math.min(1, wearState.lower / 60));
         // 0%는 감긴 눈이 아니라 자연스러운 기본 노출, 100%는 충분히 벌린 상태다.
-        const upperC1 = 218 - upperRatio * 27;
-        const upperC2 = 210 - upperRatio * 32;
-        const upperShoulder = 220 - upperRatio * 22;
-        const lowerC1 = 282 + lowerRatio * 27;
-        const lowerC2 = 290 + lowerRatio * 32;
-        const lowerShoulder = 280 + lowerRatio * 22;
-        const frontControl = 194 + Math.min(upperRatio, lowerRatio) * 16;
-        const sideOpening = `M24 250 C66 ${upperC1} 120 ${upperC2} 166 ${upperShoulder} Q${frontControl} 250 166 ${lowerShoulder} C120 ${lowerC2} 66 ${lowerC1} 24 250Z`;
-        const lidOutline = `M24 250 C66 ${upperC1} 120 ${upperC2} 166 ${upperShoulder} M24 250 C66 ${lowerC1} 120 ${lowerC2} 166 ${lowerShoulder}`;
+        const upperC1 = 216 - upperRatio * 17;
+        const upperC2 = 207 - upperRatio * 20;
+        const upperShoulder = 214 - upperRatio * 16;
+        const lowerC1 = 284 + lowerRatio * 17;
+        const lowerC2 = 293 + lowerRatio * 20;
+        const lowerShoulder = 286 + lowerRatio * 16;
+        const frontControl = 210;
+        const sideOpening = `M76 250 C102 ${upperC1} 120 ${upperC2} 166 ${upperShoulder} Q${frontControl} 250 166 ${lowerShoulder} C120 ${lowerC2} 102 ${lowerC1} 76 250Z`;
+        const lidOutline = `M76 250 C102 ${upperC1} 120 ${upperC2} 166 ${upperShoulder} M76 250 C102 ${lowerC1} 120 ${lowerC2} 166 ${lowerShoulder}`;
 
         sideApertureClipPath.setAttribute('d', sideOpening);
         sideEyeOpeningOutline.setAttribute('d', lidOutline);
-        sideUpperLidDetail.setAttribute('d', `M55 ${upperC1 + 10} C88 ${upperC2 + 2} 124 ${upperC2 + 5} 153 ${upperShoulder - 4}`);
-        sideLowerLidDetail.setAttribute('d', `M55 ${lowerC1 - 10} C88 ${lowerC2 - 2} 124 ${lowerC2 - 5} 153 ${lowerShoulder + 4}`);
-        sideUpperRim.setAttribute('d', `M30 250 C68 ${upperC1 + 4} 120 ${upperC2 + 4} 165 ${upperShoulder + 2}`);
-        sideLowerRim.setAttribute('d', `M30 250 C68 ${lowerC1 - 4} 120 ${lowerC2 - 4} 165 ${lowerShoulder - 2}`);
+        sideUpperLidDetail.setAttribute('d', `M91 ${upperC1 + 10} C108 ${upperC2 + 2} 124 ${upperC2 + 5} 153 ${upperShoulder - 4}`);
+        sideLowerLidDetail.setAttribute('d', `M91 ${lowerC1 - 10} C108 ${lowerC2 - 2} 124 ${lowerC2 - 5} 153 ${lowerShoulder + 4}`);
+        sideUpperRim.setAttribute('d', `M79 250 C104 ${upperC1 + 4} 120 ${upperC2 + 4} 165 ${upperShoulder + 2}`);
+        sideLowerRim.setAttribute('d', `M79 250 C104 ${lowerC1 - 4} 120 ${lowerC2 - 4} 165 ${lowerShoulder - 2}`);
         // Anchor each lash to the animated eyelid curve, not a detached translation.
         const placeLashes = (group, c1, c2, end, direction) => {
           group.removeAttribute('transform');
           const paths = group.querySelectorAll('path');
           paths.forEach((path, i) => {
             const t = .70 + i * .24 / Math.max(1, paths.length - 1), u = 1 - t;
-            const x = u*u*u*24 + 3*u*u*t*66 + 3*u*t*t*120 + t*t*t*166;
+            const x = u*u*u*76 + 3*u*u*t*102 + 3*u*t*t*120 + t*t*t*166;
             const y = u*u*u*250 + 3*u*u*t*c1 + 3*u*t*t*c2 + t*t*t*end;
             const length = direction < 0 ? 24 : 17;
             path.setAttribute('d', `M${x} ${y} Q${x+9} ${y+direction*length*.75} ${x+21} ${y+direction*length}`);
@@ -3097,7 +3099,7 @@
   document.querySelectorAll('[fill="url(#wearIris)"], [fill="url(#iris)"], [fill="url(#sideIris)"]').forEach(base => {
     const side = base.tagName.toLowerCase() === 'ellipse';
     const cx = +base.getAttribute('cx'), cy = +base.getAttribute('cy');
-    const rx = side ? 32 : 89, ry = side ? 45 : 89;
+    const rx = side ? 20 : 89, ry = side ? 35 : 89;
     const fibers = el('g', {'pointer-events':'none', opacity:'.58'});
     for (let i = 0; i < 156; i++) {
       const a = i * Math.PI * 2 / 156;
