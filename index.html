@@ -2052,8 +2052,8 @@
         },
         3: {
           title: '오른손 검지와 엄지로 렌즈를 빼세요',
-          body: '손톱이 아닌 검지와 엄지의 지문 면을 렌즈 양쪽 테두리에 놓고 안쪽으로 살짝 모으세요.',
-          feedback: '손톱 말고 지문 면을 사용하세요. 왼쪽은 검지, 오른쪽은 엄지입니다.'
+          body: '렌즈 위치가 맞지 않으면 다시 위아래로 드래그해 조절하고, 손톱이 아닌 검지와 엄지의 지문 면을 렌즈 양쪽 테두리에 놓고 안쪽으로 살짝 모으세요.',
+          feedback: '렌즈를 다시 위아래로 조절할 수 있어요. 손톱 말고 지문 면을 사용하세요. 왼쪽은 검지, 오른쪽은 엄지입니다.'
         }
       };
 
@@ -2314,14 +2314,20 @@
         }
 
         if (state.step === 3) {
-          beginPinchIfReady();
           if (state.pointers.size === 1) {
+            if (withinLens(point, 16)) {
+              state.drag = { type: 'lensAdjust', id: event.pointerId, startY: point.y, startLensY: state.lensY };
+              setFeedback('렌즈 위치를 다시 조절할 수 있어요. 위아래로 드래그하거나 두 손가락으로 집어 제거하세요.');
+            }
             clearTimeout(state.oneFingerTimer);
             state.oneFingerTimer = setTimeout(() => {
               if (state.step === 3 && state.pointers.size === 1 && !state.success) {
-                setFeedback('반대쪽 렌즈 테두리에도 다른 손가락을 놓아주세요.', 'error');
+                setFeedback('반대쪽 렌즈 테두리에도 다른 손가락을 놓아주세요. 렌즈 위치가 맞지 않으면 먼저 다시 드래그해 조절해도 돼요.', 'error');
               }
             }, 900);
+          } else {
+            state.drag = null;
+            beginPinchIfReady();
           }
         }
       }, { passive: false });
@@ -2351,18 +2357,30 @@
           // 별도의 상안검 단계 없이 렌즈를 내리는 거리만큼 상안검이 자동으로 열린다.
           state.upperLidOffset = Math.min(60, state.lensY);
           renderGeometry();
-          if (dy < -12) setFeedback('위쪽이 아니라 아래 흰자위 방향으로 밀어주세요.', 'error');
-          if (state.lensY >= 54) {
-            state.lensY = 60;
-            state.upperLidOffset = 60;
-            renderGeometry();
-            goToStep(3);
+          if (dy < -12) {
+            setFeedback('위쪽이 아니라 아래 흰자위 방향으로 밀어주세요.', 'error');
+          } else if (state.lensY >= 54) {
+            setFeedback('좋아요! 렌즈가 충분히 내려왔어요. 손을 떼면 집어 제거 단계로 넘어갑니다. 더 조절하려면 다시 위아래로 움직여보세요.');
+          } else {
+            setFeedback('렌즈를 아래 흰자위 방향으로 천천히 밀어주세요. 아직 다시 위로 올려서 조절할 수 있어요.');
           }
           return;
         }
 
         if (state.step === 3) {
-          if (!state.pinch) beginPinchIfReady();
+          if (state.drag?.type === 'lensAdjust' && state.drag.id === event.pointerId && state.pointers.size === 1 && !state.pinch) {
+            const dy = point.y - state.drag.startY;
+            state.lensY = Math.max(18, Math.min(112, state.drag.startLensY + dy));
+            state.upperLidOffset = Math.min(60, state.lensY);
+            renderGeometry();
+            if (state.lensY < 48) {
+              setFeedback('렌즈를 조금 더 아래 흰자위 쪽으로 내린 뒤 양쪽을 집어보세요. 계속 위아래로 조절할 수 있어요.');
+            } else {
+              setFeedback('좋아요! 이제 검지와 엄지를 렌즈 양쪽에 두고 살짝 모아 제거해보세요.');
+            }
+            return;
+          }
+          if (!state.pinch && state.pointers.size >= 2) beginPinchIfReady();
           if (!state.pinch) return;
           const [idA, idB] = state.pinch.ids;
           const a = state.pointers.get(idA);
@@ -2390,12 +2408,28 @@
 
       function releasePointer(event) {
         const completedPinchGesture = state.pinch?.ids.includes(event.pointerId) && !state.success;
+        const releasedDrag = state.drag && state.drag.id === event.pointerId ? state.drag.type : null;
         state.pointers.delete(event.pointerId);
         updateMarkers();
         if (state.drag?.id === event.pointerId) state.drag = null;
+
+        if (state.step === 2 && releasedDrag === 'lens' && !state.success) {
+          if (state.lensY >= 54) {
+            state.lensY = Math.max(60, state.lensY);
+            state.upperLidOffset = Math.max(60, state.upperLidOffset);
+            renderGeometry();
+            goToStep(3);
+            return;
+          }
+          setFeedback('렌즈를 더 아래 흰자위 방향으로 밀어주세요. 다시 위아래로 계속 조절할 수 있어요.');
+        }
+
         // 두 손가락이 한 번 함께 인식됐다면 손가락을 떼는 동작도 핀치 완료로 인정한다.
         if (completedPinchGesture) finish();
-        if (state.pointers.size === 0) clearTimeout(state.oneFingerTimer);
+        if (state.pointers.size === 0) {
+          clearTimeout(state.oneFingerTimer);
+          if (state.step === 3 && !state.success) state.pinch = null;
+        }
       }
 
       // iPhone Safari에서 두 번째 PointerEvent가 누락되는 경우를 위한 멀티터치 보조 인식.
