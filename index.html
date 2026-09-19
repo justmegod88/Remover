@@ -940,15 +940,277 @@
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
     }
+  
+
+    /* ===== Reference-style refresh inspired by the provided guide image ===== */
+    .app {
+      width: min(100%, 760px);
+      background: #f7fbff;
+      box-shadow: 0 14px 42px rgba(10, 40, 74, .12);
+    }
+
+    .topbar {
+      position: relative;
+      padding: calc(22px + env(safe-area-inset-top)) 22px 18px;
+      text-align: center;
+      background: linear-gradient(180deg, #0a4f87 0%, #0b3e74 100%);
+      box-shadow: inset 0 -1px 0 rgba(255,255,255,.12);
+    }
+
+    .topbar-row {
+      position: relative;
+      display: block;
+      min-height: 72px;
+    }
+
+    .eyebrow {
+      display: none;
+    }
+
+    h1 {
+      margin: 0;
+      color: #fff;
+      font-size: clamp(28px, 6.5vw, 44px);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.05em;
+    }
+
+    .page-subtitle {
+      margin: 8px 0 0;
+      color: #b9e2ff;
+      font-size: clamp(18px, 3.9vw, 28px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.16;
+    }
+
+    .top-actions {
+      position: absolute;
+      top: 0;
+      right: 0;
+      gap: 8px;
+    }
+
+    .faq-button,
+    .reset-button {
+      min-height: 40px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.28);
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    main {
+      padding: 14px 14px calc(24px + env(safe-area-inset-bottom));
+      background: linear-gradient(180deg, #f3f8fd 0%, #f9fcff 100%);
+    }
+
+    .mode-tabs {
+      margin: 0 0 12px;
+      padding: 4px;
+      border-radius: 15px;
+      background: #e9f1f8;
+      box-shadow: inset 0 0 0 1px #d7e6f3;
+    }
+
+    .mode-tab {
+      min-height: 44px;
+      font-size: 15px;
+    }
+
+    .progress-list {
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .progress-list li {
+      padding: 10px 6px;
+      border-radius: 14px;
+      font-size: 12px;
+      background: #edf3f8;
+      color: #6e8092;
+    }
+
+    .progress-list li.active {
+      background: #d7edff;
+      color: #075993;
+      box-shadow: inset 0 0 0 1px #a7d6fb;
+    }
+
+    .coach {
+      margin-bottom: 12px;
+      padding: 14px 15px;
+      border-radius: 20px;
+      border: 1px solid #dce8f3;
+      background: #fff;
+      box-shadow: 0 10px 24px rgba(26, 71, 109, .08);
+    }
+
+    .step-number {
+      background: linear-gradient(180deg, #0b5b98 0%, #0a4372 100%);
+      box-shadow: 0 6px 14px rgba(8, 72, 120, .22);
+    }
+
+    .coach strong {
+      color: #0c3962;
+      font-size: 16px;
+    }
+
+    .coach p {
+      color: #6a7c8f;
+      font-size: 13px;
+    }
+
+    .simulator {
+      border-radius: 24px;
+      background: linear-gradient(180deg, #cee6f8 0%, #a9d0ea 100%);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.58), 0 14px 28px rgba(11, 58, 92, .16);
+    }
+
+    #wearPractice .simulator {
+      background: linear-gradient(180deg, #b8ddf7 0%, #96c4e9 100%);
+    }
+
+    #wearEyeScene,
+    #sideViewScene,
+    #eyeScene {
+      background: linear-gradient(180deg, #c5e4f9 0%, #b5dbf5 100%);
+    }
+
+    .side-view-stage {
+      background: linear-gradient(180deg, #c5e4f9 0%, #b5dbf5 100%);
+    }
+
+    .side-view-label {
+      position: absolute;
+      z-index: 8;
+      top: 12px;
+      left: 12px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.82);
+      color: #0a4b7e;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .03em;
+      box-shadow: 0 6px 16px rgba(16, 61, 95, .14);
+    }
+
+    .video-pip {
+      top: 12px;
+      right: 12px;
+      width: min(34%, 150px);
+      border-radius: 16px;
+      border: 2px solid rgba(255,255,255,.95);
+      background: rgba(255,255,255,.94);
+      box-shadow: 0 10px 24px rgba(7, 35, 60, .18);
+    }
+
+    .video-pip span {
+      padding: 6px 8px;
+      color: #0b4271;
+      background: rgba(237, 246, 255, .9);
+      font-size: 10px;
+    }
+
+    .wear-control-dock {
+      margin: 0 0 12px;
+      border-radius: 18px;
+      background: #eff6fc;
+      border: 1px solid #d9e8f3;
+      box-shadow: 0 8px 20px rgba(18, 73, 111, .08);
+    }
+
+    .orientation-card {
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 6px 16px rgba(20, 64, 99, .08);
+    }
+
+    .feedback {
+      right: 0;
+      bottom: 0;
+      left: 0;
+      min-height: 74px;
+      padding: 16px 18px 18px;
+      border: 0;
+      border-top: 1px solid rgba(9, 63, 106, .1);
+      border-radius: 0;
+      background: rgba(255,255,255,.96);
+      color: #0a4b7e;
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.35;
+      text-align: center;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      box-shadow: 0 -10px 20px rgba(9, 54, 88, .08);
+    }
+
+    .feedback.error {
+      background: rgba(255, 238, 240, .98);
+      color: #b63f4f;
+    }
+
+    .feedback.success {
+      background: rgba(236, 251, 245, .98);
+      color: #0f7b57;
+    }
+
+    .attempt-guide-card {
+      border-radius: 22px;
+    }
+
+    .completion {
+      background: rgba(8, 47, 79, .68);
+    }
+
+    .safety-note {
+      margin-top: 14px;
+      font-size: 11px;
+    }
+
+    @media (max-width: 520px) {
+      .topbar {
+        padding-inline: 16px;
+      }
+
+      .top-actions {
+        position: static;
+        justify-content: center;
+        margin-top: 12px;
+      }
+
+      .topbar-row {
+        min-height: 0;
+      }
+
+      .page-subtitle {
+        font-size: clamp(16px, 3.8vw, 22px);
+      }
+
+      .feedback {
+        font-size: 16px;
+        min-height: 68px;
+      }
+    }
+
   </style>
 </head>
-<body>
+<body data-mode="wear">
   <div class="app">
     <header class="topbar">
       <div class="topbar-row">
         <div>
           <p class="eyebrow" id="modeEyebrow">WEARING PRACTICE</p>
-          <h1 id="pageTitle">콘택트렌즈 착용 연습</h1>
+          <h1 id="pageTitle">렌즈 착용 연습</h1>
+          <p class="page-subtitle" id="pageSubtitle">눈과 손끝을 가까이</p>
         </div>
         <div class="top-actions">
           <button class="faq-button" id="faqButton" type="button" aria-haspopup="dialog">FAQ</button>
@@ -2106,6 +2368,7 @@
       const removalPractice = document.getElementById('removalPractice');
       const modeEyebrow = document.getElementById('modeEyebrow');
       const pageTitle = document.getElementById('pageTitle');
+      const pageSubtitle = document.getElementById('pageSubtitle');
       const resetButton = document.getElementById('resetButton');
       let activeMode = 'wear';
 
@@ -2196,9 +2459,9 @@
           feedback: '두 렌즈 중 올바른 앞면 모양을 선택하세요.'
         },
         2: {
-          title: DIRECT_SIDE_WEAR ? '측면에서 눈꺼풀을 벌리고 렌즈를 직접 넣으세요' : '왼손 중지와 오른손 중지로 눈꺼풀을 벌리세요',
-          body: DIRECT_SIDE_WEAR ? '왼손 중지는 위로, 오른손 중지는 아래로 드래그해 고정하고 오른손 검지의 렌즈를 각막 중심으로 움직이세요.' : '왼손 중지는 윗눈꺼풀 위 피부를 위로, 오른손 중지는 아랫눈꺼풀 아래 피부를 아래로 당기세요.',
-          feedback: DIRECT_SIDE_WEAR ? '위 손가락은 위로, 아래 손가락은 아래로 움직인 뒤 렌즈를 든 검지를 왼쪽으로 드래그하세요.' : '위 파란 원은 왼손 중지, 아래 파란 원은 오른손 중지로 드래그하세요.'
+          title: DIRECT_SIDE_WEAR ? '눈꺼풀을 가까이 잡고, 렌즈를 눈 앞으로 가져오세요' : '왼손 중지와 오른손 중지로 눈꺼풀을 벌리세요',
+          body: DIRECT_SIDE_WEAR ? '왼손 중지로 윗눈꺼풀을 위로, 오른손 중지로 아랫눈꺼풀을 아래로 고정한 뒤 오른손 검지의 렌즈를 눈앞까지 부드럽게 가져오세요.' : '왼손 중지는 윗눈꺼풀 위 피부를 위로, 오른손 중지는 아랫눈꺼풀 아래 피부를 아래로 당기세요.',
+          feedback: DIRECT_SIDE_WEAR ? '윗눈꺼풀은 위로, 아랫눈꺼풀은 아래로 잡고 렌즈를 든 검지를 왼쪽으로 천천히 움직여 보세요.' : '위 파란 원은 왼손 중지, 아래 파란 원은 오른손 중지로 드래그하세요.'
         },
         3: {
           title: '측면에서 렌즈와 각막을 일직선으로 맞추세요',
@@ -2782,8 +3045,12 @@
         removalTab.classList.toggle('active', !wearing);
         wearTab.setAttribute('aria-selected', String(wearing));
         removalTab.setAttribute('aria-selected', String(!wearing));
+        document.body.dataset.mode = mode;
         modeEyebrow.textContent = wearing ? 'WEARING PRACTICE' : 'REMOVAL PRACTICE';
-        pageTitle.textContent = wearing ? '콘택트렌즈 착용 연습' : '콘택트렌즈 제거 연습';
+        pageTitle.textContent = wearing ? '렌즈 착용 연습' : '렌즈 제거 연습';
+        if (pageSubtitle) {
+          pageSubtitle.textContent = wearing ? '눈과 손끝을 가까이' : '눈꺼풀을 잡고 부드럽게 제거';
+        }
       }
 
       document.getElementById('correctOrientation').addEventListener('click', () => goWearStep(2));
