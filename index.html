@@ -1,0 +1,3146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b2f58">
+  <title>콘택트렌즈 착용·제거 연습</title>
+  <style>
+    :root {
+      --navy: #0b2f58;
+      --blue: #1268ad;
+      --sky: #eaf5ff;
+      --line: #d7e5f2;
+      --text: #172536;
+      --muted: #66788c;
+      --success: #11865f;
+      --danger: #c84545;
+      --shadow: 0 18px 50px rgba(14, 50, 82, 0.13);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { margin: 0; min-height: 100%; }
+
+    body {
+      background: linear-gradient(180deg, #e9f4ff 0%, #f7fbff 48%, #edf6fc 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button, input { font: inherit; }
+
+    body.faq-open { overflow: hidden; }
+
+    .app {
+      width: min(100%, 560px);
+      min-height: 100dvh;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .topbar {
+      padding: calc(18px + env(safe-area-inset-top)) 20px 20px;
+      color: #fff;
+      background:
+        radial-gradient(circle at 90% 10%, rgba(89, 192, 240, 0.35), transparent 30%),
+        linear-gradient(135deg, #092b50, #0b5d93);
+    }
+
+    .topbar-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .eyebrow {
+      margin: 0 0 5px;
+      color: #aee4ff;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(23px, 6vw, 30px);
+      line-height: 1.18;
+      letter-spacing: -0.04em;
+    }
+
+    .top-actions {
+      display: flex;
+      flex: 0 0 auto;
+      gap: 8px;
+    }
+
+    .faq-button,
+    .reset-button {
+      flex: 0 0 auto;
+      min-width: 52px;
+      min-height: 44px;
+      padding: 10px 13px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.13);
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .faq-button {
+      border-color: rgba(174, 228, 255, .58);
+      background: rgba(174, 228, 255, .17);
+      font-weight: 800;
+    }
+
+    .faq-button:active,
+    .reset-button:active { transform: translateY(1px); }
+
+    main { padding: 18px 16px calc(28px + env(safe-area-inset-bottom)); }
+
+    .progress-list {
+      display: flex;
+      gap: 7px;
+      margin: 0 0 14px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .progress-list li {
+      flex: 1 1 0;
+      min-width: 0;
+      padding: 9px 4px;
+      border-radius: 12px;
+      background: #eef3f7;
+      color: #738397;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      transition: 180ms ease;
+    }
+
+    .progress-list li.active {
+      background: #dceeff;
+      color: #075993;
+      box-shadow: inset 0 0 0 1px #add8f6;
+    }
+
+    .progress-list li.done {
+      display: none;
+    }
+
+    .progress-list.all-done { display: none; }
+
+    .coach {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      min-height: 82px;
+      margin-bottom: 14px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(25, 74, 111, 0.08);
+    }
+
+    .step-number {
+      display: grid;
+      flex: 0 0 38px;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--navy);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .coach strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .coach p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .simulator {
+      position: relative;
+      overflow: hidden;
+      border-radius: 28px;
+      background: #173047;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.16), 0 14px 30px rgba(12, 44, 72, .18);
+      isolation: isolate;
+    }
+
+    #eyeScene {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      max-height: 640px;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: grab;
+    }
+
+    #eyeScene:active { cursor: grabbing; }
+
+    #lensPosition,
+    #lensFold,
+    #lowerLid,
+    #guideLayer { transition: opacity 180ms ease; }
+
+    #lensFold {
+      transform-box: view-box;
+      transform-origin: 200px 250px;
+    }
+
+    .touch-marker {
+      position: absolute;
+      z-index: 8;
+      display: none;
+      width: 56px;
+      height: 56px;
+      margin: -28px 0 0 -28px;
+      border: 3px solid rgba(255, 255, 255, .95);
+      border-radius: 50%;
+      background: rgba(78, 169, 230, .28);
+      box-shadow: 0 0 0 8px rgba(78, 169, 230, .13);
+      pointer-events: none;
+    }
+
+    .feedback {
+      position: absolute;
+      z-index: 10;
+      right: 14px;
+      bottom: 14px;
+      left: 14px;
+      min-height: 54px;
+      padding: 12px 14px;
+      border: 1px solid rgba(255,255,255,.28);
+      border-radius: 16px;
+      background: rgba(5, 29, 50, .84);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: 180ms ease;
+    }
+
+    .feedback.error { background: rgba(139, 34, 42, .9); }
+    .feedback.success { background: rgba(5, 108, 74, .92); }
+    .feedback[hidden] { display: none; }
+
+    .completion {
+      position: absolute;
+      z-index: 12;
+      inset: 0;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      padding: 30px;
+      background: rgba(5, 37, 61, .78);
+      color: #fff;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      transition: opacity 260ms ease;
+    }
+
+    .completion.visible { opacity: 1; pointer-events: auto; }
+
+    .checkmark {
+      display: grid;
+      width: 72px;
+      height: 72px;
+      margin-bottom: 14px;
+      place-items: center;
+      border-radius: 50%;
+      background: #20a978;
+      font-size: 38px;
+      box-shadow: 0 10px 30px rgba(9, 27, 39, .25);
+    }
+
+    .completion h2 { margin: 0 0 8px; font-size: 28px; }
+    .completion p { margin: 0 0 22px; max-width: 310px; color: #d7efff; line-height: 1.5; }
+
+    .again-button {
+      min-width: 180px;
+      min-height: 48px;
+      padding: 12px 20px;
+      border: 0;
+      border-radius: 14px;
+      background: #fff;
+      color: var(--navy);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .safety-note {
+      margin: 14px 4px 0;
+      color: #6f7f91;
+      font-size: 11px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .mode-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 0 0 14px;
+      padding: 5px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #eef4f9;
+    }
+
+    .mode-tab {
+      min-height: 46px;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      color: #6d7f91;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .mode-tab.active {
+      background: #fff;
+      color: #075993;
+      box-shadow: 0 4px 14px rgba(18, 72, 111, .12), inset 0 0 0 1px #b9dbf2;
+    }
+
+    .practice-panel[hidden] { display: none; }
+
+    #wearEyeScene,
+    #sideViewScene {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      max-height: 640px;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: grab;
+    }
+
+    #wearEyeScene:active { cursor: grabbing; }
+
+    #wearEyeScene[hidden],
+    .side-view-stage[hidden],
+    .video-pip[hidden] { display: none; }
+
+    .side-view-stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 36 / 41;
+      max-height: 640px;
+      overflow: hidden;
+      background: #173047;
+    }
+
+    #sideViewScene {
+      aspect-ratio: 36 / 41;
+    }
+
+    .video-pip {
+      position: absolute;
+      z-index: 18;
+      top: 14px;
+      right: 14px;
+      width: min(40%, 170px);
+      overflow: hidden;
+      border: 3px solid rgba(255,255,255,.94);
+      border-radius: 17px;
+      background: #082a48;
+      box-shadow: 0 8px 24px rgba(4, 25, 43, .28);
+    }
+
+    .video-pip span {
+      display: block;
+      padding: 7px 9px;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .video-pip iframe {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: 0;
+      background: #061d31;
+    }
+
+    .wear-control-dock {
+      min-height: 62px;
+      margin: -2px 0 14px;
+      padding: 7px;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: #eef5fb;
+      box-shadow: 0 6px 18px rgba(25, 74, 111, .07);
+    }
+
+    .wear-control-dock[hidden] { display: none; }
+
+    .wear-actions {
+      position: static;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .wear-actions[hidden],
+    .opening-meter[hidden] { display: none; }
+
+    .wear-action {
+      flex: 1 1 auto;
+      min-height: 46px;
+      padding: 10px 15px;
+      border: 1px solid rgba(255,255,255,.45);
+      border-radius: 14px;
+      background: rgba(255,255,255,.94);
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 850;
+      box-shadow: 0 4px 12px rgba(4, 29, 49, .12);
+      cursor: pointer;
+    }
+
+    .wear-action.secondary {
+      background: #0b3f69;
+      color: #fff;
+    }
+
+    .wear-action:disabled {
+      cursor: wait;
+      opacity: .68;
+    }
+
+    .orientation-actions .wear-action {
+      flex: 1 1 0;
+      min-width: 0;
+      min-height: 190px;
+      overflow: hidden;
+      padding: 0;
+      border: 1px solid #c2d9e9;
+      background: linear-gradient(180deg, #fff 0%, #f4faff 100%);
+      text-align: left;
+      box-shadow: 0 7px 18px rgba(10, 55, 88, .1);
+    }
+
+    .orientation-card-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 38px;
+      padding: 8px 10px;
+      background: linear-gradient(135deg, #0b3d67, #1374aa);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .orientation-card.wrong .orientation-card-title {
+      background: linear-gradient(135deg, #5a6570, #7d8995);
+    }
+
+    .orientation-card-title small {
+      padding: 3px 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.18);
+      font-size: 9px;
+      letter-spacing: .02em;
+    }
+
+    .orientation-visual {
+      display: block;
+      width: 100%;
+      height: 112px;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(149, 227, 248, .22), transparent 42%),
+        linear-gradient(180deg, #fafeff, #e8f4fa);
+    }
+
+    .orientation-caption {
+      display: block;
+      padding: 8px 8px 9px;
+      color: #19364d;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.25;
+      text-align: center;
+    }
+
+    .orientation-caption small {
+      display: block;
+      margin-top: 3px;
+      color: #6b7f90;
+      font-size: 9px;
+      font-weight: 750;
+    }
+
+    .orientation-card.correct:active {
+      border-color: #2aa67c;
+      box-shadow: 0 0 0 3px rgba(42,166,124,.18);
+    }
+
+    .orientation-card.wrong:active {
+      border-color: #cf555f;
+      box-shadow: 0 0 0 3px rgba(207,85,95,.16);
+    }
+
+    .orientation-card.wrong.invalid {
+      border-color: #d34c59;
+      background: #fff1f2;
+      box-shadow: 0 0 0 3px rgba(211,76,89,.16);
+      animation: orientationWrong 360ms ease;
+    }
+
+    @keyframes orientationWrong {
+      0%, 100% { transform: translateX(0); }
+      30% { transform: translateX(-5px); }
+      65% { transform: translateX(5px); }
+    }
+
+    .angle-actions {
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .view-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 4px;
+      border-radius: 13px;
+      background: #dfeaf3;
+    }
+
+    .view-switch button {
+      min-height: 38px;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      color: #667b8f;
+      font-size: 12px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .view-switch button.active {
+      background: #fff;
+      color: #075993;
+      box-shadow: 0 3px 10px rgba(20, 72, 108, .12);
+    }
+
+    .angle-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 3px 5px 0;
+      color: #243d55;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .angle-value {
+      min-width: 52px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #dcefff;
+      color: #075993;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .angle-adjust-row,
+    .angle-button-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .angle-nudge {
+      width: 48px;
+      height: 42px;
+      flex: 0 0 48px;
+      border: 1px solid #b8d4e8;
+      border-radius: 12px;
+      background: #fff;
+      color: #0b4f7d;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    #angleSlider {
+      width: 100%;
+      accent-color: #1479b8;
+      cursor: grab;
+    }
+
+    .angle-button-row .wear-action { flex: 1 1 0; }
+
+    .side-view-label {
+      position: absolute;
+      z-index: 5;
+      top: 14px;
+      left: 14px;
+      padding: 7px 11px;
+      border: 1px solid rgba(255,255,255,.4);
+      border-radius: 999px;
+      background: rgba(6,42,70,.78);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .05em;
+    }
+
+    .opening-meter {
+      position: absolute;
+      z-index: 15;
+      top: 14px;
+      left: 14px;
+      width: 145px;
+      padding: 9px 11px;
+      border: 1px solid rgba(255,255,255,.36);
+      border-radius: 14px;
+      background: rgba(7,39,66,.76);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      backdrop-filter: blur(8px);
+    }
+
+    .meter-track {
+      height: 7px;
+      margin-top: 6px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255,255,255,.23);
+    }
+
+    .meter-fill {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #70c9f3, #64e0b0);
+      transition: width 100ms linear;
+    }
+
+    .attempt-guide {
+      position: absolute;
+      z-index: 40;
+      inset: 0;
+      display: grid;
+      align-content: center;
+      padding: 26px;
+      background: rgba(4, 28, 48, .7);
+      backdrop-filter: blur(4px);
+    }
+
+    .attempt-guide[hidden] { display: none; }
+
+    .attempt-guide-card {
+      padding: 22px 19px 18px;
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 22px;
+      background: #fff;
+      color: var(--text);
+      text-align: center;
+      box-shadow: 0 18px 45px rgba(1, 20, 35, .32);
+    }
+
+    .attempt-guide-badge {
+      display: grid;
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 11px;
+      place-items: center;
+      border-radius: 50%;
+      background: #e9f5ff;
+      color: #08649f;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .attempt-guide h3 { margin: 0 0 8px; font-size: 20px; }
+    .attempt-guide p { margin: 0 0 16px; color: #53677a; font-size: 13px; line-height: 1.55; }
+
+    .attempt-guide button {
+      min-width: 150px;
+      min-height: 44px;
+      border: 0;
+      border-radius: 13px;
+      background: var(--navy);
+      color: #fff;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .lash-hit { animation: lashHit .5s ease 2; }
+
+    @keyframes lashHit {
+      0%, 100% { opacity: .2; }
+      50% { opacity: 1; }
+    }
+
+    .faq-modal[hidden] { display: none; }
+
+    .faq-modal {
+      position: fixed;
+      z-index: 1000;
+      inset: 0;
+      display: grid;
+      align-items: end;
+      padding-top: env(safe-area-inset-top);
+      background: rgba(4, 23, 40, .62);
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
+    }
+
+    .faq-sheet {
+      display: flex;
+      width: min(100%, 640px);
+      max-height: 94dvh;
+      margin: 0 auto;
+      flex-direction: column;
+      overflow: hidden;
+      border-radius: 28px 28px 0 0;
+      background: #f8fbfe;
+      box-shadow: 0 -18px 60px rgba(4, 23, 40, .28);
+    }
+
+    .faq-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 20px 20px 14px;
+      color: #fff;
+      background: linear-gradient(135deg, #092b50, #0b659b);
+    }
+
+    .faq-kicker {
+      margin: 0 0 3px;
+      color: #aee4ff;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .12em;
+    }
+
+    .faq-header h2 { margin: 0; font-size: 24px; letter-spacing: -.035em; }
+
+    .faq-close {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 50%;
+      background: rgba(255,255,255,.14);
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .faq-search-wrap {
+      padding: 14px 18px 12px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .faq-search-wrap label {
+      display: block;
+      margin-bottom: 7px;
+      color: #33465a;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .faq-search-row { position: relative; }
+
+    .faq-search-row::before {
+      position: absolute;
+      top: 50%;
+      left: 14px;
+      color: #6f8296;
+      content: "⌕";
+      font-size: 24px;
+      transform: translateY(-55%);
+      pointer-events: none;
+    }
+
+    #faqSearch {
+      width: 100%;
+      min-height: 48px;
+      padding: 11px 14px 11px 44px;
+      border: 1px solid #bfd5e7;
+      border-radius: 14px;
+      outline: none;
+      background: #f7fbff;
+      color: var(--text);
+      font-size: 16px;
+    }
+
+    #faqSearch:focus { border-color: #3493cd; box-shadow: 0 0 0 3px rgba(52,147,205,.14); }
+
+    .faq-count { margin: 7px 2px 0; color: var(--muted); font-size: 11px; }
+
+    .faq-list {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
+      padding: 5px 18px 24px;
+      overscroll-behavior: contain;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid #dfe9f1;
+      background: transparent;
+    }
+
+    .faq-item[hidden] { display: none; }
+
+    .faq-item summary {
+      position: relative;
+      padding: 16px 38px 16px 2px;
+      color: #193148;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.4;
+      list-style: none;
+    }
+
+    .faq-item summary::-webkit-details-marker { display: none; }
+
+    .faq-item summary::after {
+      position: absolute;
+      top: 14px;
+      right: 4px;
+      color: #1979b5;
+      content: "+";
+      font-size: 23px;
+      font-weight: 500;
+    }
+
+    .faq-item[open] summary::after { content: "−"; }
+
+    .faq-item p {
+      margin: -3px 0 16px;
+      padding: 0 34px 0 2px;
+      color: #52677b;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .faq-tag {
+      display: inline-block;
+      margin-right: 7px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: #e2f2ff;
+      color: #12669e;
+      font-size: 10px;
+      vertical-align: 1px;
+    }
+
+    .faq-empty {
+      padding: 38px 24px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .faq-sources {
+      padding: 12px 18px calc(12px + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--line);
+      background: #eef6fc;
+      color: #63778a;
+      font-size: 10px;
+      line-height: 1.55;
+    }
+
+    .faq-sources p { margin: 0 0 5px; }
+    .faq-sources p:last-child { margin-bottom: 0; }
+    .faq-sources a { color: #0b639b; font-weight: 700; }
+
+    .pulse { animation: pulse 1.25s ease-in-out infinite; }
+    .bob { animation: bob 1.25s ease-in-out infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: .45; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(10px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+
+    @media (max-width: 380px) {
+      main { padding-inline: 10px; }
+      .topbar { padding-inline: 14px; }
+      .topbar-row { gap: 9px; }
+      .top-actions { gap: 5px; }
+      .faq-button, .reset-button { min-width: 48px; padding-inline: 9px; font-size: 13px; }
+      .progress-list { gap: 4px; }
+      .progress-list li { font-size: 11px; }
+      .coach { min-height: 88px; }
+    }
+
+    @media (min-width: 640px) {
+      .faq-modal { align-items: center; padding: 24px; }
+      .faq-sheet { border-radius: 28px; }
+    }
+    /* Portrait finish: preserve all drag targets and scene coordinates. */
+    svg { shape-rendering: geometricPrecision; }
+    #sideViewScene { background: #a8c4ce; }
+    #sideEyeOpeningOutline { stroke-width: 4; stroke: #85564c; }
+    #sideUpperRim, #sideLowerRim { stroke-width: 3; }
+    #sideUpperLashes { stroke-width: 1.8; }
+    #sideLowerLashes { stroke-width: 1.2; }
+    #sideLensShape { stroke-width: 4; }
+    #sideUpperHoldingHand > path:first-child,
+    #sideLensHandPalm > path:nth-child(-n+2),
+    #sideInsertionAssembly > g > path:first-child { stroke-width: .9; }
+    #wearUpperOuter, #wearLowerOuter { stroke-width: 10; }
+    #wearUpperInner, #wearLowerInner { stroke-width: 4; }
+    #wearUpperLashes, #wearLowerLashes { stroke-width: 2.1; }
+    .topbar { box-shadow: inset 0 -1px 0 #ffffff20; }
+    button { transition: background-color .18s ease, box-shadow .18s ease; }
+    button:focus-visible, input:focus-visible { outline: 3px solid #349abb; outline-offset: 3px; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-row">
+        <div>
+          <p class="eyebrow" id="modeEyebrow">WEARING PRACTICE</p>
+          <h1 id="pageTitle">콘택트렌즈 착용 연습</h1>
+        </div>
+        <div class="top-actions">
+          <button class="faq-button" id="faqButton" type="button" aria-haspopup="dialog">FAQ</button>
+          <button class="reset-button" id="resetButton" type="button" aria-label="처음부터 다시 시작">↺ 처음</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <nav class="mode-tabs" aria-label="연습 종류 선택">
+        <button class="mode-tab active" id="wearTab" type="button" aria-selected="true">착용 연습</button>
+        <button class="mode-tab" id="removalTab" type="button" aria-selected="false">제거 연습</button>
+      </nav>
+
+      <section class="practice-panel" id="wearPractice">
+        <ol class="progress-list" id="directWearProgress" aria-label="직접 착용 연습 진행 단계">
+          <li class="active" data-direct-wear-progress="1">1. 앞뒤 확인</li>
+          <li data-direct-wear-progress="2">2. 눈 벌리기</li>
+          <li data-direct-wear-progress="3">3. 렌즈 넣기</li>
+        </ol>
+
+        <section class="coach" aria-labelledby="wearInstructionTitle">
+          <div class="step-number" id="wearStepNumber">1</div>
+          <div>
+            <strong id="wearInstructionTitle">렌즈의 앞뒤를 먼저 확인 후 적절한 렌즈를 선택해 주세요</strong>
+            <p id="wearInstructionBody">가장자리가 위로 선 둥근 그릇 모양이 올바른 방향입니다.</p>
+          </div>
+        </section>
+
+        <div class="wear-control-dock" id="wearControlDock" aria-label="착용 단계 조작 버튼">
+          <div class="wear-actions orientation-actions" id="orientationActions">
+            <button class="wear-action orientation-card correct" id="correctOrientation" type="button" aria-label="가장자리가 위로 선 올바른 렌즈 앞면 선택">
+              <span class="orientation-card-title">렌즈 앞면 <small>FRONT</small></span>
+              <svg class="orientation-visual" viewBox="0 0 170 112" role="img" aria-label="가장자리가 곧게 선 깊고 둥근 그릇 모양 렌즈">
+                <defs>
+                  <linearGradient id="orientationLensFront" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9fbff"/><stop offset=".45" stop-color="#9fd8ea"/><stop offset=".78" stop-color="#4aa9c9"/><stop offset="1" stop-color="#197ba5"/></linearGradient>
+                  <linearGradient id="orientationRimFront" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2b7397"/><stop offset=".5" stop-color="#e4f9ff"/><stop offset="1" stop-color="#2b7397"/></linearGradient>
+                  <filter id="orientationGlowFront" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#168db6" flood-opacity=".34"/></filter>
+                </defs>
+                <ellipse cx="85" cy="94" rx="58" ry="8" fill="#123c57" opacity=".12"/>
+                <path d="M26 27 C30 53 44 72 66 82 C76 87 94 87 104 82 C126 72 140 53 144 27 Q85 38 26 27Z" fill="url(#orientationLensFront)" stroke="#267fa5" stroke-width="2.4" filter="url(#orientationGlowFront)"/>
+                <ellipse cx="85" cy="27" rx="59" ry="10" fill="#d9f5fc" fill-opacity=".78" stroke="url(#orientationRimFront)" stroke-width="3"/>
+                <ellipse cx="85" cy="29" rx="51" ry="6.5" fill="#f8feff" fill-opacity=".44" stroke="#7ec7df" stroke-width="1.4"/>
+                <path d="M35 39 C44 60 57 72 71 77 C79 80 91 80 99 77 C113 72 126 60 135 39" fill="none" stroke="#fff" stroke-width="3" opacity=".38"/>
+                <path d="M42 29 C49 45 56 58 67 67" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".48"/>
+                <circle cx="142" cy="83" r="13" fill="#19a99a"/>
+                <path d="M136 83 L141 88 L149 77" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="orientation-caption">가장자리가 곧게 위로<small>깊고 둥근 그릇 모양</small></span>
+            </button>
+            <button class="wear-action orientation-card wrong" id="wrongOrientation" type="button" aria-label="가장자리가 바깥으로 벌어진 뒤집힌 렌즈 선택">
+              <span class="orientation-card-title">뒤집힌 렌즈 <small>INSIDE OUT</small></span>
+              <svg class="orientation-visual" viewBox="0 0 170 112" role="img" aria-label="가장자리가 바깥으로 벌어진 얕은 접시 모양의 뒤집힌 렌즈">
+                <defs>
+                  <linearGradient id="orientationLensBack" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eefcff"/><stop offset=".5" stop-color="#a8d7e5"/><stop offset=".82" stop-color="#589db8"/><stop offset="1" stop-color="#347c9a"/></linearGradient>
+                  <linearGradient id="orientationRimBack" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#347f9d"/><stop offset=".5" stop-color="#e8faff"/><stop offset="1" stop-color="#347f9d"/></linearGradient>
+                  <filter id="orientationGlowBack" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#39859e" flood-opacity=".28"/></filter>
+                </defs>
+                <ellipse cx="85" cy="93" rx="61" ry="8" fill="#123c57" opacity=".11"/>
+                <path d="M21 36 C36 39 44 48 52 63 C58 74 65 82 75 86 C81 89 89 89 95 86 C105 82 112 74 118 63 C126 48 134 39 149 36 Q85 51 21 36Z" fill="url(#orientationLensBack)" stroke="#3d88a4" stroke-width="2.2" stroke-linejoin="round"/>
+                <path d="M21 36 Q85 20 149 36 Q85 50 21 36Z" fill="#e8f9fd" fill-opacity=".72" stroke="url(#orientationRimBack)" stroke-width="2.5" stroke-linejoin="round"/>
+                <path d="M49 48 C55 66 64 78 75 82" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".42"/>
+                <path d="M75 85 Q85 88 95 85" fill="none" stroke="#d9f6fc" stroke-width="2" stroke-linecap="round" opacity=".42"/>
+                <path d="M16 21 L8 32 M154 21 L162 32" fill="none" stroke="#e15d48" stroke-width="4" stroke-linecap="round"/>
+                <path d="M8 32 L9 24 M8 32 L16 31 M162 32 L161 24 M162 32 L154 31" fill="none" stroke="#e15d48" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="143" cy="83" r="13" fill="#e95f45"/>
+                <path d="M138 78 L148 88 M148 78 L138 88" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+              </svg>
+              <span class="orientation-caption">가장자리가 바깥으로 벌어짐<small>둥근 곡률은 남아 있는 뒤집힌 모양</small></span>
+            </button>
+          </div>
+          <div class="wear-actions" id="openingActions" hidden>
+            <button class="wear-action" id="tryOpening" type="button">렌즈 넣기 시도</button>
+          </div>
+          <div class="wear-actions angle-actions" id="lensActions" hidden>
+            <div class="view-switch" aria-label="착용 화면 방향 선택">
+              <button id="frontViewButton" type="button">정면 눈 확인</button>
+              <button class="active" id="sideViewButton" type="button">측면 각도 조절</button>
+            </div>
+            <div class="angle-summary">
+              <span id="angleStatus">렌즈 면을 각막의 정면과 평행하게 맞추세요</span>
+              <span class="angle-value" id="angleValue">0°</span>
+            </div>
+            <div class="angle-adjust-row">
+              <button class="angle-nudge" id="angleMinus" type="button" aria-label="렌즈 각도 5도 줄이기">−5°</button>
+              <input id="angleSlider" type="range" min="-25" max="25" step="1" value="15" aria-label="손가락과 렌즈 기울기 조절">
+              <button class="angle-nudge" id="anglePlus" type="button" aria-label="렌즈 각도 5도 늘리기">+5°</button>
+            </div>
+            <div class="angle-button-row">
+              <button class="wear-action secondary" id="adjustOpening" type="button">눈 벌림 다시 조절</button>
+              <button class="wear-action" id="insertLensButton" type="button">이 각도로 넣기</button>
+            </div>
+          </div>
+          <div class="wear-actions" id="blinkActions" hidden>
+            <button class="wear-action" id="blinkButton" type="button">천천히 눈 깜빡이기</button>
+          </div>
+        </div>
+
+        <section class="simulator" aria-label="콘택트렌즈 착용 터치 연습 화면">
+          <div class="video-pip" aria-label="실제 착용 방법 영상">
+            <span>▶ 실제 착용 방법 같이 보기</span>
+            <iframe id="wearVideo" title="아큐브 콘택트렌즈 착용 방법" src="https://www.youtube.com/embed/SK0bOgx5pEM?autoplay=1&mute=1&playsinline=1&loop=1&playlist=SK0bOgx5pEM&controls=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+          </div>
+
+          <div class="opening-meter" id="openingMeter" hidden>
+            <span id="openingMeterText">현재 눈 벌림 0%</span>
+            <div class="meter-track"><div class="meter-fill" id="openingMeterFill"></div></div>
+          </div>
+
+          <svg id="wearEyeScene" viewBox="0 0 400 500" role="img" aria-labelledby="wearSceneTitle wearSceneDesc">
+            <title id="wearSceneTitle">콘택트렌즈 착용 연습용 눈</title>
+            <desc id="wearSceneDesc">왼손 중지로 윗눈꺼풀 위 피부를 올리고 오른손 중지로 아랫눈꺼풀 아래 피부를 내린 뒤, 오른손 검지 위 렌즈를 눈 중앙으로 이동합니다. 충분히 벌리지 않으면 렌즈가 속눈썹에 닿아 실패합니다.</desc>
+            <defs>
+              <linearGradient id="wearSkin" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#b97862"/><stop offset=".22" stop-color="#d99d80"/><stop offset=".52" stop-color="#efc5aa"/><stop offset=".78" stop-color="#d7977d"/><stop offset="1" stop-color="#9f5f54"/>
+              </linearGradient>
+              <radialGradient id="wearSclera" cx="48%" cy="43%" r="65%">
+                <stop offset="0" stop-color="#fffefc"/><stop offset=".78" stop-color="#f5e9e4"/><stop offset="1" stop-color="#d7b7ad"/>
+              </radialGradient>
+              <radialGradient id="wearIris" cx="42%" cy="38%" r="60%">
+                <stop offset="0" stop-color="#d7ad65"/><stop offset=".3" stop-color="#a87534"/><stop offset=".6" stop-color="#69421e"/><stop offset=".83" stop-color="#382416"/><stop offset="1" stop-color="#17120e"/>
+              </radialGradient>
+              <radialGradient id="wearLensGlow" cx="42%" cy="35%" r="68%">
+                <stop offset="0" stop-color="#9eeeff" stop-opacity=".55"/><stop offset=".75" stop-color="#56c7e9" stop-opacity=".26"/><stop offset="1" stop-color="#1d91bf" stop-opacity=".38"/>
+              </radialGradient>
+              <filter id="wearShadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#10283b" flood-opacity=".28"/></filter>
+              <marker id="wearArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#fff"/></marker>
+              <clipPath id="wearEyeClip"><path id="wearEyeClipPath" d="M24,250 Q200,145 376,250 Q200,355 24,250Z"/></clipPath>
+            </defs>
+
+            <rect width="400" height="500" fill="url(#wearSkin)"/>
+            <ellipse cx="200" cy="275" rx="218" ry="205" fill="#713e35" opacity=".14"/>
+            <ellipse cx="200" cy="230" rx="205" ry="145" fill="#ffe0c8" opacity=".12"/>
+            <path d="M34 191 Q200 65 366 191" fill="none" stroke="#704338" stroke-width="9" opacity=".28"/>
+            <path d="M46 202 Q200 91 354 202" fill="none" stroke="#f3c5ad" stroke-width="4" opacity=".36"/>
+
+            <g filter="url(#wearShadow)">
+              <path id="wearEyeWhite" d="M24,250 Q200,145 376,250 Q200,355 24,250Z" fill="url(#wearSclera)" stroke="#714a3e" stroke-width="8"/>
+              <g clip-path="url(#wearEyeClip)">
+                <path d="M25 250 C73 226 111 236 154 249 M24 270 C78 261 116 274 151 266 M376 249 C331 228 293 239 251 250 M373 274 C326 260 292 272 253 266" fill="none" stroke="#d88e91" stroke-width="2" opacity=".45"/>
+                <circle cx="200" cy="250" r="94" fill="url(#wearIris)"/>
+                <circle cx="200" cy="250" r="91" fill="none" stroke="#261b12" stroke-width="8" opacity=".75"/>
+                <circle cx="200" cy="250" r="52" fill="#4a2d18"/>
+                <circle cx="200" cy="250" r="39" fill="#05090c"/>
+                <ellipse cx="174" cy="207" rx="20" ry="30" fill="#fff" opacity=".78"/>
+                <ellipse cx="223" cy="224" rx="8" ry="10" fill="#fff" opacity=".62"/>
+              </g>
+            </g>
+
+            <g id="wearContactLens" clip-path="url(#wearEyeClip)" opacity="0">
+              <circle cx="200" cy="250" r="110" fill="url(#wearLensGlow)" stroke="#8be8fa" stroke-width="3"/>
+              <ellipse cx="177" cy="215" rx="56" ry="31" fill="none" stroke="#e4fcff" stroke-width="2" opacity=".62"/>
+            </g>
+
+            <g id="wearUpperLid">
+              <path id="wearUpperOuter" d="M24,250 Q200,145 376,250" fill="none" stroke="#70473c" stroke-width="14" stroke-linecap="round"/>
+              <path id="wearUpperInner" d="M31,245 Q200,158 369,245" fill="none" stroke="#efbea7" stroke-width="7" stroke-linecap="round"/>
+              <g id="wearUpperLashes" fill="none" stroke="#3b2724" stroke-width="4" stroke-linecap="round" opacity=".9"><path d="M64 221 Q47 200 43 184 M88 205 Q74 179 75 163 M116 187 Q106 157 112 142 M146 170 Q141 138 151 124 M178 159 Q177 125 188 112 M211 158 Q216 124 228 114 M244 166 Q254 134 267 125 M276 181 Q291 152 306 146 M307 201 Q326 176 340 173 M333 221 Q352 201 363 197"/></g>
+              <path id="wearUpperHit" d="M24,250 Q200,145 376,250" fill="none" stroke="transparent" stroke-width="68"/>
+            </g>
+
+            <g id="wearLowerLid">
+              <path id="wearLowerOuter" d="M24,250 Q200,355 376,250" fill="none" stroke="#8f5949" stroke-width="14" stroke-linecap="round"/>
+              <path id="wearLowerInner" d="M31,255 Q200,342 369,255" fill="none" stroke="#f0bfaa" stroke-width="7" stroke-linecap="round"/>
+              <path id="wearLowerCrease" d="M46 291 Q200 390 354 291" fill="none" stroke="#714238" stroke-width="7" opacity=".25"/>
+              <g id="wearLowerLashes" fill="none" stroke="#49302c" stroke-width="3" stroke-linecap="round" opacity=".72"><path d="M72 299 Q60 319 57 334 M104 316 Q95 338 96 352 M139 333 Q134 356 138 368 M174 341 Q172 365 178 376 M212 341 Q214 366 220 376 M248 334 Q254 358 262 369 M282 318 Q293 341 302 353 M316 302 Q331 322 339 336"/></g>
+              <path id="wearLowerHit" d="M24,250 Q200,355 376,250" fill="none" stroke="transparent" stroke-width="68"/>
+            </g>
+
+            <g id="wearLens" transform="translate(0 170)" opacity="0">
+              <circle cx="200" cy="250" r="72" fill="url(#wearLensGlow)" stroke="#8be8fa" stroke-width="4"/>
+              <ellipse cx="184" cy="226" rx="38" ry="22" fill="none" stroke="#e4fcff" stroke-width="3" opacity=".75"/>
+              <circle cx="200" cy="250" r="78" fill="transparent" stroke="transparent" stroke-width="20"/>
+            </g>
+
+            <g id="wearLidGuides" pointer-events="none" opacity="0">
+              <circle id="wearUpperHandle" cx="200" cy="158" r="29" fill="#247fb8" fill-opacity=".78" stroke="#fff" stroke-width="3"/>
+              <text id="wearUpperHandleText" x="200" y="154" fill="#fff" text-anchor="middle" font-size="9" font-weight="850"><tspan x="200">왼손</tspan><tspan x="200" dy="11">중지</tspan></text>
+              <path id="wearUpperArrow" d="M200 132 L200 103" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#wearArrow)"/>
+              <circle id="wearLowerHandle" cx="200" cy="342" r="29" fill="#247fb8" fill-opacity=".78" stroke="#fff" stroke-width="3"/>
+              <text id="wearLowerHandleText" x="200" y="338" fill="#fff" text-anchor="middle" font-size="9" font-weight="850"><tspan x="200">오른손</tspan><tspan x="200" dy="11">중지</tspan></text>
+              <path id="wearLowerArrow" d="M200 368 L200 397" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#wearArrow)"/>
+            </g>
+
+            <g id="wearLensGuide" pointer-events="none" opacity="0">
+              <path d="M200 393 L200 330" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#wearArrow)"/>
+              <text x="200" y="460" fill="#fff" text-anchor="middle" font-size="15" font-weight="800">렌즈를 눈 중앙으로 올리기</text>
+            </g>
+            <g id="wearCollision" pointer-events="none" opacity="0">
+              <path id="wearCollisionLine" d="M68 203 Q200 133 332 203" fill="none" stroke="#ff5964" stroke-width="12" stroke-linecap="round" opacity=".9"/>
+              <text id="wearCollisionText" x="200" y="104" fill="#fff" text-anchor="middle" font-size="16" font-weight="900">속눈썹에 닿았어요!</text>
+            </g>
+          </svg>
+
+          <div class="side-view-stage" id="sideViewStage" hidden>
+            <span class="side-view-label">SIDE VIEW · 측면</span>
+            <svg id="sideViewScene" viewBox="20 45 360 410" role="img" aria-labelledby="sideViewTitle sideViewDesc">
+              <title id="sideViewTitle">각막과 렌즈의 측면 정렬 연습</title>
+              <desc id="sideViewDesc">왼손 중지로 윗눈꺼풀 위 피부를 올리고, 오른손 중지로 아랫눈꺼풀 아래 피부를 내린 채, 아래에서 올라오는 오른손 검지 위 렌즈의 각도를 조절하여 각막 정면에 고르게 닿도록 연습합니다.</desc>
+              <defs>
+                <linearGradient id="sideBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d9edf4"/><stop offset=".48" stop-color="#8bb1c2"/><stop offset="1" stop-color="#17394f"/></linearGradient>
+                <radialGradient id="sideSkin" cx="62%" cy="45%" r="75%"><stop offset="0" stop-color="#f4c7ac"/><stop offset=".48" stop-color="#dfa184"/><stop offset=".82" stop-color="#bd7867"/><stop offset="1" stop-color="#8f554d"/></radialGradient>
+                <radialGradient id="sideEyeWhite" cx="61%" cy="44%" r="78%"><stop offset="0" stop-color="#fffefc"/><stop offset=".48" stop-color="#fffaf6"/><stop offset=".78" stop-color="#f0dfda"/><stop offset="1" stop-color="#cfa8a2"/></radialGradient>
+                <radialGradient id="sideIris" cx="34%" cy="35%" r="76%"><stop offset="0" stop-color="#ecc981"/><stop offset=".22" stop-color="#bc823c"/><stop offset=".48" stop-color="#805022"/><stop offset=".72" stop-color="#4b2c18"/><stop offset=".9" stop-color="#241812"/><stop offset="1" stop-color="#100d0b"/></radialGradient>
+                <linearGradient id="sideLens" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d9fbff" stop-opacity=".98"/><stop offset=".45" stop-color="#77dff4" stop-opacity=".82"/><stop offset="1" stop-color="#2ba8d2" stop-opacity=".62"/></linearGradient>
+                <linearGradient id="sideFinger" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd8bf"/><stop offset=".25" stop-color="#f6bea1"/><stop offset=".58" stop-color="#e9a184"/><stop offset=".83" stop-color="#ce826d"/><stop offset="1" stop-color="#aa6258"/></linearGradient>
+                <radialGradient id="sideNail" cx="35%" cy="28%" r="82%"><stop offset="0" stop-color="#fff0e5"/><stop offset=".52" stop-color="#f3c6b2"/><stop offset=".82" stop-color="#dfa08d"/><stop offset="1" stop-color="#c77f72"/></radialGradient>
+                <filter id="sideGlow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                <filter id="sideSoftShadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#173047" flood-opacity=".28"/></filter>
+                <filter id="sideSkinTexture" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".7" numOctaves="2" seed="8"/><feColorMatrix type="matrix" values="1 0 0 0 0  0 .72 0 0 0  0 0 .62 0 0  0 0 0 .09 0"/></filter>
+                <marker id="sideArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#fff"/></marker>
+                <marker id="sideAngleArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#7fe4ff"/></marker>
+                <clipPath id="sideFaceClip"><path d="M0 0 H171 C193 43 190 94 176 137 C164 176 164 193 172 219 C175 231 176 242 176 250 C176 258 175 269 172 281 C164 307 164 338 176 377 C190 420 193 457 171 500 H0Z"/></clipPath>
+                <clipPath id="sideEyeClip"><path d="M24 250 C66 191 120 178 166 198 Q210 250 166 302 C120 322 66 309 24 250Z"/></clipPath>
+                <clipPath id="sideApertureClip"><path id="sideApertureClipPath" d="M24 250 C66 213 120 210 166 220 Q194 250 166 280 C120 290 66 287 24 250Z"/></clipPath>
+              </defs>
+
+              <rect width="400" height="500" fill="url(#sideBg)"/>
+              <ellipse cx="312" cy="96" rx="180" ry="130" fill="#fff" opacity=".12"/>
+
+              <defs>
+                <path id="humanProfile" d="M0 0 H139 C165 18 185 57 186 104 C188 143 176 170 171 190 C167 209 173 227 177 249 C180 276 196 301 212 322 C221 335 224 344 216 351 C207 359 193 353 184 355 C179 362 181 369 190 375 C198 380 195 385 188 388 C194 393 191 400 183 403 C178 406 185 417 182 429 C179 445 166 452 146 453 L134 500 H0Z"/>
+                <radialGradient id="cheekLight"><stop stop-color="#ffe3cd" stop-opacity=".8"/><stop offset="1" stop-color="#edb396" stop-opacity="0"/></radialGradient>
+                <linearGradient id="nosePlane"><stop stop-color="#a96759" stop-opacity=".05"/><stop offset=".55" stop-color="#ffe0c5" stop-opacity=".85"/><stop offset="1" stop-color="#d5947a"/></linearGradient>
+                <linearGradient id="lipTone" x2="0" y2="1"><stop stop-color="#a55c59"/><stop offset=".5" stop-color="#d8978b"/><stop offset="1" stop-color="#b87169"/></linearGradient>
+                <clipPath id="humanProfileClip"><use href="#humanProfile"/></clipPath>
+                <filter id="portraitSoft"><feGaussianBlur stdDeviation="5"/></filter>
+              </defs>
+              <use href="#humanProfile" fill="url(#sideSkin)"/>
+              <g clip-path="url(#humanProfileClip)" pointer-events="none">
+                <ellipse cx="89" cy="338" rx="112" ry="159" fill="url(#cheekLight)"/>
+                <path d="M171 191 C160 237 179 298 205 325 Q225 347 207 351 L175 343 Q182 326 161 289 Q144 252 151 224Z" fill="url(#nosePlane)"/>
+                <path d="M166 283 Q171 312 190 333 Q198 343 207 342" fill="none" stroke="#ffe8d0" stroke-width="5" opacity=".55" filter="url(#portraitSoft)"/>
+                <path d="M161 326 C174 320 187 333 190 345 Q180 355 168 346" fill="#ce927d"/>
+                <path d="M175 343 Q183 337 192 346 Q184 350 175 346Z" fill="#70433c" opacity=".8"/>
+                <path d="M157 326 Q168 316 180 329" fill="none" stroke="#ac6b5d" stroke-width="1.4" opacity=".65"/>
+                <path d="M176 355 Q164 365 169 375" fill="none" stroke="#a56658" stroke-width="2" opacity=".35"/>
+                <path d="M149 384 Q171 368 185 374 Q196 378 190 384 Q176 389 149 384Z" fill="url(#lipTone)"/>
+                <path d="M149 384 Q172 387 190 387 Q197 393 182 399 Q165 398 149 384Z" fill="url(#lipTone)"/>
+                <path d="M148 384 Q169 384 190 386" fill="none" stroke="#77473f" stroke-width="1.25"/>
+                <path d="M165 393 Q174 395 184 392" fill="none" stroke="#f6c0ad" stroke-width="1.4" opacity=".6"/>
+                <path d="M158 409 Q172 404 181 412" fill="none" stroke="#a96958" stroke-width="3" opacity=".3" filter="url(#portraitSoft)"/>
+                <ellipse cx="149" cy="428" rx="29" ry="15" fill="url(#cheekLight)"/>
+                <path d="M44 407 Q80 461 149 453" fill="none" stroke="#9d6659" stroke-width="10" opacity=".18" filter="url(#portraitSoft)"/>
+                <rect width="240" height="500" filter="url(#sideSkinTexture)" opacity=".22"/>
+              </g>
+              <use href="#humanProfile" fill="none" stroke="#895d50" stroke-width=".8" opacity=".42"/>
+              <g clip-path="url(#sideFaceClip)">
+                <path d="M25 126 Q96 82 160 130" fill="none" stroke="#77483f" stroke-width="12" stroke-linecap="round" opacity=".45"/>
+                <path d="M35 143 Q103 108 158 148" fill="none" stroke="#efbea5" stroke-width="4.5" stroke-linecap="round" opacity=".38"/>
+              </g>
+
+              <!-- 눈알과 홍채는 항상 같은 모양을 유지하고, 움직이는 안검 틈으로만 노출한다. -->
+              <g clip-path="url(#sideApertureClip)">
+                <path id="sideEyeWhiteShape" d="M24 250 C66 191 120 178 166 198 Q210 250 166 302 C120 322 66 309 24 250Z" fill="url(#sideEyeWhite)" filter="url(#sideSoftShadow)"/>
+                <g clip-path="url(#sideEyeClip)">
+                  <path d="M39 246 Q75 236 108 242 M45 267 Q78 274 111 264" fill="none" stroke="#d88f94" stroke-width="1.4" stroke-linecap="round" opacity=".27"/>
+                  <ellipse cx="160" cy="250" rx="34" ry="47" fill="url(#sideIris)" stroke="#342118" stroke-width="3.4"/>
+                  <ellipse cx="160" cy="250" rx="29" ry="41" fill="none" stroke="#d5a259" stroke-width="1" opacity=".18"/>
+                  <path d="M151 207 Q158 228 160 246 M139 220 Q151 237 159 247 M138 280 Q151 265 160 254 M153 292 Q159 271 162 255" fill="none" stroke="#efc77c" stroke-width="1" stroke-linecap="round" opacity=".18"/>
+                  <ellipse cx="184" cy="250" rx="8" ry="25" fill="#06090a"/>
+                  <ellipse cx="147" cy="228" rx="7" ry="13" fill="#fff" opacity=".7"/>
+                  <ellipse cx="185" cy="241" rx="2.8" ry="4.8" fill="#fff" opacity=".52"/>
+                </g>
+              </g>
+              <path id="sideEyeOpeningOutline" d="M24 250 C66 213 120 210 166 220 M24 250 C66 287 120 290 166 280" fill="none" stroke="#784a42" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" filter="url(#sideSoftShadow)"/>
+              <path id="sideUpperLidDetail" d="M55 228 C88 212 124 215 153 216" fill="none" stroke="#c98777" stroke-width="2.1" stroke-linecap="round" opacity=".42"/>
+              <path id="sideLowerLidDetail" d="M55 272 C88 288 124 285 153 284" fill="none" stroke="#c98777" stroke-width="2.1" stroke-linecap="round" opacity=".38"/>
+              <path id="sideUpperRim" d="M30 250 C68 222 120 214 165 222" fill="none" stroke="#e3a08f" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path id="sideLowerRim" d="M30 250 C68 278 120 286 165 278" fill="none" stroke="#df9a8b" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <g id="sideUpperLashes" fill="none" stroke="#342522" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round" opacity=".92">
+                <path d="M132 214 Q149 188 163 173"/><path d="M148 216 Q169 193 184 181"/><path d="M161 219 Q183 204 199 194"/>
+              </g>
+              <g id="sideLowerLashes" fill="none" stroke="#553a35" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity=".62">
+                <path d="M135 286 Q154 306 164 321"/><path d="M152 283 Q176 300 189 313"/>
+              </g>
+
+              <!-- 왼손 중지: 윗눈꺼풀 위 피부에 닿는 손끝과 한 관절만 보인다. -->
+              <g id="sideUpperHoldingHand" filter="url(#sideSoftShadow)" opacity=".97">
+                <path d="M78 -16 C95 -23 113 -14 120 3 L159 94 C167 114 162 133 147 142 C132 151 114 142 108 125 L70 35 C63 15 65 -10 78 -16Z" fill="url(#sideFinger)" stroke="#9d6058" stroke-width="2.4"/>
+                <path d="M94 40 Q109 33 124 40 M104 67 Q120 60 135 67" fill="none" stroke="#bd796a" stroke-width="2.3" stroke-linecap="round" opacity=".62"/>
+                <path d="M111 82 Q125 72 139 80 L151 106 Q147 122 133 125 Q119 122 114 110Z" fill="url(#sideNail)" stroke="#cb8878" stroke-width="1.35"/>
+                <path d="M113 129 Q129 121 146 129 M114 137 Q130 129 145 137" fill="none" stroke="#c98573" stroke-width="1.9" stroke-linecap="round" opacity=".66"/>
+              </g>
+              <g id="sideUpperHoldingGuide" pointer-events="none">
+                <path d="M136 152 L136 125" fill="none" stroke="#83e4ff" stroke-width="3" stroke-linecap="round" marker-end="url(#sideArrow)"/>
+              </g>
+
+              <!-- 오른손 중지: 렌즈를 든 검지보다 뒤쪽에서 하안검 아래 피부를 내린다. -->
+              <g id="sideLensHandPalm" filter="url(#sideSoftShadow)" opacity=".94">
+                <path d="M318 500 C329 456 350 424 382 407 L400 403 V500Z" fill="url(#sideFinger)" stroke="#9d6058" stroke-width="2.4"/>
+                <path d="M386 401 C358 387 332 375 304 367 L144 315 C125 309 107 318 101 334 C95 350 107 366 127 370 L293 404 C322 411 350 423 376 438Z" fill="url(#sideFinger)" stroke="#9d6058" stroke-width="2.4"/>
+                <path d="M118 325 Q134 316 150 323 L168 339 Q165 354 150 359 Q133 357 120 347Z" fill="url(#sideNail)" stroke="#cb8878" stroke-width="1.35"/>
+                <path d="M202 337 Q218 349 213 363 M272 360 Q288 372 283 386 M333 381 Q349 393 344 407" fill="none" stroke="#bd796a" stroke-width="2.3" stroke-linecap="round" opacity=".58"/>
+              </g>
+              <g id="sideLowerHoldingGuide" pointer-events="none">
+                <path d="M121 337 L121 368" fill="none" stroke="#83e4ff" stroke-width="3" stroke-linecap="round" marker-end="url(#sideArrow)"/>
+              </g>
+
+              <path d="M166 142 V358" fill="none" stroke="#b7eeff" stroke-width="3" stroke-dasharray="8 8"/>
+              <path d="M354 250 H235" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" marker-end="url(#sideArrow)" opacity=".78"/>
+
+              <g id="sideInsertionAssembly" transform="translate(0 0) rotate(15 287 238)">
+                <!-- 오른손 검지: 지문 면이 렌즈 뒤를 직접 받치고, 손톱은 오른쪽 측면에만 보인다. -->
+                <g transform="translate(-12 -2)">
+                  <path d="M399 505 C371 475 348 441 331 404 L290 309 C282 291 285 270 297 257 C304 249 312 247 320 250 C331 254 338 265 341 278 L380 372 C393 401 405 429 416 455Z" fill="url(#sideFinger)" stroke="#9d6058" stroke-width="2.3" filter="url(#sideSoftShadow)"/>
+                  <path d="M321 252 C330 255 337 264 339 273 C339 277 337 280 334 282 C332 270 327 259 321 252Z" fill="url(#sideNail)" stroke="#c77f72" stroke-width="1.3" stroke-linejoin="round"/>
+                  <path d="M322 356 Q336 349 348 356 M338 397 Q352 390 363 397" fill="none" stroke="#bd796a" stroke-width="2" stroke-linecap="round" opacity=".38"/>
+                </g>
+                <path id="sideLensShape" d="M258 198 Q302 250 258 302" fill="#75d8ee" fill-opacity=".14" stroke="url(#sideLens)" stroke-width="9" stroke-linecap="round" filter="url(#sideGlow)"/>
+                <path d="M258 198 L258 302" fill="none" stroke="#e5fbff" stroke-width="2" stroke-dasharray="5 6" opacity=".72"/>
+                <path d="M263 207 Q297 250 263 293" fill="none" stroke="#fff" stroke-width="3" opacity=".62"/>
+                <circle id="sideTopContact" cx="258" cy="198" r="13" fill="#ff5964" opacity="0"/>
+                <circle id="sideBottomContact" cx="258" cy="302" r="13" fill="#ff5964" opacity="0"/>
+              </g>
+
+              <g id="sideAngleGuide" opacity="0" pointer-events="none">
+                <path d="M343 214 C369 232 370 268 343 287" fill="none" stroke="#7fe4ff" stroke-width="3.2" stroke-linecap="round" marker-start="url(#sideAngleArrow)" marker-end="url(#sideAngleArrow)" filter="url(#sideGlow)"/>
+              </g>
+
+              <g id="sideContactSuccess" opacity="0" pointer-events="none">
+                <path d="M166 198 Q210 250 166 302" fill="none" stroke="#76e3bd" stroke-width="11" stroke-linecap="round" filter="url(#sideGlow)"/>
+                <text x="276" y="382" fill="#c9f9e7" text-anchor="middle" font-size="16" font-weight="900">렌즈 면이 고르게 안착했어요</text>
+              </g>
+
+              <g id="sideLashWarning" opacity="0" pointer-events="none">
+                <path id="sideUpperLashWarningLine" d="M130 214 Q166 203 198 217" fill="none" stroke="#ff5964" stroke-width="9" stroke-linecap="round" filter="url(#sideGlow)" opacity="0"/>
+                <path id="sideLowerLashWarningLine" d="M132 286 Q166 297 196 282" fill="none" stroke="#ff5964" stroke-width="9" stroke-linecap="round" filter="url(#sideGlow)" opacity="0"/>
+                <text id="sideLashWarningText" x="270" y="405" fill="#ffced2" text-anchor="middle" font-size="15" font-weight="900">속눈썹에 걸리지 않게 더 벌려주세요</text>
+              </g>
+
+            </svg>
+          </div>
+
+          <div class="feedback" id="wearFeedback" aria-live="polite">두 렌즈 중 올바른 앞면 모양을 선택하세요.</div>
+
+          <div class="attempt-guide" id="wearAttemptGuide" hidden>
+            <div class="attempt-guide-card">
+              <div class="attempt-guide-badge" id="wearAttemptBadge">2회</div>
+              <h3 id="wearAttemptTitle">눈꺼풀을 조금 더 벌려보세요</h3>
+              <p id="wearAttemptBody"></p>
+              <button id="wearAttemptClose" type="button">다시 해보기</button>
+            </div>
+          </div>
+
+          <div class="completion" id="wearCompletion" aria-hidden="true">
+            <div class="checkmark" aria-hidden="true">✓</div>
+            <h2>착용 성공!</h2>
+            <p>눈을 충분히 벌리고 렌즈 면을 각막 정면과 평행하게 맞춰 안정적으로 안착했어요.</p>
+            <button class="again-button" id="wearAgainButton" type="button">한 번 더 연습하기</button>
+          </div>
+        </section>
+      </section>
+
+      <section class="practice-panel" id="removalPractice" hidden>
+      <ol class="progress-list" aria-label="연습 진행 단계">
+        <li class="active" data-progress="1">1. 아랫눈꺼풀</li>
+        <li data-progress="2">2. 렌즈 이동</li>
+        <li data-progress="3">3. 집어 제거</li>
+      </ol>
+
+      <section class="coach" aria-labelledby="instructionTitle">
+        <div class="step-number" id="stepNumber">1</div>
+        <div>
+          <strong id="instructionTitle">오른손 중지로 아랫눈꺼풀을 내리세요</strong>
+          <p id="instructionBody">표시된 아랫눈꺼풀을 오른손 중지로 잡고 아래로 드래그하세요.</p>
+        </div>
+      </section>
+
+      <section class="simulator" aria-label="콘택트렌즈 제거 터치 연습 화면">
+        <div class="video-pip" aria-label="실제 제거 방법 영상">
+          <span>▶ 실제 제거 방법 같이 보기</span>
+          <iframe id="removalVideo" title="아큐브 콘택트렌즈 제거 방법" src="https://www.youtube.com/embed/R3Z0pg4OjAs?autoplay=1&mute=1&playsinline=1&loop=1&playlist=R3Z0pg4OjAs&controls=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <svg id="eyeScene" viewBox="0 0 400 500" role="img" aria-labelledby="sceneTitle sceneDesc">
+          <title id="sceneTitle">콘택트렌즈 제거 연습용 눈</title>
+          <desc id="sceneDesc">오른손 중지로 아랫눈꺼풀을 내린 뒤, 오른손 검지로 렌즈를 흰자위로 이동하고 손톱이 아닌 오른손 검지와 엄지의 지문 면으로 렌즈 양쪽을 집어 제거합니다.</desc>
+          <defs>
+            <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#b97862"/>
+              <stop offset="0.22" stop-color="#d99d80"/>
+              <stop offset="0.52" stop-color="#efc5aa"/>
+              <stop offset="0.78" stop-color="#d7977d"/>
+              <stop offset="1" stop-color="#9f5f54"/>
+            </linearGradient>
+            <radialGradient id="sclera" cx="48%" cy="43%" r="65%">
+              <stop offset="0" stop-color="#fffefc"/>
+              <stop offset="0.78" stop-color="#f5e9e4"/>
+              <stop offset="1" stop-color="#d7b7ad"/>
+            </radialGradient>
+            <radialGradient id="iris" cx="42%" cy="38%" r="60%">
+              <stop offset="0" stop-color="#d7ad65"/>
+              <stop offset="0.3" stop-color="#a87534"/>
+              <stop offset="0.58" stop-color="#69421e"/>
+              <stop offset="0.82" stop-color="#382416"/>
+              <stop offset="1" stop-color="#17120e"/>
+            </radialGradient>
+            <radialGradient id="pupil" cx="40%" cy="36%" r="65%">
+              <stop offset="0" stop-color="#18242c"/>
+              <stop offset=".65" stop-color="#070b0e"/>
+              <stop offset="1" stop-color="#000"/>
+            </radialGradient>
+            <radialGradient id="lensGlow" cx="42%" cy="35%" r="68%">
+              <stop offset="0" stop-color="#9eeeff" stop-opacity=".32"/>
+              <stop offset=".74" stop-color="#56c7e9" stop-opacity=".13"/>
+              <stop offset="1" stop-color="#1d91bf" stop-opacity=".2"/>
+            </radialGradient>
+            <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
+              <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#10283b" flood-opacity=".28"/>
+            </filter>
+            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="4" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="skinTexture" x="-10%" y="-10%" width="120%" height="120%">
+              <feTurbulence type="fractalNoise" baseFrequency=".58" numOctaves="3" seed="11" result="grain"/>
+              <feColorMatrix in="grain" type="matrix" values="1 0 0 0 0  0 .72 0 0 0  0 0 .58 0 0  0 0 0 .13 0"/>
+            </filter>
+            <filter id="wetGlow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="1.5" result="shine"/>
+              <feMerge><feMergeNode in="shine"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <marker id="arrowHead" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#ffffff"/>
+            </marker>
+            <clipPath id="eyeClip">
+              <path id="eyeClipPath" d="M24,250 Q200,105 376,250 Q200,395 24,250Z"/>
+            </clipPath>
+            <path id="irisRay" d="M200 159 C196 177 204 194 200 211" fill="none" stroke="#e0b56b" stroke-width="3" stroke-linecap="round" opacity=".65"/>
+          </defs>
+
+          <rect width="400" height="500" fill="url(#skin)"/>
+          <rect width="400" height="500" fill="#8d5c4e" opacity=".2" filter="url(#skinTexture)"/>
+          <ellipse cx="200" cy="273" rx="218" ry="200" fill="#713e35" opacity=".14"/>
+          <ellipse cx="200" cy="232" rx="205" ry="145" fill="#ffe0c8" opacity=".12"/>
+          <path d="M34 191 Q200 65 366 191" fill="none" stroke="#704338" stroke-width="9" opacity=".28"/>
+          <path d="M46 202 Q200 91 354 202" fill="none" stroke="#f3c5ad" stroke-width="4" opacity=".36"/>
+
+          <g filter="url(#softShadow)">
+            <path id="eyeWhite" d="M24,250 Q200,105 376,250 Q200,395 24,250Z" fill="url(#sclera)" stroke="#714a3e" stroke-width="8"/>
+            <g clip-path="url(#eyeClip)">
+              <path d="M25 250 C73 226 111 236 154 249 M24 270 C78 261 116 274 151 266 M376 249 C331 228 293 239 251 250 M373 274 C326 260 292 272 253 266" fill="none" stroke="#d88e91" stroke-width="2" opacity=".45"/>
+              <path d="M38 230 C77 219 106 225 139 238 M363 230 C326 220 299 228 270 239 M47 291 C89 280 116 284 150 275 M352 294 C316 282 286 283 255 275" fill="none" stroke="#c96772" stroke-width="1.2" opacity=".38"/>
+              <ellipse cx="35" cy="252" rx="20" ry="14" fill="#d98786" opacity=".72"/>
+              <ellipse cx="365" cy="252" rx="17" ry="12" fill="#d98786" opacity=".48"/>
+              <g id="irisGroup">
+                <circle cx="200" cy="250" r="94" fill="url(#iris)"/>
+                <circle cx="200" cy="250" r="92" fill="none" stroke="#1e1711" stroke-width="8" opacity=".8"/>
+                <g>
+                <use href="#irisRay"/>
+                <use href="#irisRay" transform="rotate(15 200 250)"/>
+                <use href="#irisRay" transform="rotate(30 200 250)"/>
+                <use href="#irisRay" transform="rotate(45 200 250)"/>
+                <use href="#irisRay" transform="rotate(60 200 250)"/>
+                <use href="#irisRay" transform="rotate(75 200 250)"/>
+                <use href="#irisRay" transform="rotate(90 200 250)"/>
+                <use href="#irisRay" transform="rotate(105 200 250)"/>
+                <use href="#irisRay" transform="rotate(120 200 250)"/>
+                <use href="#irisRay" transform="rotate(135 200 250)"/>
+                <use href="#irisRay" transform="rotate(150 200 250)"/>
+                <use href="#irisRay" transform="rotate(165 200 250)"/>
+                <use href="#irisRay" transform="rotate(180 200 250)"/>
+                <use href="#irisRay" transform="rotate(195 200 250)"/>
+                <use href="#irisRay" transform="rotate(210 200 250)"/>
+                <use href="#irisRay" transform="rotate(225 200 250)"/>
+                <use href="#irisRay" transform="rotate(240 200 250)"/>
+                <use href="#irisRay" transform="rotate(255 200 250)"/>
+                <use href="#irisRay" transform="rotate(270 200 250)"/>
+                <use href="#irisRay" transform="rotate(285 200 250)"/>
+                <use href="#irisRay" transform="rotate(300 200 250)"/>
+                <use href="#irisRay" transform="rotate(315 200 250)"/>
+                <use href="#irisRay" transform="rotate(330 200 250)"/>
+                <use href="#irisRay" transform="rotate(345 200 250)"/>
+                </g>
+                <circle cx="200" cy="250" r="53" fill="none" stroke="#4a2d18" stroke-width="9" opacity=".8"/>
+                <circle cx="200" cy="250" r="39" fill="url(#pupil)"/>
+                <ellipse cx="174" cy="207" rx="20" ry="30" fill="#fff" opacity=".8" filter="url(#wetGlow)"/>
+                <ellipse cx="223" cy="224" rx="8" ry="10" fill="#fff" opacity=".62"/>
+              </g>
+              <path d="M74 290 Q200 363 326 290" fill="none" stroke="#fff" stroke-width="4" opacity=".3" filter="url(#wetGlow)"/>
+            </g>
+          </g>
+
+          <g id="lensWindow" clip-path="url(#eyeClip)">
+            <g id="lensPosition" transform="translate(0 0)">
+              <g id="lensFold">
+                <circle id="lensHit" cx="200" cy="250" r="101" fill="url(#lensGlow)" stroke="#76dff5" stroke-width="3" stroke-opacity=".92"/>
+                <ellipse cx="178" cy="215" rx="56" ry="32" fill="none" stroke="#d8fbff" stroke-width="2" stroke-opacity=".62"/>
+                <path d="M126 287 Q200 318 274 287" fill="none" stroke="#81dff0" stroke-width="2" stroke-opacity=".6"/>
+              </g>
+            </g>
+          </g>
+
+          <g id="upperLid">
+            <path id="upperLidOuter" d="M24,250 Q200,105 376,250" fill="none" stroke="#70473c" stroke-width="14" stroke-linecap="round"/>
+            <path id="upperLidInner" d="M31,245 Q200,122 369,245" fill="none" stroke="#efbea7" stroke-width="7" stroke-linecap="round" opacity=".92"/>
+            <g id="upperLashes" fill="none" stroke="#3b2724" stroke-width="4" stroke-linecap="round" opacity=".82">
+              <path d="M64 221 Q47 200 43 184 M88 195 Q74 169 75 153 M116 171 Q106 141 112 126 M146 151 Q141 119 151 105 M178 139 Q177 105 188 92 M211 138 Q216 104 228 94 M244 146 Q254 114 267 105 M276 161 Q291 132 306 126 M307 181 Q326 156 340 153 M333 207 Q352 187 363 183"/>
+            </g>
+            <path id="upperLidHit" d="M24,250 Q200,105 376,250" fill="none" stroke="transparent" stroke-width="62"/>
+          </g>
+
+          <g id="lowerLid">
+            <path id="lowerLidOuter" d="M24,250 Q200,395 376,250" fill="none" stroke="#8f5949" stroke-width="14" stroke-linecap="round"/>
+            <path id="lowerLidInner" d="M31,255 Q200,378 369,255" fill="none" stroke="#f0bfaa" stroke-width="7" stroke-linecap="round" opacity=".92"/>
+            <path id="lowerCrease" d="M46 291 Q200 420 354 291" fill="none" stroke="#714238" stroke-width="7" opacity=".25"/>
+            <g id="lowerLashes" fill="none" stroke="#49302c" stroke-width="3" stroke-linecap="round" opacity=".58">
+              <path d="M72 303 Q60 323 57 338 M104 329 Q95 351 96 365 M139 351 Q134 374 138 386 M174 365 Q172 389 178 400 M212 365 Q214 390 220 400 M248 354 Q254 378 262 389 M282 335 Q293 358 302 370 M316 310 Q331 330 339 344"/>
+            </g>
+            <path id="lidHit" d="M24,250 Q200,395 376,250" fill="none" stroke="transparent" stroke-width="58"/>
+          </g>
+
+          <g id="guideLayer" pointer-events="none">
+            <g id="guideStep1">
+              <circle cx="200" cy="365" r="23" fill="#4aa9e8" fill-opacity=".45" stroke="#fff" stroke-width="3"/>
+              <text x="200" y="362" fill="#fff" text-anchor="middle" font-size="9" font-weight="700">오른손</text>
+              <text x="200" y="375" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">중지</text>
+              <path d="M200 389 L200 430" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowHead)"/>
+              <text x="200" y="462" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">아랫눈꺼풀 내리기</text>
+            </g>
+            <g id="guideStep2" opacity="0">
+              <circle cx="200" cy="310" r="22" fill="#4aa9e8" fill-opacity=".45" stroke="#fff" stroke-width="3"/>
+              <text x="200" y="307" fill="#fff" text-anchor="middle" font-size="9" font-weight="700">오른손</text>
+              <text x="200" y="320" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">검지</text>
+              <path d="M200 329 L200 400" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowHead)"/>
+              <text x="200" y="443" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">렌즈를 흰자위로</text>
+            </g>
+            <g id="guideStep3" opacity="0">
+              <circle cx="112" cy="310" r="28" fill="#4aa9e8" fill-opacity=".58" stroke="#fff" stroke-width="3"/>
+              <text x="112" y="306" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">오른손</text>
+              <text x="112" y="322" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">검지</text>
+              <circle cx="288" cy="310" r="28" fill="#4aa9e8" fill-opacity=".58" stroke="#fff" stroke-width="3"/>
+              <text x="288" y="306" fill="#fff" text-anchor="middle" font-size="10" font-weight="700">오른손</text>
+              <text x="288" y="322" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">엄지</text>
+              <path d="M143 310 L181 310 M257 310 L219 310" stroke="#fff" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowHead)"/>
+              <text x="200" y="402" fill="#fff" text-anchor="middle" font-size="15" font-weight="700">손톱 말고 지문 면으로 테두리 모으기</text>
+            </g>
+          </g>
+        </svg>
+
+        <div class="touch-marker" id="touchMarker1"></div>
+        <div class="touch-marker" id="touchMarker2"></div>
+        <div class="feedback" id="feedback" aria-live="polite">파란 원에 오른손 중지를 놓고 아래로 내려보세요.</div>
+
+        <div class="completion" id="completion" aria-hidden="true">
+          <div class="checkmark" aria-hidden="true">✓</div>
+          <h2>제거 성공!</h2>
+          <p>렌즈를 흰자위로 이동한 뒤, 양쪽을 부드럽게 모아 잘 제거했어요.</p>
+          <button class="again-button" id="againButton" type="button">한 번 더 연습하기</button>
+        </div>
+
+        <div class="attempt-guide" id="removalAttemptGuide" hidden>
+          <div class="attempt-guide-card">
+            <div class="attempt-guide-badge" id="removalAttemptBadge">2회</div>
+            <h3 id="removalAttemptTitle">손가락 위치를 다시 확인해보세요</h3>
+            <p id="removalAttemptBody"></p>
+            <button id="removalAttemptClose" type="button">다시 해보기</button>
+          </div>
+        </div>
+      </section>
+      </section>
+
+      <p class="safety-note">교육용 시뮬레이터입니다. 실제 착용·제거 시 손을 깨끗이 씻고 안경전문가의 안내를 따라주세요.</p>
+    </main>
+  </div>
+
+  <div class="faq-modal" id="faqModal" hidden>
+    <section class="faq-sheet" role="dialog" aria-modal="true" aria-labelledby="faqTitle">
+      <header class="faq-header">
+        <div>
+          <p class="faq-kicker">WEAR &amp; CARE</p>
+          <h2 id="faqTitle">착용·제거 FAQ</h2>
+        </div>
+        <button class="faq-close" id="faqClose" type="button" aria-label="FAQ 닫기">×</button>
+      </header>
+
+      <div class="faq-search-wrap">
+        <label for="faqSearch">궁금한 내용을 검색하세요</label>
+        <div class="faq-search-row">
+          <input id="faqSearch" type="search" placeholder="예: 안 빠져요, 수돗물, 잠" autocomplete="off">
+        </div>
+        <p class="faq-count" id="faqCount" aria-live="polite">22개 질문</p>
+      </div>
+
+      <div class="faq-list" id="faqList">
+        <details class="faq-item" data-search="착용 뒤집힘 앞뒤 그릇 접시 모양">
+          <summary><span class="faq-tag">착용</span>렌즈가 뒤집혔는지 어떻게 확인하나요?</summary>
+          <p>손가락 끝에 올렸을 때 가장자리가 곧게 위를 향한 둥근 그릇 모양이면 바른 방향입니다. 가장자리가 바깥으로 벌어진 접시 모양이면 뒤집힌 것이므로 뒤집어 착용하세요.</p>
+        </details>
+        <details class="faq-item" data-search="착용 이물감 따가움 불편 통증">
+          <summary><span class="faq-tag">착용</span>처음 끼면 약간 이물감이 있어도 되나요?</summary>
+          <p>처음에는 렌즈가 느껴질 수 있지만 지속되는 통증·심한 따가움·충혈·눈부심·시야 변화는 정상으로 넘기면 안 됩니다. 즉시 빼고 증상이 계속되면 안과 또는 렌즈 전문가에게 연락하세요.</p>
+        </details>
+        <details class="faq-item" data-search="착용 렌즈 움직임 깜빡임 중심 이탈">
+          <summary><span class="faq-tag">착용</span>깜빡일 때 렌즈가 조금 움직여도 되나요?</summary>
+          <p>소프트렌즈는 깜빡일 때 약간 움직일 수 있습니다. 계속 크게 밀리거나 중심을 벗어나고 시야가 흔들리면 착용을 중단하고 피팅 상태를 확인받으세요.</p>
+        </details>
+        <details class="faq-item" data-search="착용 흐림 뿌옇게 시야 뒤집힘 이물 건조">
+          <summary><span class="faq-tag">착용</span>착용 후 시야가 흐리면 어떻게 하나요?</summary>
+          <p>렌즈를 빼서 앞뒤가 맞는지, 찢어짐이나 이물질이 없는지 확인하세요. 권장 용액으로 관리한 뒤 다시 착용해도 흐림이 지속되거나 통증·충혈이 동반되면 진료가 필요합니다.</p>
+        </details>
+        <details class="faq-item" data-search="착용 시간 오래 몇시간 교체주기 처방">
+          <summary><span class="faq-tag">착용</span>하루에 몇 시간까지 착용해도 되나요?</summary>
+          <p>렌즈 종류와 눈 상태에 따라 달라서 제품 설명과 안과 전문가가 정한 착용 시간을 따라야 합니다. 불편감이나 건조감이 생기면 정해진 시간 전이라도 빼세요.</p>
+        </details>
+        <details class="faq-item" data-search="착용 화장 메이크업 순서 제거 클렌징">
+          <summary><span class="faq-tag">착용</span>화장 전과 후, 언제 렌즈를 끼고 빼나요?</summary>
+          <p>보통 화장 전에 렌즈를 착용하고, 화장을 지우기 전에 렌즈부터 제거하면 오염이 묻을 가능성을 줄일 수 있습니다. 손과 손가락은 깨끗하고 완전히 마른 상태로 사용하세요.</p>
+        </details>
+        <details class="faq-item" data-search="제거 기본 순서 흰자 검지 엄지 미끄러뜨리기">
+          <summary><span class="faq-tag">제거</span>소프트렌즈를 빼는 기본 순서는 무엇인가요?</summary>
+          <p>위를 보고 눈꺼풀을 충분히 연 뒤, 검지의 넓은 면으로 렌즈를 아래 흰자위로 미세요. 손톱이 아닌 검지와 엄지의 지문 면으로 렌즈 양쪽을 부드럽게 모아 들어냅니다.</p>
+        </details>
+        <details class="faq-item" data-search="제거 렌즈 붙음 안빠짐 건조 재습윤 식염수 깜빡임">
+          <summary><span class="faq-tag">제거</span>렌즈가 붙어서 안 빠져요.</summary>
+          <p>억지로 집지 말고 여러 번 깜빡인 뒤, 전문가가 허용한 렌즈용 재습윤액이나 멸균 식염수를 넣고 몇 분 기다리세요. 손가락을 다시 완전히 말린 후 시도하고, 그래도 움직이지 않거나 아프면 전문가에게 도움을 받으세요.</p>
+        </details>
+        <details class="faq-item" data-search="제거 눈 뒤 넘어감 사라짐 윗눈꺼풀 접힘">
+          <summary><span class="faq-tag">제거</span>렌즈가 눈 뒤로 넘어갈 수 있나요?</summary>
+          <p>눈의 구조상 렌즈가 안구 뒤로 완전히 넘어갈 수는 없습니다. 다만 접혀서 눈꺼풀 아래에 들어갈 수 있으므로 찾지 못하거나 이물감이 계속되면 손톱으로 찾지 말고 안과에서 확인받으세요.</p>
+        </details>
+        <details class="faq-item" data-search="제거 찢어짐 조각 남음 파손 핀셋 손톱">
+          <summary><span class="faq-tag">제거</span>렌즈가 찢어져 조각이 남은 것 같아요.</summary>
+          <p>손톱이나 핀셋으로 눈을 긁지 마세요. 승인된 멸균 용액으로 눈을 적시고 깜빡여도 조각을 확인할 수 없거나 통증·충혈이 있으면 바로 안과에서 제거 여부를 확인받으세요.</p>
+        </details>
+        <details class="faq-item" data-search="제거 긴 손톱 네일 손가락 패드">
+          <summary><span class="faq-tag">제거</span>손톱이 길어도 안전하게 뺄 수 있나요?</summary>
+          <p>반드시 손톱 끝이 아닌 손가락의 넓은 지문 면을 사용하고 천천히 옆에서 접근하세요. 가능하면 검지와 엄지 손톱을 짧고 매끈하게 유지하고, 반복해서 어렵다면 전문가에게 다른 제거법을 배우세요.</p>
+        </details>
+        <details class="faq-item" data-search="제거 한쪽 반복 실패 안빠져요 휴식">
+          <summary><span class="faq-tag">제거</span>한쪽 렌즈만 계속 안 빠지면요?</summary>
+          <p>눈이 자극될 만큼 반복하지 말고 잠시 쉬면서 렌즈용 재습윤액을 사용하세요. 충분히 적신 뒤에도 렌즈가 움직이지 않거나 통증이 생기면 스스로 억지로 빼지 말고 전문가에게 연락하세요.</p>
+        </details>
+        <details class="faq-item" data-search="위생 수돗물 생수 증류수 세척 물 침 타액">
+          <summary><span class="faq-tag">위생</span>수돗물·생수·증류수로 렌즈를 씻어도 되나요?</summary>
+          <p>안 됩니다. FDA는 수돗물·생수·증류수·호수·바닷물 등 어떤 물에도 렌즈를 노출하지 말라고 안내합니다. 침으로 적시는 것도 피하고, 제품에 맞는 멸균 렌즈 관리용액만 사용하세요.</p>
+        </details>
+        <details class="faq-item" data-search="위생 샤워 수영 물 바다 수영장">
+          <summary><span class="faq-tag">위생</span>렌즈를 끼고 샤워하거나 수영해도 되나요?</summary>
+          <p>물에 닿기 전에 렌즈를 빼는 것이 원칙입니다. 실수로 물에 닿았다면 가능한 빨리 제거하고, 일회용은 버리며 재사용 렌즈는 전문가와 제품 지침에 따라 소독하세요.</p>
+        </details>
+        <details class="faq-item" data-search="착용 수면 낮잠 밤 잠자기">
+          <summary><span class="faq-tag">착용</span>렌즈를 끼고 자거나 낮잠을 자도 되나요?</summary>
+          <p>전문가가 해당 렌즈의 연속 착용을 명확히 허용한 경우가 아니라면 잠들기 전에 빼세요. 렌즈를 끼고 자는 행동은 감염 위험을 높일 수 있습니다.</p>
+        </details>
+        <details class="faq-item" data-search="위생 손씻기 비누 건조 보풀 로션 오일">
+          <summary><span class="faq-tag">위생</span>손은 어떻게 씻고 말려야 하나요?</summary>
+          <p>향·크림·오일 잔여물이 적은 순한 비누로 충분히 씻고 깨끗한 보풀 없는 수건으로 완전히 말리세요. 젖은 손가락은 렌즈를 잡기 더 어렵습니다.</p>
+        </details>
+        <details class="faq-item" data-search="위생 다목적 용액 안약 점안 눈에 넣기">
+          <summary><span class="faq-tag">위생</span>다목적 렌즈 용액을 안약처럼 넣어도 되나요?</summary>
+          <p>안 됩니다. 세척·소독용 용액은 일반 점안액이 아니므로 눈에 직접 넣지 마세요. 눈에는 ‘콘택트렌즈 착용 중 사용 가능’이라고 표시된 제품만 전문가의 안내에 따라 사용하세요.</p>
+        </details>
+        <details class="faq-item" data-search="착용 안약 인공눈물 충혈 알레르기 점안액">
+          <summary><span class="faq-tag">착용</span>렌즈를 낀 채 어떤 안약을 쓸 수 있나요?</summary>
+          <p>모든 인공눈물이 렌즈와 호환되는 것은 아닙니다. 포장에 렌즈 착용 중 사용 가능하다고 표시된 재습윤액만 사용하고, 충혈·알레르기·치료용 안약은 의사 지시가 없다면 렌즈를 뺀 뒤 사용하세요.</p>
+        </details>
+        <details class="faq-item" data-search="위생 원데이 일회용 재사용 다시 사용">
+          <summary><span class="faq-tag">위생</span>원데이 렌즈를 빼두었다가 다시 써도 되나요?</summary>
+          <p>원데이 렌즈는 한 번 착용하고 제거하면 버리는 제품입니다. 세척하거나 보관해서 재사용하지 말고 새 렌즈를 사용하세요.</p>
+        </details>
+        <details class="faq-item" data-search="위생 케이스 용액 덧붓기 교체 3개월 보관">
+          <summary><span class="faq-tag">위생</span>케이스의 남은 용액에 새 용액을 덧부어도 되나요?</summary>
+          <p>남은 용액은 매번 버리고 새 용액만 사용하세요. 케이스는 권장 용액으로 문질러 헹군 뒤 자연 건조하고, FDA 안내에 따라 약 3개월마다 또는 전문가 지시에 맞춰 교체하세요.</p>
+        </details>
+        <details class="faq-item" data-search="위생 과산화수소 용액 중화 특수 케이스 화상">
+          <summary><span class="faq-tag">위생</span>과산화수소 용액으로 바로 헹구고 착용해도 되나요?</summary>
+          <p>절대 안 됩니다. 반드시 제품 전용 케이스를 사용해 표시된 시간 동안 완전히 중화해야 하며, 중화되지 않은 용액이 눈에 닿으면 심한 자극이나 손상을 일으킬 수 있습니다.</p>
+        </details>
+        <details class="faq-item" data-search="증상 응급 병원 통증 충혈 눈부심 분비물 눈물 시야 변화">
+          <summary><span class="faq-tag">증상</span>어떤 증상이 생기면 즉시 빼고 진료받아야 하나요?</summary>
+          <p>통증, 심한 충혈, 갑작스럽거나 지속되는 시야 흐림, 눈부심, 많은 눈물이나 분비물이 생기면 렌즈를 즉시 빼고 안과 전문가에게 연락하세요. 증상이 심하거나 빠르게 악화되면 지체하지 말고 진료받으세요.</p>
+        </details>
+        <p class="faq-empty" id="faqEmpty" hidden>검색 결과가 없습니다. 다른 단어로 찾아보세요.</p>
+      </div>
+
+      <footer class="faq-sources">
+        <p>교육용 요약이며 개인 진단을 대신하지 않습니다. 렌즈 종류와 처방에 따라 담당 안과 전문가의 지시를 우선하세요.</p>
+        <p>근거: <a href="https://www.cdc.gov/contact-lenses/about/index.html" target="_blank" rel="noopener">CDC</a> · <a href="https://www.fda.gov/medical-devices/contact-lenses/contact-lens-solutions-and-products" target="_blank" rel="noopener">미국 FDA</a> · <a href="https://www.acuvue.com/en-us/eye-health/take-off-contacts/" target="_blank" rel="noopener">ACUVUE 제거 안내</a> · <a href="https://www.moorfields.nhs.uk/for-patients/visual-aids/contact-lenses/care-of-your-soft-contact-lenses" target="_blank" rel="noopener">Moorfields Eye Hospital</a></p>
+      </footer>
+    </section>
+  </div>
+
+  <script>
+    (() => {
+      const svg = document.getElementById('eyeScene');
+      const upperLid = document.getElementById('upperLid');
+      const lowerLid = document.getElementById('lowerLid');
+      const eyeWhite = document.getElementById('eyeWhite');
+      const eyeClipPath = document.getElementById('eyeClipPath');
+      const irisGroup = document.getElementById('irisGroup');
+      const upperLidOuter = document.getElementById('upperLidOuter');
+      const upperLidInner = document.getElementById('upperLidInner');
+      const upperLidHit = document.getElementById('upperLidHit');
+      const upperLashes = document.getElementById('upperLashes');
+      const lowerLidOuter = document.getElementById('lowerLidOuter');
+      const lowerLidInner = document.getElementById('lowerLidInner');
+      const lowerLidHit = document.getElementById('lidHit');
+      const lowerCrease = document.getElementById('lowerCrease');
+      const lowerLashes = document.getElementById('lowerLashes');
+      const lensPosition = document.getElementById('lensPosition');
+      const lensFold = document.getElementById('lensFold');
+      const feedback = document.getElementById('feedback');
+      const completion = document.getElementById('completion');
+      const stepNumber = document.getElementById('stepNumber');
+      const instructionTitle = document.getElementById('instructionTitle');
+      const instructionBody = document.getElementById('instructionBody');
+      const progressList = document.querySelector('#removalPractice .progress-list');
+      const progressItems = [...document.querySelectorAll('#removalPractice [data-progress]')];
+      const guides = [null, document.getElementById('guideStep1'), document.getElementById('guideStep2'), document.getElementById('guideStep3')];
+      const markers = [document.getElementById('touchMarker1'), document.getElementById('touchMarker2')];
+      const faqButton = document.getElementById('faqButton');
+      const faqModal = document.getElementById('faqModal');
+      const faqClose = document.getElementById('faqClose');
+      const faqSearch = document.getElementById('faqSearch');
+      const faqItems = [...document.querySelectorAll('.faq-item')];
+      const faqCount = document.getElementById('faqCount');
+      const faqEmpty = document.getElementById('faqEmpty');
+
+      const copy = {
+        1: {
+          title: '오른손 중지로 아랫눈꺼풀을 내리세요',
+          body: '표시된 아랫눈꺼풀을 오른손 중지로 잡고 아래로 드래그하세요.',
+          feedback: '파란 원에 오른손 중지를 놓고 아래로 내려보세요.'
+        },
+        2: {
+          title: '오른손 검지로 렌즈를 내리세요',
+          body: '렌즈를 아래 흰자위로 이동하면 눈동자가 위로 향하면서 상안검도 자동으로 열립니다.',
+          feedback: '오른손 검지를 렌즈 아래쪽에 놓고 아래로 밀어주세요.'
+        },
+        3: {
+          title: '오른손 검지와 엄지로 렌즈를 빼세요',
+          body: '손톱이 아닌 검지와 엄지의 지문 면을 렌즈 양쪽 테두리에 놓고 안쪽으로 살짝 모으세요.',
+          feedback: '손톱 말고 지문 면을 사용하세요. 왼쪽은 검지, 오른쪽은 엄지입니다.'
+        }
+      };
+
+      const state = {
+        step: 1,
+        upperLidOffset: 0,
+        lidOffset: 0,
+        lensY: 0,
+        fold: 1,
+        pointers: new Map(),
+        drag: null,
+        pinch: null,
+        oneFingerTimer: null,
+        pinchHoldTimer: null,
+        touchFallbackTimer: null,
+        success: false
+      };
+
+      function toSvgPoint(event) {
+        const point = svg.createSVGPoint();
+        point.x = event.clientX;
+        point.y = event.clientY;
+        const matrix = svg.getScreenCTM();
+        return matrix ? point.matrixTransform(matrix.inverse()) : { x: 0, y: 0 };
+      }
+
+      function withinLens(point, extra = 0) {
+        const dx = point.x - 200;
+        const dy = point.y - (250 + state.lensY);
+        return Math.hypot(dx, dy) <= 101 + extra;
+      }
+
+      function midpoint(a, b) {
+        return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+      }
+
+      function distance(a, b) {
+        return Math.hypot(a.x - b.x, a.y - b.y);
+      }
+
+      function vibrate(pattern = 22) {
+        if ('vibrate' in navigator) navigator.vibrate(pattern);
+      }
+
+      function setFeedback(message, type = '') {
+        feedback.textContent = message;
+        feedback.className = `feedback${type ? ` ${type}` : ''}`;
+      }
+
+      function renderGeometry() {
+        // 눈꺼풀의 양 끝은 고정하고 가운데 곡선만 열어 실제 눈처럼 보이게 한다.
+        const topOuter = 105 - state.upperLidOffset * 1.2;
+        const topInner = 122 - state.upperLidOffset * 1.05;
+        const bottomOuter = 395 + state.lidOffset * 1.08;
+        const bottomInner = 378 + state.lidOffset * .95;
+        const eyeOpening = `M24,250 Q200,${topOuter} 376,250 Q200,${bottomOuter} 24,250Z`;
+
+        upperLid.removeAttribute('transform');
+        lowerLid.removeAttribute('transform');
+        eyeWhite.setAttribute('d', eyeOpening);
+        eyeClipPath.setAttribute('d', eyeOpening);
+        upperLidOuter.setAttribute('d', `M24,250 Q200,${topOuter} 376,250`);
+        upperLidInner.setAttribute('d', `M31,245 Q200,${topInner} 369,245`);
+        upperLidHit.setAttribute('d', `M24,250 Q200,${topOuter} 376,250`);
+        lowerLidOuter.setAttribute('d', `M24,250 Q200,${bottomOuter} 376,250`);
+        lowerLidInner.setAttribute('d', `M31,255 Q200,${bottomInner} 369,255`);
+        lowerLidHit.setAttribute('d', `M24,250 Q200,${bottomOuter} 376,250`);
+        lowerCrease.setAttribute('d', `M46,291 Q200,${420 + state.lidOffset * .75} 354,291`);
+        upperLashes.setAttribute('transform', `translate(0 ${-state.upperLidOffset * .72})`);
+        lowerLashes.setAttribute('transform', `translate(0 ${state.lidOffset * .7})`);
+
+        // 렌즈를 아래로 미는 동안 시선은 위를 향한다.
+        // 렌즈가 흰자위로 내려갈수록 눈동자는 위를 보되,
+        // 검은 동공이 너무 위로 붙지 않도록 상승 폭을 제한한다.
+        const gazeUp = state.success ? 115 : Math.min(115, state.lensY * 1.7);
+        irisGroup.setAttribute('transform', `translate(0 ${-gazeUp})`);
+        lensPosition.setAttribute('transform', `translate(0 ${state.lensY})`);
+        lensFold.style.transform = `scaleX(${state.fold})`;
+      }
+
+      function renderStep() {
+        const current = copy[state.step];
+        stepNumber.textContent = state.step;
+        instructionTitle.textContent = current.title;
+        instructionBody.textContent = current.body;
+        setFeedback(current.feedback);
+        progressList.classList.toggle('all-done', state.success);
+
+        progressItems.forEach((item, index) => {
+          const number = index + 1;
+          item.classList.toggle('active', number === state.step);
+          item.classList.toggle('done', number < state.step || state.success);
+        });
+
+        for (let i = 1; i <= 3; i++) {
+          const isCurrentGuide = i === state.step;
+          // 완료한 가이드는 애니메이션이 남지 않도록 화면에서 완전히 제외한다.
+          guides[i].style.display = isCurrentGuide ? '' : 'none';
+          guides[i].style.opacity = isCurrentGuide ? '1' : '0';
+          guides[i].style.pointerEvents = 'none';
+        }
+      }
+
+      function goToStep(next) {
+        state.step = next;
+        state.drag = null;
+        state.pinch = null;
+        state.fold = 1;
+        renderGeometry();
+        renderStep();
+        vibrate();
+      }
+
+      function showMarker(index, event) {
+        if (!markers[index]) return;
+        const rect = svg.getBoundingClientRect();
+        markers[index].style.display = 'block';
+        markers[index].style.left = `${event.clientX - rect.left}px`;
+        markers[index].style.top = `${event.clientY - rect.top}px`;
+      }
+
+      function hideMarkers() {
+        markers.forEach(marker => { marker.style.display = 'none'; });
+      }
+
+      function updateMarkers() {
+        if (state.step === 3) {
+          hideMarkers();
+          return;
+        }
+        const rect = svg.getBoundingClientRect();
+        [...state.pointers.values()].slice(0, 2).forEach((pointer, index) => {
+          markers[index].style.display = 'block';
+          markers[index].style.left = `${pointer.clientX - rect.left}px`;
+          markers[index].style.top = `${pointer.clientY - rect.top}px`;
+        });
+        for (let i = state.pointers.size; i < markers.length; i++) markers[i].style.display = 'none';
+      }
+
+      function reset() {
+        clearTimeout(state.oneFingerTimer);
+        clearTimeout(state.pinchHoldTimer);
+        clearTimeout(state.touchFallbackTimer);
+        state.step = 1;
+        state.upperLidOffset = 0;
+        state.lidOffset = 0;
+        state.lensY = 0;
+        state.fold = 1;
+        state.pointers.clear();
+        state.drag = null;
+        state.pinch = null;
+        state.success = false;
+        lensPosition.style.opacity = '1';
+        completion.classList.remove('visible');
+        completion.setAttribute('aria-hidden', 'true');
+        progressList.classList.remove('all-done');
+        hideMarkers();
+        renderGeometry();
+        renderStep();
+      }
+
+      function finish() {
+        if (state.success) return;
+        state.success = true;
+        clearTimeout(state.oneFingerTimer);
+        clearTimeout(state.pinchHoldTimer);
+        clearTimeout(state.touchFallbackTimer);
+        setFeedback('정확해요! 손가락의 넓은 면으로 렌즈 양쪽을 부드럽게 모았어요.', 'success');
+        progressItems.forEach(item => {
+          item.classList.add('done');
+          item.classList.remove('active');
+        });
+        progressList.classList.add('all-done');
+        guides[3].style.display = 'none';
+        guides[3].style.opacity = '0';
+        vibrate([35, 40, 70]);
+
+        const start = performance.now();
+        const startY = state.lensY;
+        const duration = 620;
+        function animate(now) {
+          const raw = Math.min(1, (now - start) / duration);
+          const eased = 1 - Math.pow(1 - raw, 3);
+          state.lensY = startY - 125 * eased;
+          state.fold = 1 - .72 * eased;
+          lensPosition.style.opacity = String(1 - .82 * eased);
+          renderGeometry();
+          if (raw < 1) requestAnimationFrame(animate);
+          else {
+            completion.classList.add('visible');
+            completion.setAttribute('aria-hidden', 'false');
+          }
+        }
+        requestAnimationFrame(animate);
+      }
+
+      function beginPinchIfReady() {
+        // iPhone에서는 두 번째 손가락의 좌표 판정이 불안정할 수 있어
+        // 마지막 단계에서는 두 포인터가 동시에 존재하면 바로 핀치로 인정한다.
+        const entries = [...state.pointers.entries()].sort((a, b) => a[1].clientX - b[1].clientX);
+        if (entries.length < 2) return;
+
+        const left = entries[0];
+        const right = entries[entries.length - 1];
+        const a = left[1];
+        const b = right[1];
+        const startClientGap = b.clientX - a.clientX;
+        const startDistance = distance(a, b);
+
+        state.pinch = {
+          ids: [left[0], right[0]],
+          startDistance,
+          startClientGap,
+          startLeftClientX: a.clientX,
+          startRightClientX: b.clientX,
+          startLeftClientY: a.clientY,
+          startRightClientY: b.clientY
+        };
+        clearTimeout(state.oneFingerTimer);
+        setFeedback('두 손가락이 인식됐어요! 안쪽으로 살짝 모아주세요.');
+        state.fold = .86;
+        renderGeometry();
+        vibrate(16);
+
+        clearTimeout(state.pinchHoldTimer);
+        state.pinchHoldTimer = setTimeout(() => {
+          const [leftId, rightId] = state.pinch?.ids || [];
+          if (state.step === 3 && !state.success && state.pointers.has(leftId) && state.pointers.has(rightId)) finish();
+        }, 320);
+      }
+
+      svg.addEventListener('pointerdown', (event) => {
+        if (state.success) return;
+        event.preventDefault();
+        if (state.step !== 3) svg.setPointerCapture?.(event.pointerId);
+        const point = toSvgPoint(event);
+        state.pointers.set(event.pointerId, { ...point, clientX: event.clientX, clientY: event.clientY });
+        updateMarkers();
+
+        if (state.step === 1) {
+          if (point.y < 300 || point.y > 430) {
+            setFeedback('아랫눈꺼풀의 파란 원에 오른손 중지를 놓아주세요.', 'error');
+            return;
+          }
+          state.drag = { type: 'lowerLid', id: event.pointerId, startY: point.y, startOffset: state.lidOffset };
+          setFeedback('오른손 중지를 그대로 아래로 내려주세요.');
+          return;
+        }
+
+        if (state.step === 2) {
+          if (!withinLens(point, 8)) {
+            setFeedback('투명한 렌즈 안쪽에 손가락을 놓아주세요.', 'error');
+            return;
+          }
+          state.drag = { type: 'lens', id: event.pointerId, startY: point.y, startLensY: state.lensY };
+          setFeedback('렌즈를 아래 흰자위 방향으로 천천히 밀어주세요.');
+          return;
+        }
+
+        if (state.step === 3) {
+          beginPinchIfReady();
+          if (state.pointers.size === 1) {
+            clearTimeout(state.oneFingerTimer);
+            state.oneFingerTimer = setTimeout(() => {
+              if (state.step === 3 && state.pointers.size === 1 && !state.success) {
+                setFeedback('반대쪽 렌즈 테두리에도 다른 손가락을 놓아주세요.', 'error');
+              }
+            }, 900);
+          }
+        }
+      }, { passive: false });
+
+      svg.addEventListener('pointermove', (event) => {
+        if (!state.pointers.has(event.pointerId) || state.success) return;
+        event.preventDefault();
+        const point = toSvgPoint(event);
+        state.pointers.set(event.pointerId, { ...point, clientX: event.clientX, clientY: event.clientY });
+        updateMarkers();
+
+        if (state.step === 1 && state.drag?.id === event.pointerId) {
+          const dy = point.y - state.drag.startY;
+          state.lidOffset = Math.max(0, Math.min(70, state.drag.startOffset + dy));
+          renderGeometry();
+          if (state.lidOffset >= 34) {
+            state.lidOffset = 66;
+            renderGeometry();
+            goToStep(2);
+          }
+          return;
+        }
+
+        if (state.step === 2 && state.drag?.id === event.pointerId) {
+          const dy = point.y - state.drag.startY;
+          state.lensY = Math.max(0, Math.min(112, state.drag.startLensY + dy));
+          // 별도의 상안검 단계 없이 렌즈를 내리는 거리만큼 상안검이 자동으로 열린다.
+          state.upperLidOffset = Math.min(60, state.lensY);
+          renderGeometry();
+          if (dy < -12) setFeedback('위쪽이 아니라 아래 흰자위 방향으로 밀어주세요.', 'error');
+          if (state.lensY >= 54) {
+            state.lensY = 60;
+            state.upperLidOffset = 60;
+            renderGeometry();
+            goToStep(3);
+          }
+          return;
+        }
+
+        if (state.step === 3) {
+          if (!state.pinch) beginPinchIfReady();
+          if (!state.pinch) return;
+          const [idA, idB] = state.pinch.ids;
+          const a = state.pointers.get(idA);
+          const b = state.pointers.get(idB);
+          if (!a || !b) return;
+          const currentDistance = distance(a, b);
+          const ratio = currentDistance / state.pinch.startDistance;
+          const closedDistance = state.pinch.startDistance - currentDistance;
+          const currentClientGap = b.clientX - a.clientX;
+          const horizontalClose = (a.clientX - state.pinch.startLeftClientX) + (state.pinch.startRightClientX - b.clientX);
+          const clientClosedDistance = state.pinch.startClientGap - currentClientGap;
+          const totalMotion = Math.abs(a.clientX - state.pinch.startLeftClientX)
+            + Math.abs(b.clientX - state.pinch.startRightClientX)
+            + Math.abs(a.clientY - state.pinch.startLeftClientY)
+            + Math.abs(b.clientY - state.pinch.startRightClientY);
+          const closeProgress = Math.max(4, horizontalClose, clientClosedDistance, closedDistance, totalMotion);
+
+          // 작은 움직임도 눈에 보이도록 렌즈 접힘을 확대해서 표시한다.
+          state.fold = Math.max(.58, Math.min(1, 1 - closeProgress / 28));
+          renderGeometry();
+          // 두 손가락이 함께 인식된 뒤 아주 작은 움직임만 생겨도 성공한다.
+          if (totalMotion >= 3 || horizontalClose >= 2 || clientClosedDistance >= 2 || closedDistance >= 3 || ratio <= .98) finish();
+        }
+      }, { passive: false });
+
+      function releasePointer(event) {
+        const completedPinchGesture = state.pinch?.ids.includes(event.pointerId) && !state.success;
+        state.pointers.delete(event.pointerId);
+        updateMarkers();
+        if (state.drag?.id === event.pointerId) state.drag = null;
+        // 두 손가락이 한 번 함께 인식됐다면 손가락을 떼는 동작도 핀치 완료로 인정한다.
+        if (completedPinchGesture) finish();
+        if (state.pointers.size === 0) clearTimeout(state.oneFingerTimer);
+      }
+
+      // iPhone Safari에서 두 번째 PointerEvent가 누락되는 경우를 위한 멀티터치 보조 인식.
+      svg.addEventListener('touchstart', event => {
+        if (state.step !== 3 || state.success || event.touches.length < 2) return;
+        event.preventDefault();
+        clearTimeout(state.oneFingerTimer);
+        clearTimeout(state.touchFallbackTimer);
+        setFeedback('두 손가락이 인식됐어요! 렌즈를 살짝 집어주세요.');
+        state.fold = .82;
+        renderGeometry();
+        vibrate(16);
+        state.touchFallbackTimer = setTimeout(() => {
+          if (state.step === 3 && !state.success) finish();
+        }, 220);
+      }, { passive: false });
+
+      svg.addEventListener('touchmove', event => {
+        if (state.step !== 3 || state.success || event.touches.length < 2) return;
+        event.preventDefault();
+        finish();
+      }, { passive: false });
+
+      svg.addEventListener('pointerup', releasePointer);
+      svg.addEventListener('pointercancel', releasePointer);
+      document.getElementById('resetButton').addEventListener('click', reset);
+      document.getElementById('againButton').addEventListener('click', reset);
+
+      function filterFaq() {
+        const query = faqSearch.value.trim().toLocaleLowerCase('ko-KR').replace(/\s+/g, '');
+        let visible = 0;
+        faqItems.forEach(item => {
+          const searchable = `${item.dataset.search || ''} ${item.textContent}`.toLocaleLowerCase('ko-KR').replace(/\s+/g, '');
+          const matches = !query || searchable.includes(query);
+          item.hidden = !matches;
+          if (matches) visible += 1;
+        });
+        faqCount.textContent = query ? `검색 결과 ${visible}개` : `${visible}개 질문`;
+        faqEmpty.hidden = visible !== 0;
+      }
+
+      function openFaq() {
+        faqModal.hidden = false;
+        document.body.classList.add('faq-open');
+        faqButton.setAttribute('aria-expanded', 'true');
+        requestAnimationFrame(() => faqSearch.focus());
+      }
+
+      function closeFaq() {
+        faqModal.hidden = true;
+        document.body.classList.remove('faq-open');
+        faqButton.setAttribute('aria-expanded', 'false');
+        faqButton.focus();
+      }
+
+      faqButton.setAttribute('aria-expanded', 'false');
+      faqButton.addEventListener('click', openFaq);
+      faqClose.addEventListener('click', closeFaq);
+      faqSearch.addEventListener('input', filterFaq);
+      faqModal.addEventListener('click', event => {
+        if (event.target === faqModal) closeFaq();
+      });
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && !faqModal.hidden) closeFaq();
+      });
+
+      renderGeometry();
+      renderStep();
+      filterFaq();
+    })();
+  </script>
+  <script>
+    (() => {
+      const wearTab = document.getElementById('wearTab');
+      const removalTab = document.getElementById('removalTab');
+      const wearPractice = document.getElementById('wearPractice');
+      const removalPractice = document.getElementById('removalPractice');
+      const modeEyebrow = document.getElementById('modeEyebrow');
+      const pageTitle = document.getElementById('pageTitle');
+      const resetButton = document.getElementById('resetButton');
+      let activeMode = 'wear';
+
+      const wearSvg = document.getElementById('wearEyeScene');
+      const wearEyeWhite = document.getElementById('wearEyeWhite');
+      const wearEyeClipPath = document.getElementById('wearEyeClipPath');
+      const wearUpperOuter = document.getElementById('wearUpperOuter');
+      const wearUpperInner = document.getElementById('wearUpperInner');
+      const wearUpperHit = document.getElementById('wearUpperHit');
+      const wearUpperLashes = document.getElementById('wearUpperLashes');
+      const wearLowerOuter = document.getElementById('wearLowerOuter');
+      const wearLowerInner = document.getElementById('wearLowerInner');
+      const wearLowerHit = document.getElementById('wearLowerHit');
+      const wearLowerLashes = document.getElementById('wearLowerLashes');
+      const wearLowerCrease = document.getElementById('wearLowerCrease');
+      const wearLens = document.getElementById('wearLens');
+      const wearContactLens = document.getElementById('wearContactLens');
+      const wearLidGuides = document.getElementById('wearLidGuides');
+      const wearLensGuide = document.getElementById('wearLensGuide');
+      const wearUpperHandle = document.getElementById('wearUpperHandle');
+      const wearUpperHandleText = document.getElementById('wearUpperHandleText');
+      const wearUpperArrow = document.getElementById('wearUpperArrow');
+      const wearLowerHandle = document.getElementById('wearLowerHandle');
+      const wearLowerHandleText = document.getElementById('wearLowerHandleText');
+      const wearLowerArrow = document.getElementById('wearLowerArrow');
+      const wearCollision = document.getElementById('wearCollision');
+      const wearCollisionLine = document.getElementById('wearCollisionLine');
+      const wearCollisionText = document.getElementById('wearCollisionText');
+      const wearFeedback = document.getElementById('wearFeedback');
+      const wearStepNumber = document.getElementById('wearStepNumber');
+      const wearInstructionTitle = document.getElementById('wearInstructionTitle');
+      const wearInstructionBody = document.getElementById('wearInstructionBody');
+      const wearProgress = [...document.querySelectorAll('[data-wear-progress]')];
+      const directWearProgress = [...document.querySelectorAll('[data-direct-wear-progress]')];
+      const wearControlDock = document.getElementById('wearControlDock');
+      const orientationActions = document.getElementById('orientationActions');
+      const openingActions = document.getElementById('openingActions');
+      const lensActions = document.getElementById('lensActions');
+      const blinkActions = document.getElementById('blinkActions');
+      const openingMeter = document.getElementById('openingMeter');
+      const openingMeterText = document.getElementById('openingMeterText');
+      const openingMeterFill = document.getElementById('openingMeterFill');
+      const wearAttemptGuide = document.getElementById('wearAttemptGuide');
+      const wearAttemptBadge = document.getElementById('wearAttemptBadge');
+      const wearAttemptTitle = document.getElementById('wearAttemptTitle');
+      const wearAttemptBody = document.getElementById('wearAttemptBody');
+      const wearCompletion = document.getElementById('wearCompletion');
+      const wearVideoPip = wearPractice.querySelector('.video-pip');
+      const sideViewStage = document.getElementById('sideViewStage');
+      const sideViewScene = document.getElementById('sideViewScene');
+      const sideApertureClipPath = document.getElementById('sideApertureClipPath');
+      const sideEyeOpeningOutline = document.getElementById('sideEyeOpeningOutline');
+      const sideUpperLidDetail = document.getElementById('sideUpperLidDetail');
+      const sideLowerLidDetail = document.getElementById('sideLowerLidDetail');
+      const sideUpperRim = document.getElementById('sideUpperRim');
+      const sideLowerRim = document.getElementById('sideLowerRim');
+      const sideUpperLashes = document.getElementById('sideUpperLashes');
+      const sideLowerLashes = document.getElementById('sideLowerLashes');
+      const sideUpperHoldingHand = document.getElementById('sideUpperHoldingHand');
+      const sideLowerHoldingHand = document.getElementById('sideLensHandPalm');
+      const sideUpperHoldingGuide = document.getElementById('sideUpperHoldingGuide');
+      const sideLowerHoldingGuide = document.getElementById('sideLowerHoldingGuide');
+      const sideInsertionAssembly = document.getElementById('sideInsertionAssembly');
+      const sideAngleGuide = document.getElementById('sideAngleGuide');
+      const sideTopContact = document.getElementById('sideTopContact');
+      const sideBottomContact = document.getElementById('sideBottomContact');
+      const sideContactSuccess = document.getElementById('sideContactSuccess');
+      const sideLashWarning = document.getElementById('sideLashWarning');
+      const sideUpperLashWarningLine = document.getElementById('sideUpperLashWarningLine');
+      const sideLowerLashWarningLine = document.getElementById('sideLowerLashWarningLine');
+      const sideLashWarningText = document.getElementById('sideLashWarningText');
+      const angleSlider = document.getElementById('angleSlider');
+      const angleValue = document.getElementById('angleValue');
+      const angleStatus = document.getElementById('angleStatus');
+      const insertLensButton = document.getElementById('insertLensButton');
+      const frontViewButton = document.getElementById('frontViewButton');
+      const sideViewButton = document.getElementById('sideViewButton');
+
+      // 기존 버튼형 착용 버전은 아래 로직과 DOM에 그대로 보존하고,
+      // 새 기본 버전에서는 렌즈 선택 뒤 측면 한 화면에서 직접 드래그한다.
+      const DIRECT_SIDE_WEAR = true;
+      const sidePointerDrags = new Map();
+
+      const wearCopy = {
+        1: {
+          title: '렌즈의 앞뒤를 먼저 확인 후 적절한 렌즈를 선택해 주세요',
+          body: '가장자리가 위로 선 둥근 그릇 모양이 올바른 방향입니다.',
+          feedback: '두 렌즈 중 올바른 앞면 모양을 선택하세요.'
+        },
+        2: {
+          title: DIRECT_SIDE_WEAR ? '측면에서 눈꺼풀을 벌리고 렌즈를 직접 넣으세요' : '왼손 중지와 오른손 중지로 눈꺼풀을 벌리세요',
+          body: DIRECT_SIDE_WEAR ? '왼손 중지는 위로, 오른손 중지는 아래로 드래그해 고정하고 오른손 검지의 렌즈를 각막 중심으로 움직이세요.' : '왼손 중지는 윗눈꺼풀 위 피부를 위로, 오른손 중지는 아랫눈꺼풀 아래 피부를 아래로 당기세요.',
+          feedback: DIRECT_SIDE_WEAR ? '위 손가락은 위로, 아래 손가락은 아래로 움직인 뒤 렌즈를 든 검지를 왼쪽으로 드래그하세요.' : '위 파란 원은 왼손 중지, 아래 파란 원은 오른손 중지로 드래그하세요.'
+        },
+        3: {
+          title: '측면에서 렌즈와 각막을 일직선으로 맞추세요',
+          body: '왼손 중지로 윗눈꺼풀, 오른손 중지로 아랫눈꺼풀을 고정하고 오른손 검지 위 렌즈의 각도를 맞추세요.',
+          feedback: '눈꺼풀 고정 손가락은 그대로 두고, 렌즈를 든 검지만 각막 중심으로 움직이세요.'
+        },
+        4: {
+          title: DIRECT_SIDE_WEAR ? '렌즈가 각막에 고르게 안착됐어요' : '손가락을 떼고 천천히 눈을 깜빡이세요',
+          body: DIRECT_SIDE_WEAR ? '렌즈가 각막 곡면에 맞게 닿았습니다. 검지를 천천히 떼면 착용 연습이 완료됩니다.' : '렌즈가 눈에 닿았어요. 한 번 천천히 깜빡여 렌즈를 중앙에 안착시키세요.',
+          feedback: DIRECT_SIDE_WEAR ? '착용 성공! 렌즈가 측면에서 각막에 고르게 안착했어요.' : '좋아요! 이제 아래 버튼을 눌러 천천히 깜빡여보세요.'
+        }
+      };
+
+      const SIDE_ROTATION_PIVOT_X = 287;
+      const SIDE_ROTATION_PIVOT_Y = 238;
+
+      const wearState = {
+        step: 1,
+        upper: 0,
+        lower: 0,
+        lensX: 200,
+        lensY: 420,
+        drag: null,
+        failures: 0,
+        attemptLocked: false,
+        success: false,
+        blinking: false,
+        angle: 15,
+        approach: 0,
+        inserting: false,
+        lastFail: 'lid',
+        viewMode: 'side'
+      };
+
+      function vibrate(pattern = 20) {
+        if ('vibrate' in navigator) navigator.vibrate(pattern);
+      }
+
+      function toWearPoint(event) {
+        const point = wearSvg.createSVGPoint();
+        point.x = event.clientX;
+        point.y = event.clientY;
+        const matrix = wearSvg.getScreenCTM();
+        return matrix ? point.matrixTransform(matrix.inverse()) : { x: 0, y: 0 };
+      }
+
+      function toSidePoint(event) {
+        const point = sideViewScene.createSVGPoint();
+        point.x = event.clientX;
+        point.y = event.clientY;
+        const matrix = sideViewScene.getScreenCTM();
+        return matrix ? point.matrixTransform(matrix.inverse()) : { x: 0, y: 0 };
+      }
+
+      function setWearFeedback(message, type = '') {
+        wearFeedback.textContent = message;
+        wearFeedback.className = `feedback${type ? ` ${type}` : ''}`;
+      }
+
+      function openingPercent() {
+        return Math.round(Math.min(wearState.upper, wearState.lower) / 60 * 100);
+      }
+
+      function renderWearGeometry() {
+        const topOuter = 145 - wearState.upper * 1.35;
+        const topInner = 158 - wearState.upper * 1.18;
+        const bottomOuter = 355 + wearState.lower * 1.35;
+        const bottomInner = 342 + wearState.lower * 1.18;
+        const opening = `M24,250 Q200,${topOuter} 376,250 Q200,${bottomOuter} 24,250Z`;
+
+        wearEyeWhite.setAttribute('d', opening);
+        wearEyeClipPath.setAttribute('d', opening);
+        wearUpperOuter.setAttribute('d', `M24,250 Q200,${topOuter} 376,250`);
+        wearUpperInner.setAttribute('d', `M31,245 Q200,${topInner} 369,245`);
+        wearUpperHit.setAttribute('d', `M24,250 Q200,${topOuter} 376,250`);
+        wearLowerOuter.setAttribute('d', `M24,250 Q200,${bottomOuter} 376,250`);
+        wearLowerInner.setAttribute('d', `M31,255 Q200,${bottomInner} 369,255`);
+        wearLowerHit.setAttribute('d', `M24,250 Q200,${bottomOuter} 376,250`);
+        wearLowerCrease.setAttribute('d', `M46 291 Q200,${390 + wearState.lower * .82} 354,291`);
+        wearUpperLashes.setAttribute('transform', `translate(0 ${-wearState.upper * .86})`);
+        wearLowerLashes.setAttribute('transform', `translate(0 ${wearState.lower * .86})`);
+        wearLens.setAttribute('transform', `translate(${wearState.lensX - 200} ${wearState.lensY - 250})`);
+
+        const upperHandleY = topInner;
+        const lowerHandleY = bottomInner;
+        wearUpperHandle.setAttribute('cy', upperHandleY);
+        wearUpperHandleText.setAttribute('y', upperHandleY - 4);
+        wearUpperArrow.setAttribute('d', `M200 ${upperHandleY - 27} L200 ${upperHandleY - 55}`);
+        wearLowerHandle.setAttribute('cy', lowerHandleY);
+        wearLowerHandleText.setAttribute('y', lowerHandleY - 4);
+        wearLowerArrow.setAttribute('d', `M200 ${lowerHandleY + 27} L200 ${lowerHandleY + 55}`);
+
+        const percent = openingPercent();
+        openingMeterText.textContent = `현재 눈 벌림 ${percent}%`;
+        openingMeterFill.style.width = `${percent}%`;
+      }
+
+      function renderSideGeometry() {
+        // 정면에서 사용자가 벌린 위·아래 눈꺼풀의 양을 측면 노출 범위에도 그대로 반영한다.
+        const upperRatio = Math.max(0, Math.min(1, wearState.upper / 60));
+        const lowerRatio = Math.max(0, Math.min(1, wearState.lower / 60));
+        // 0%는 감긴 눈이 아니라 자연스러운 기본 노출, 100%는 충분히 벌린 상태다.
+        const upperC1 = 218 - upperRatio * 27;
+        const upperC2 = 210 - upperRatio * 32;
+        const upperShoulder = 220 - upperRatio * 22;
+        const lowerC1 = 282 + lowerRatio * 27;
+        const lowerC2 = 290 + lowerRatio * 32;
+        const lowerShoulder = 280 + lowerRatio * 22;
+        const frontControl = 194 + Math.min(upperRatio, lowerRatio) * 16;
+        const sideOpening = `M24 250 C66 ${upperC1} 120 ${upperC2} 166 ${upperShoulder} Q${frontControl} 250 166 ${lowerShoulder} C120 ${lowerC2} 66 ${lowerC1} 24 250Z`;
+        const lidOutline = `M24 250 C66 ${upperC1} 120 ${upperC2} 166 ${upperShoulder} M24 250 C66 ${lowerC1} 120 ${lowerC2} 166 ${lowerShoulder}`;
+
+        sideApertureClipPath.setAttribute('d', sideOpening);
+        sideEyeOpeningOutline.setAttribute('d', lidOutline);
+        sideUpperLidDetail.setAttribute('d', `M55 ${upperC1 + 10} C88 ${upperC2 + 2} 124 ${upperC2 + 5} 153 ${upperShoulder - 4}`);
+        sideLowerLidDetail.setAttribute('d', `M55 ${lowerC1 - 10} C88 ${lowerC2 - 2} 124 ${lowerC2 - 5} 153 ${lowerShoulder + 4}`);
+        sideUpperRim.setAttribute('d', `M30 250 C68 ${upperC1 + 4} 120 ${upperC2 + 4} 165 ${upperShoulder + 2}`);
+        sideLowerRim.setAttribute('d', `M30 250 C68 ${lowerC1 - 4} 120 ${lowerC2 - 4} 165 ${lowerShoulder - 2}`);
+        // Anchor each lash to the animated eyelid curve, not a detached translation.
+        const placeLashes = (group, c1, c2, end, direction) => {
+          group.removeAttribute('transform');
+          const paths = group.querySelectorAll('path');
+          paths.forEach((path, i) => {
+            const t = .70 + i * .24 / Math.max(1, paths.length - 1), u = 1 - t;
+            const x = u*u*u*24 + 3*u*u*t*66 + 3*u*t*t*120 + t*t*t*166;
+            const y = u*u*u*250 + 3*u*u*t*c1 + 3*u*t*t*c2 + t*t*t*end;
+            const length = direction < 0 ? 24 : 17;
+            path.setAttribute('d', `M${x} ${y} Q${x+9} ${y+direction*length*.75} ${x+21} ${y+direction*length}`);
+          });
+        };
+        placeLashes(sideUpperLashes, upperC1, upperC2, upperShoulder, -1);
+        placeLashes(sideLowerLashes, lowerC1, lowerC2, lowerShoulder, 1);
+        sideUpperLashWarningLine.setAttribute('transform', `translate(0 ${-upperRatio * 30})`);
+        sideLowerLashWarningLine.setAttribute('transform', `translate(0 ${lowerRatio * 30})`);
+
+        // 눈꺼풀을 잡은 손가락도 드래그한 거리만큼 함께 움직여 고정된 느낌을 준다.
+        const upperHandOffset = -upperRatio * 22;
+        const lowerHandOffset = lowerRatio * 22;
+        sideUpperHoldingHand.setAttribute('transform', `translate(0 ${upperHandOffset})`);
+        sideUpperHoldingGuide.setAttribute('transform', `translate(0 ${upperHandOffset})`);
+        sideLowerHoldingHand.setAttribute('transform', `translate(0 ${lowerHandOffset})`);
+        sideLowerHoldingGuide.setAttribute('transform', `translate(0 ${lowerHandOffset})`);
+
+        sideInsertionAssembly.setAttribute('transform', `translate(${wearState.approach} 0) rotate(${wearState.angle} ${SIDE_ROTATION_PIVOT_X} ${SIDE_ROTATION_PIVOT_Y})`);
+        sideAngleGuide.setAttribute('transform', `translate(${wearState.approach} 0)`);
+        const showAngleGuide = DIRECT_SIDE_WEAR
+          ? wearState.step === 2 && wearState.upper >= 42 && wearState.lower >= 42 && !wearState.inserting && !wearState.success
+          : wearState.step === 3 && wearState.viewMode === 'side' && !wearState.inserting && !wearState.success;
+        sideAngleGuide.style.opacity = showAngleGuide ? '.72' : '0';
+        angleSlider.value = String(wearState.angle);
+        angleValue.textContent = `${wearState.angle > 0 ? '+' : ''}${wearState.angle}°`;
+
+        const absoluteAngle = Math.abs(wearState.angle);
+        if (absoluteAngle <= 6) {
+          angleStatus.textContent = '정렬 양호 · 각막 정면과 거의 평행해요';
+          angleValue.style.background = '#dff7ed';
+          angleValue.style.color = '#087353';
+        } else if (wearState.angle < 0) {
+          angleStatus.textContent = '윗부분이 먼저 닿을 수 있어요';
+          angleValue.style.background = '#ffe8e9';
+          angleValue.style.color = '#a82f3a';
+        } else {
+          angleStatus.textContent = '아랫부분이 먼저 닿을 수 있어요';
+          angleValue.style.background = '#ffe8e9';
+          angleValue.style.color = '#a82f3a';
+        }
+        updateDirectWearPhaseUI();
+      }
+
+      function setAngle(value) {
+        if (wearState.inserting) return;
+        wearState.angle = Math.max(-25, Math.min(25, Math.round(Number(value))));
+        sideTopContact.style.opacity = '0';
+        sideBottomContact.style.opacity = '0';
+        sideContactSuccess.style.opacity = '0';
+        sideLashWarning.style.opacity = '0';
+        renderSideGeometry();
+      }
+
+      function randomStartAngle() {
+        const choices = [-20, -15, -10, 10, 15, 20];
+        return choices[Math.floor(Math.random() * choices.length)];
+      }
+
+      function setPracticeView(mode) {
+        wearState.viewMode = mode;
+        const sideActive = (DIRECT_SIDE_WEAR && (wearState.step === 2 || wearState.step === 4)) || (wearState.step === 3 && mode === 'side');
+        frontViewButton.classList.toggle('active', !sideActive);
+        sideViewButton.classList.toggle('active', sideActive);
+        frontViewButton.setAttribute('aria-pressed', String(!sideActive));
+        sideViewButton.setAttribute('aria-pressed', String(sideActive));
+
+        // iPhone Safari에서도 확실히 한 화면만 보이도록 hidden과 inline display를 함께 적용한다.
+        wearSvg.hidden = sideActive;
+        wearSvg.style.display = sideActive ? 'none' : 'block';
+        sideViewStage.hidden = !sideActive;
+        sideViewStage.style.display = sideActive ? 'block' : 'none';
+        openingMeter.hidden = DIRECT_SIDE_WEAR || !(wearState.step === 2 || (wearState.step === 3 && !sideActive));
+      }
+
+      function directDisplayStep() {
+        if (wearState.step === 1) return 1;
+        if (wearState.step === 2) return wearState.upper >= 42 && wearState.lower >= 42 ? 3 : 2;
+        return 3;
+      }
+
+      function updateDirectWearPhaseUI() {
+        if (!DIRECT_SIDE_WEAR) return;
+        const displayStep = directDisplayStep();
+        wearStepNumber.textContent = displayStep;
+        directWearProgress.forEach((item, index) => {
+          const number = index + 1;
+          item.classList.toggle('active', number === displayStep);
+          item.classList.toggle('done', number < displayStep || wearState.success);
+        });
+
+        if (wearState.step === 2 && displayStep === 2) {
+          wearInstructionTitle.textContent = '측면에서 위·아래 눈꺼풀을 충분히 벌리세요';
+          wearInstructionBody.textContent = '왼손 중지는 위로, 오른손 중지는 아래로 드래그하세요. 손을 떼어도 벌린 위치가 유지됩니다.';
+        } else if (wearState.step === 2 && displayStep === 3) {
+          wearInstructionTitle.textContent = '렌즈를 든 오른손 검지를 각막 중심으로 움직이세요';
+          wearInstructionBody.textContent = '검지를 왼쪽으로 천천히 드래그하고, 위아래 움직임으로 렌즈 면이 각막 정면과 나란해지도록 맞추세요.';
+        }
+      }
+
+      function renderWearStep() {
+        const current = wearCopy[wearState.step];
+        const displayStep = DIRECT_SIDE_WEAR ? directDisplayStep() : wearState.step;
+        wearStepNumber.textContent = displayStep;
+        wearInstructionTitle.textContent = current.title;
+        wearInstructionBody.textContent = current.body;
+        setWearFeedback(current.feedback);
+
+        wearProgress.forEach((item, index) => {
+          const number = index + 1;
+          item.classList.toggle('active', number === wearState.step);
+          item.classList.toggle('done', number < wearState.step || wearState.success);
+        });
+
+        directWearProgress.forEach((item, index) => {
+          const number = index + 1;
+          item.classList.toggle('active', number === displayStep);
+          item.classList.toggle('done', number < displayStep || wearState.success);
+        });
+
+        orientationActions.hidden = wearState.step !== 1;
+        openingActions.hidden = DIRECT_SIDE_WEAR || wearState.step !== 2;
+        lensActions.hidden = DIRECT_SIDE_WEAR || wearState.step !== 3;
+        blinkActions.hidden = DIRECT_SIDE_WEAR || wearState.step !== 4;
+        wearControlDock.hidden = DIRECT_SIDE_WEAR && wearState.step !== 1;
+        openingMeter.hidden = DIRECT_SIDE_WEAR || wearState.step !== 2;
+        const sidePracticeStep = (DIRECT_SIDE_WEAR && (wearState.step === 2 || wearState.step === 4)) || wearState.step === 3;
+        wearVideoPip.hidden = DIRECT_SIDE_WEAR || sidePracticeStep;
+        wearVideoPip.style.display = DIRECT_SIDE_WEAR || sidePracticeStep ? 'none' : '';
+        wearFeedback.hidden = DIRECT_SIDE_WEAR && wearState.step === 1;
+        if (DIRECT_SIDE_WEAR && (wearState.step === 2 || wearState.step === 4)) {
+          setPracticeView('side');
+        } else if (wearState.step === 3) {
+          setPracticeView(wearState.viewMode);
+        } else if (DIRECT_SIDE_WEAR && wearState.step === 1) {
+          wearSvg.hidden = true;
+          wearSvg.style.display = 'none';
+          sideViewStage.hidden = true;
+          sideViewStage.style.display = 'none';
+        } else {
+          wearSvg.hidden = false;
+          wearSvg.style.display = 'block';
+          sideViewStage.hidden = true;
+          sideViewStage.style.display = 'none';
+        }
+        wearLidGuides.style.opacity = wearState.step === 2 ? '1' : '0';
+        wearLensGuide.style.opacity = '0';
+        wearLens.style.opacity = '0';
+        wearContactLens.style.opacity = wearState.step === 4 || wearState.success ? '.76' : '0';
+        if (sidePracticeStep) renderSideGeometry();
+        updateDirectWearPhaseUI();
+      }
+
+      function goWearStep(step) {
+        const previousStep = wearState.step;
+        wearState.step = step;
+        wearState.drag = null;
+        sidePointerDrags.clear();
+        wearState.attemptLocked = false;
+        if (DIRECT_SIDE_WEAR && step === 2) {
+          wearState.approach = 0;
+          wearState.inserting = false;
+          wearState.viewMode = 'side';
+          if (previousStep !== 2) wearState.angle = randomStartAngle();
+          sideTopContact.style.opacity = '0';
+          sideBottomContact.style.opacity = '0';
+          sideContactSuccess.style.opacity = '0';
+          sideLashWarning.style.opacity = '0';
+        }
+        if (step === 3) {
+          wearState.lensX = 200;
+          wearState.lensY = 420;
+          wearState.approach = 0;
+          wearState.inserting = false;
+          wearState.viewMode = 'side';
+          if (previousStep !== 3) wearState.angle = randomStartAngle();
+          sideTopContact.style.opacity = '0';
+          sideBottomContact.style.opacity = '0';
+          sideContactSuccess.style.opacity = '0';
+          sideLashWarning.style.opacity = '0';
+        }
+        if (step === 4) {
+          wearState.lensX = 200;
+          wearState.lensY = 250;
+        }
+        renderWearGeometry();
+        renderWearStep();
+        vibrate();
+      }
+
+      function resetWear() {
+        wearState.step = 1;
+        wearState.upper = 0;
+        wearState.lower = 0;
+        wearState.lensX = 200;
+        wearState.lensY = 420;
+        wearState.drag = null;
+        wearState.failures = 0;
+        wearState.attemptLocked = false;
+        wearState.success = false;
+        wearState.blinking = false;
+        wearState.angle = 15;
+        wearState.approach = 0;
+        wearState.inserting = false;
+        wearState.lastFail = 'lid';
+        wearState.viewMode = 'side';
+        sidePointerDrags.clear();
+        wearCollision.style.opacity = '0';
+        sideTopContact.style.opacity = '0';
+        sideBottomContact.style.opacity = '0';
+        sideContactSuccess.style.opacity = '0';
+        sideLashWarning.style.opacity = '0';
+        wearAttemptGuide.hidden = true;
+        wearCompletion.classList.remove('visible');
+        wearCompletion.setAttribute('aria-hidden', 'true');
+        renderWearGeometry();
+        renderWearStep();
+      }
+
+      function showWearAttemptGuide() {
+        if (wearState.failures !== 2 && wearState.failures !== 4) return;
+        wearAttemptBadge.textContent = `${wearState.failures}회`;
+        if (wearState.lastFail === 'angle' && wearState.failures === 2) {
+          wearAttemptTitle.textContent = '렌즈 면과 각막 정면을 나란히 맞추세요';
+          wearAttemptBody.textContent = '손가락이 기울면 렌즈의 위쪽 또는 아래쪽 가장자리가 먼저 닿아 렌즈가 밀려나요. 측면 기준선과 렌즈가 나란해지도록 0°에 가깝게 조절한 뒤 다시 넣어보세요.';
+        } else if (wearState.lastFail === 'angle') {
+          wearAttemptTitle.textContent = '손가락 끝을 세운 상태부터 다시 확인하세요';
+          wearAttemptBody.textContent = '잠시 쉬었다가 손가락 끝의 렌즈가 기울지 않았는지 옆에서 확인하세요. 렌즈 전체가 각막에 동시에 닿도록 각도를 맞춘 뒤 정면 방향으로 천천히 접근하세요.';
+        } else if (wearState.failures === 2) {
+          wearAttemptTitle.textContent = '속눈썹 뿌리 쪽을 잡아보세요';
+          wearAttemptBody.textContent = '눈꺼풀 가장자리만 잡으면 손가락이 미끄러지고 눈이 충분히 열리지 않아요. 위·아래 속눈썹 뿌리에 가깝게 잡고 서로 반대 방향으로 더 벌린 뒤 다시 시도하세요.';
+        } else {
+          wearAttemptTitle.textContent = '잠시 쉬고, 눈 벌리기부터 다시 해보세요';
+          wearAttemptBody.textContent = '눈을 여러 번 건드리면 반사적으로 감기기 쉬워요. 잠시 쉬었다가 거울을 보며 위·아래 눈꺼풀을 충분히 벌린 상태를 먼저 유지한 뒤 렌즈를 천천히 가져가세요.';
+        }
+        wearAttemptGuide.hidden = false;
+      }
+
+      function failWear(reason) {
+        if (wearState.attemptLocked) return;
+        wearState.attemptLocked = true;
+        wearState.failures += 1;
+        wearState.drag = null;
+
+        let message;
+        let lowerCollision = false;
+        if (wearState.upper < 42 && wearState.lower < 42) {
+          message = '위·아래 눈꺼풀을 충분히 벌리지 않아 렌즈가 속눈썹에 닿았어요.';
+          lowerCollision = wearState.lower <= wearState.upper;
+        } else if (wearState.lower < 42) {
+          message = '아랫눈꺼풀이 충분히 내려가지 않아 아래 속눈썹에 렌즈가 걸렸어요.';
+          lowerCollision = true;
+        } else {
+          message = '윗눈꺼풀이 충분히 올라가지 않아 눈이 감기며 위 속눈썹에 렌즈가 닿았어요.';
+        }
+
+        setWearFeedback(`${wearState.failures}회 실패 · ${message}`, 'error');
+        wearCollisionLine.setAttribute('d', lowerCollision ? 'M68 297 Q200 367 332 297' : 'M68 203 Q200 133 332 203');
+        wearCollisionText.setAttribute('y', lowerCollision ? '410' : '104');
+        wearCollisionText.textContent = reason || '속눈썹에 닿았어요!';
+        wearCollision.style.opacity = '1';
+        wearCollision.classList.remove('lash-hit');
+        void wearCollision.getBoundingClientRect();
+        wearCollision.classList.add('lash-hit');
+        vibrate([35, 45, 35]);
+
+        wearState.lensX = 200;
+        wearState.lensY = 420;
+        renderWearGeometry();
+        setTimeout(() => {
+          wearCollision.style.opacity = '0';
+          showWearAttemptGuide();
+        }, 650);
+      }
+
+      function animateSideReturn(callback) {
+        const startApproach = wearState.approach;
+        const start = performance.now();
+        const duration = 420;
+        function animate(now) {
+          const progress = Math.min(1, (now - start) / duration);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          wearState.approach = startApproach * (1 - eased);
+          renderSideGeometry();
+          if (progress < 1) requestAnimationFrame(animate);
+          else {
+            wearState.approach = 0;
+            wearState.inserting = false;
+            wearState.attemptLocked = false;
+            insertLensButton.disabled = false;
+            insertLensButton.textContent = '이 각도로 넣기';
+            renderSideGeometry();
+            if (callback) callback();
+          }
+        }
+        requestAnimationFrame(animate);
+      }
+
+      function recordSideFailure(type) {
+        wearState.failures += 1;
+        wearState.lastFail = type;
+        const count = wearState.failures;
+
+        sideTopContact.style.opacity = '0';
+        sideBottomContact.style.opacity = '0';
+        sideContactSuccess.style.opacity = '0';
+        sideLashWarning.style.opacity = '0';
+
+        if (type === 'lid') {
+          const upperShort = wearState.upper < 42;
+          const lowerShort = wearState.lower < 42;
+          sideUpperLashWarningLine.style.opacity = upperShort ? '1' : '0';
+          sideLowerLashWarningLine.style.opacity = lowerShort ? '1' : '0';
+          sideLashWarning.style.opacity = '1';
+          const bothShort = upperShort && lowerShort;
+          const location = bothShort ? '위·아래 속눈썹' : upperShort ? '위 속눈썹' : '아래 속눈썹';
+          sideLashWarningText.textContent = bothShort ? '위·아래 눈꺼풀을 모두 더 벌려주세요' : `${location}에 걸리지 않게 더 벌려주세요`;
+          setWearFeedback(`${count}회 실패 · 눈을 충분히 벌리지 않아 렌즈가 ${location}에 닿았어요.`, 'error');
+        } else {
+          const topFirst = wearState.angle < 0;
+          sideTopContact.style.opacity = topFirst ? '1' : '0';
+          sideBottomContact.style.opacity = topFirst ? '0' : '1';
+          const edge = topFirst ? '위쪽' : '아래쪽';
+          setWearFeedback(`${count}회 실패 · 렌즈가 기울어 ${edge} 가장자리가 먼저 닿고 밀려났어요.`, 'error');
+        }
+        vibrate([35, 45, 35]);
+
+        setTimeout(() => {
+          animateSideReturn(() => {
+            sideTopContact.style.opacity = '0';
+            sideBottomContact.style.opacity = '0';
+            sideLashWarning.style.opacity = '0';
+            showWearAttemptGuide();
+          });
+        }, 720);
+      }
+
+      function firstSideContactApproach() {
+        if (Math.abs(wearState.angle) < .01) return -92;
+        const radians = wearState.angle * Math.PI / 180;
+        const contactY = wearState.angle > 0 ? 302 : 198;
+        const dx = 258 - SIDE_ROTATION_PIVOT_X;
+        const dy = contactY - SIDE_ROTATION_PIVOT_Y;
+        const rotatedContactX = SIDE_ROTATION_PIVOT_X + dx * Math.cos(radians) - dy * Math.sin(radians);
+        return 166 - rotatedContactX;
+      }
+
+      function attemptSideInsertion() {
+        if (wearState.step !== 3 || wearState.inserting || wearState.success) return;
+        if (wearState.viewMode !== 'side') {
+          setPracticeView('side');
+          setTimeout(attemptSideInsertion, 180);
+          return;
+        }
+        wearState.inserting = true;
+        wearState.approach = 0;
+        sideTopContact.style.opacity = '0';
+        sideBottomContact.style.opacity = '0';
+        sideContactSuccess.style.opacity = '0';
+        sideLashWarning.style.opacity = '0';
+        insertLensButton.disabled = true;
+        insertLensButton.textContent = '각막으로 접근 중…';
+        setWearFeedback('손가락의 각도를 유지하면서 각막 정면으로 천천히 접근합니다.');
+
+        const start = performance.now();
+        const duration = 620;
+        const lidIsShort = wearState.upper < 42 || wearState.lower < 42;
+        const firstContact = firstSideContactApproach();
+        // 안검이 덜 열린 경우에는 렌즈가 각막까지 관통하지 않고 속눈썹 앞에서 멈춘다.
+        const targetApproach = lidIsShort ? Math.max(firstContact, -76) : firstContact;
+        function animate(now) {
+          const progress = Math.min(1, (now - start) / duration);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          wearState.approach = targetApproach * eased;
+          renderSideGeometry();
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+            return;
+          }
+
+          if (wearState.upper < 42 || wearState.lower < 42) {
+            recordSideFailure('lid');
+          } else if (Math.abs(wearState.angle) > 6) {
+            recordSideFailure('angle');
+          } else {
+            // 허용 범위 안의 미세한 기울기는 안착 순간 0°로 정렬해 곡면이 정확히 포개지게 한다.
+            wearState.angle = 0;
+            wearState.approach = -92;
+            renderSideGeometry();
+            sideContactSuccess.style.opacity = '1';
+            setWearFeedback('정확해요! 렌즈 면이 각막 정면과 평행하게 고르게 닿았습니다.', 'success');
+            vibrate([30, 35, 55]);
+            setTimeout(() => {
+              wearState.inserting = false;
+              insertLensButton.disabled = false;
+              insertLensButton.textContent = '이 각도로 넣기';
+              goWearStep(4);
+            }, 650);
+          }
+        }
+        requestAnimationFrame(animate);
+      }
+
+      function finishWear() {
+        if (wearState.success) return;
+        wearState.success = true;
+        wearProgress.forEach(item => {
+          item.classList.add('done');
+          item.classList.remove('active');
+        });
+        directWearProgress.forEach(item => {
+          item.classList.add('done');
+          item.classList.remove('active');
+        });
+        setWearFeedback('착용 성공! 눈을 충분히 벌려 속눈썹 접촉 없이 렌즈를 안착했어요.', 'success');
+        wearLens.style.opacity = '0';
+        wearContactLens.style.opacity = '.76';
+        wearCompletion.classList.add('visible');
+        wearCompletion.setAttribute('aria-hidden', 'false');
+        vibrate([35, 40, 70]);
+      }
+
+      function blinkAndFinish() {
+        if (wearState.blinking || wearState.success) return;
+        wearState.blinking = true;
+        blinkActions.hidden = true;
+        const startUpper = wearState.upper;
+        const startLower = wearState.lower;
+        const start = performance.now();
+        const duration = 720;
+
+        function animate(now) {
+          const progress = Math.min(1, (now - start) / duration);
+          const close = Math.sin(progress * Math.PI);
+          wearState.upper = startUpper - (startUpper + 64) * close;
+          wearState.lower = startLower - (startLower + 64) * close;
+          renderWearGeometry();
+          if (progress < 1) requestAnimationFrame(animate);
+          else {
+            wearState.upper = startUpper;
+            wearState.lower = startLower;
+            wearState.blinking = false;
+            renderWearGeometry();
+            finishWear();
+          }
+        }
+        requestAnimationFrame(animate);
+      }
+
+      function setMode(mode) {
+        activeMode = mode;
+        const wearing = mode === 'wear';
+        wearPractice.hidden = !wearing;
+        removalPractice.hidden = wearing;
+        wearTab.classList.toggle('active', wearing);
+        removalTab.classList.toggle('active', !wearing);
+        wearTab.setAttribute('aria-selected', String(wearing));
+        removalTab.setAttribute('aria-selected', String(!wearing));
+        modeEyebrow.textContent = wearing ? 'WEARING PRACTICE' : 'REMOVAL PRACTICE';
+        pageTitle.textContent = wearing ? '콘택트렌즈 착용 연습' : '콘택트렌즈 제거 연습';
+      }
+
+      document.getElementById('correctOrientation').addEventListener('click', () => goWearStep(2));
+      document.getElementById('wrongOrientation').addEventListener('click', () => {
+        const wrongCard = document.getElementById('wrongOrientation');
+        wrongCard.classList.remove('invalid');
+        void wrongCard.offsetWidth;
+        wrongCard.classList.add('invalid');
+        window.setTimeout(() => wrongCard.classList.remove('invalid'), 700);
+        setWearFeedback('가장자리가 바깥으로 벌어진 렌즈는 뒤집힌 상태예요. 가장자리가 곧게 선 둥근 그릇 모양을 선택하세요.', 'error');
+        vibrate([25, 35, 25]);
+      });
+      document.getElementById('tryOpening').addEventListener('click', () => goWearStep(3));
+      document.getElementById('adjustOpening').addEventListener('click', () => goWearStep(2));
+      document.getElementById('angleMinus').addEventListener('click', () => setAngle(wearState.angle - 5));
+      document.getElementById('anglePlus').addEventListener('click', () => setAngle(wearState.angle + 5));
+      angleSlider.addEventListener('input', event => setAngle(event.target.value));
+      frontViewButton.addEventListener('click', () => setPracticeView('front'));
+      sideViewButton.addEventListener('click', () => setPracticeView('side'));
+      insertLensButton.addEventListener('click', attemptSideInsertion);
+      document.getElementById('blinkButton').addEventListener('click', blinkAndFinish);
+      document.getElementById('wearAgainButton').addEventListener('click', resetWear);
+      document.getElementById('wearAttemptClose').addEventListener('click', () => {
+        wearAttemptGuide.hidden = true;
+        if (DIRECT_SIDE_WEAR) {
+          goWearStep(2);
+        } else if (wearState.lastFail === 'angle') {
+          wearState.step = 3;
+          wearState.inserting = false;
+          wearState.approach = 0;
+          renderSideGeometry();
+          renderWearStep();
+        } else {
+          goWearStep(2);
+        }
+      });
+
+      function directWearPrompt() {
+        if (wearState.upper < 42) {
+          setWearFeedback('왼손 중지를 위로 드래그해 윗눈꺼풀을 충분히 올려주세요.');
+        } else if (wearState.lower < 42) {
+          setWearFeedback('오른손 중지를 아래로 드래그해 아랫눈꺼풀을 충분히 내려주세요.');
+        } else {
+          setWearFeedback('눈 벌림이 고정됐어요. 오른손 검지를 왼쪽으로 드래그하고, 위아래 움직임으로 렌즈 각도를 맞추세요.');
+        }
+      }
+
+      function completeDirectSideAttempt() {
+        if (wearState.inserting || wearState.success || wearState.step !== 2) return;
+        wearState.inserting = true;
+        wearState.attemptLocked = true;
+        sidePointerDrags.clear();
+
+        if (wearState.upper < 42 || wearState.lower < 42) {
+          recordSideFailure('lid');
+          return;
+        }
+        if (Math.abs(wearState.angle) > 6) {
+          recordSideFailure('angle');
+          return;
+        }
+
+        wearState.angle = 0;
+        wearState.approach = -92;
+        renderSideGeometry();
+        sideContactSuccess.style.opacity = '1';
+        setWearFeedback('정확해요! 직접 움직인 렌즈가 각막 정면에 고르게 닿았습니다.', 'success');
+        vibrate([30, 35, 55]);
+        setTimeout(() => {
+          wearState.inserting = false;
+          wearState.attemptLocked = false;
+          goWearStep(4);
+          finishWear();
+        }, 650);
+      }
+
+      sideViewScene.addEventListener('pointerdown', event => {
+        if (!DIRECT_SIDE_WEAR || wearState.step !== 2 || wearState.inserting || wearState.success) return;
+        const point = toSidePoint(event);
+        let type = '';
+        if (point.x < 205 && point.y < 185) type = 'upper';
+        else if (point.x < 235 && point.y > 285) type = 'lower';
+        else if (point.x >= 215 && point.y > 180) type = 'lens';
+
+        if (!type) {
+          directWearPrompt();
+          return;
+        }
+
+        event.preventDefault();
+        sideViewScene.setPointerCapture?.(event.pointerId);
+        sidePointerDrags.set(event.pointerId, {
+          type,
+          startX: point.x,
+          startY: point.y,
+          startUpper: wearState.upper,
+          startLower: wearState.lower,
+          startApproach: wearState.approach,
+          startAngle: wearState.angle
+        });
+
+        if (type === 'upper') setWearFeedback('왼손 중지를 위로 움직여 윗눈꺼풀을 올리세요.');
+        else if (type === 'lower') setWearFeedback('오른손 중지를 아래로 움직여 아랫눈꺼풀을 내리세요.');
+        else setWearFeedback('오른손 검지를 왼쪽으로 천천히 움직이세요. 위아래 이동으로 렌즈 기울기가 바뀝니다.');
+      }, { passive: false });
+
+      sideViewScene.addEventListener('pointermove', event => {
+        const drag = sidePointerDrags.get(event.pointerId);
+        if (!drag || wearState.step !== 2 || wearState.inserting || wearState.success) return;
+        event.preventDefault();
+        const point = toSidePoint(event);
+
+        if (drag.type === 'upper') {
+          wearState.upper = Math.max(0, Math.min(60, drag.startUpper + (drag.startY - point.y) * 1.25));
+          renderSideGeometry();
+          setWearFeedback(`윗눈꺼풀 ${Math.round(wearState.upper / 60 * 100)}% · 손을 떼어도 이 위치에 고정됩니다.`);
+          return;
+        }
+
+        if (drag.type === 'lower') {
+          wearState.lower = Math.max(0, Math.min(60, drag.startLower + (point.y - drag.startY) * 1.25));
+          renderSideGeometry();
+          setWearFeedback(`아랫눈꺼풀 ${Math.round(wearState.lower / 60 * 100)}% · 손을 떼어도 이 위치에 고정됩니다.`);
+          return;
+        }
+
+        const rawApproach = Math.max(-120, Math.min(0, drag.startApproach + (point.x - drag.startX) * 1.08));
+        wearState.angle = Math.max(-25, Math.min(25, Math.round(drag.startAngle + (point.y - drag.startY) * .3)));
+        const lidIsShort = wearState.upper < 42 || wearState.lower < 42;
+        const firstContact = firstSideContactApproach();
+        const contactApproach = lidIsShort ? Math.max(firstContact, -76) : firstContact;
+        wearState.approach = Math.max(rawApproach, contactApproach);
+        renderSideGeometry();
+        setWearFeedback(`렌즈 각도 ${wearState.angle > 0 ? '+' : ''}${wearState.angle}° · 0°에 가깝게 맞추며 왼쪽으로 이동하세요.`);
+
+        if (rawApproach <= contactApproach) completeDirectSideAttempt();
+      }, { passive: false });
+
+      function releaseDirectSidePointer(event) {
+        const drag = sidePointerDrags.get(event.pointerId);
+        if (!drag) return;
+        sidePointerDrags.delete(event.pointerId);
+        sideViewScene.releasePointerCapture?.(event.pointerId);
+
+        if (drag.type === 'lens' && !wearState.inserting && !wearState.success && wearState.step === 2) {
+          wearState.approach = 0;
+          renderSideGeometry();
+          setWearFeedback('렌즈가 각막까지 닿지 않았어요. 검지를 조금 더 왼쪽으로 움직여주세요.', 'error');
+        } else if (!wearState.inserting && wearState.step === 2) {
+          directWearPrompt();
+        }
+      }
+
+      sideViewScene.addEventListener('pointerup', releaseDirectSidePointer);
+      sideViewScene.addEventListener('pointercancel', releaseDirectSidePointer);
+
+      wearSvg.addEventListener('pointerdown', event => {
+        if (wearState.success || wearState.blinking) return;
+        const point = toWearPoint(event);
+        if (wearState.step === 2) {
+          event.preventDefault();
+          wearSvg.setPointerCapture?.(event.pointerId);
+          wearState.drag = {
+            id: event.pointerId,
+            type: point.y < 250 ? 'upper' : 'lower',
+            startY: point.y,
+            startValue: point.y < 250 ? wearState.upper : wearState.lower
+          };
+          setWearFeedback(point.y < 250 ? '윗눈꺼풀을 위로 원하는 만큼 올리세요.' : '아랫눈꺼풀을 아래로 원하는 만큼 내리세요.');
+          return;
+        }
+
+        if (wearState.step === 3) {
+          const distance = Math.hypot(point.x - wearState.lensX, point.y - wearState.lensY);
+          if (distance > 92) {
+            setWearFeedback('아래쪽 투명 렌즈 안에 검지를 놓아주세요.', 'error');
+            return;
+          }
+          event.preventDefault();
+          wearSvg.setPointerCapture?.(event.pointerId);
+          wearState.attemptLocked = false;
+          wearState.drag = { id: event.pointerId, type: 'lens', dx: point.x - wearState.lensX, dy: point.y - wearState.lensY };
+          setWearFeedback('렌즈를 눈동자 중앙으로 천천히 올리세요.');
+        }
+      }, { passive: false });
+
+      wearSvg.addEventListener('pointermove', event => {
+        if (!wearState.drag || wearState.drag.id !== event.pointerId || wearState.success) return;
+        event.preventDefault();
+        const point = toWearPoint(event);
+
+        if (wearState.drag.type === 'upper') {
+          wearState.upper = Math.max(0, Math.min(60, wearState.drag.startValue - (point.y - wearState.drag.startY)));
+          renderWearGeometry();
+          setWearFeedback(`윗눈꺼풀 ${Math.round(wearState.upper / 60 * 100)}% · 이제 아랫눈꺼풀도 원하는 만큼 내려보세요.`);
+          return;
+        }
+
+        if (wearState.drag.type === 'lower') {
+          wearState.lower = Math.max(0, Math.min(60, wearState.drag.startValue + (point.y - wearState.drag.startY)));
+          renderWearGeometry();
+          setWearFeedback(`아랫눈꺼풀 ${Math.round(wearState.lower / 60 * 100)}% · 벌린 정도를 유지한 채 시도할 수 있어요.`);
+          return;
+        }
+
+        if (wearState.drag.type === 'lens' && !wearState.attemptLocked) {
+          wearState.lensX = Math.max(78, Math.min(322, point.x - wearState.drag.dx));
+          wearState.lensY = Math.max(170, Math.min(430, point.y - wearState.drag.dy));
+          renderWearGeometry();
+
+          const centered = Math.abs(wearState.lensX - 200) < 75;
+          if (centered && wearState.lensY <= 322) {
+            if (wearState.upper >= 42 && wearState.lower >= 42) {
+              wearState.lensX = 200;
+              wearState.lensY = 250;
+              goWearStep(4);
+            } else {
+              failWear('속눈썹에 닿았어요!');
+            }
+          }
+        }
+      }, { passive: false });
+
+      function releaseWearPointer(event) {
+        if (wearState.drag?.id !== event.pointerId) return;
+        const wasLens = wearState.drag.type === 'lens';
+        wearState.drag = null;
+        if (wasLens && !wearState.attemptLocked && wearState.step === 3 && wearState.lensY > 322) {
+          setWearFeedback('렌즈가 눈까지 닿지 않았어요. 눈동자 중앙까지 조금 더 올려주세요.', 'error');
+          wearState.lensX = 200;
+          wearState.lensY = 420;
+          renderWearGeometry();
+        }
+        wearState.attemptLocked = false;
+      }
+
+      wearSvg.addEventListener('pointerup', releaseWearPointer);
+      wearSvg.addEventListener('pointercancel', releaseWearPointer);
+      wearTab.addEventListener('click', () => setMode('wear'));
+      removalTab.addEventListener('click', () => setMode('removal'));
+      resetButton.addEventListener('click', () => {
+        if (activeMode === 'wear') resetWear();
+      });
+
+      const removalSvg = document.getElementById('eyeScene');
+      const removalAttemptGuide = document.getElementById('removalAttemptGuide');
+      const removalAttemptBadge = document.getElementById('removalAttemptBadge');
+      const removalAttemptTitle = document.getElementById('removalAttemptTitle');
+      const removalAttemptBody = document.getElementById('removalAttemptBody');
+      let removalFailures = 0;
+      let removalPointers = new Set();
+      let removalMaxPointers = 0;
+
+      removalSvg.addEventListener('pointerdown', event => {
+        const activeStep = removalPractice.querySelector('[data-progress].active');
+        if (activeStep?.dataset.progress !== '3' || document.getElementById('completion').classList.contains('visible')) return;
+        removalPointers.add(event.pointerId);
+        removalMaxPointers = Math.max(removalMaxPointers, removalPointers.size);
+      }, true);
+
+      removalSvg.addEventListener('pointerup', event => {
+        if (!removalPointers.has(event.pointerId)) return;
+        removalPointers.delete(event.pointerId);
+        if (removalPointers.size === 0 && removalMaxPointers < 2) {
+          removalFailures += 1;
+          if (removalFailures === 2 || removalFailures === 4) {
+            removalAttemptBadge.textContent = `${removalFailures}회`;
+            if (removalFailures === 2) {
+              removalAttemptTitle.textContent = '렌즈 양쪽에 두 손가락을 놓으세요';
+              removalAttemptBody.textContent = '검지와 엄지의 손톱 끝이 아니라 넓은 지문 면을 렌즈 양쪽 테두리에 동시에 놓고, 안쪽으로 부드럽게 모아보세요.';
+            } else {
+              removalAttemptTitle.textContent = '잠시 쉬었다가 다시 시도하세요';
+              removalAttemptBody.textContent = '반복하면 눈이 자극될 수 있어요. 잠시 쉬고 손가락을 완전히 말린 뒤 다시 시도하세요. 계속 어렵다면 안경전문가의 도움을 받으세요.';
+            }
+            removalAttemptGuide.hidden = false;
+          }
+        }
+        if (removalPointers.size === 0) removalMaxPointers = 0;
+      }, true);
+
+      document.getElementById('removalAttemptClose').addEventListener('click', () => {
+        removalAttemptGuide.hidden = true;
+      });
+      resetButton.addEventListener('click', () => {
+        if (activeMode === 'removal') {
+          removalFailures = 0;
+          removalPointers.clear();
+          removalMaxPointers = 0;
+          removalAttemptGuide.hidden = true;
+        }
+      });
+      document.getElementById('againButton').addEventListener('click', () => {
+        removalFailures = 0;
+        removalPointers.clear();
+        removalMaxPointers = 0;
+        removalAttemptGuide.hidden = true;
+      });
+
+      resetWear();
+      setMode('wear');
+    })();
+  </script>
+<script>
+/* Self-contained vector detail layer. No downloads, fonts or image assets required. */
+(() => {
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (tag, attrs) => {
+    const node = document.createElementNS(NS, tag);
+    Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+    return node;
+  };
+  // Nonuniform radial fibers; inserted behind the pupil and reflections.
+  document.querySelectorAll('[fill="url(#wearIris)"], [fill="url(#iris)"], [fill="url(#sideIris)"]').forEach(base => {
+    const side = base.tagName.toLowerCase() === 'ellipse';
+    const cx = +base.getAttribute('cx'), cy = +base.getAttribute('cy');
+    const rx = side ? 32 : 89, ry = side ? 45 : 89;
+    const fibers = el('g', {'pointer-events':'none', opacity:'.58'});
+    for (let i = 0; i < 156; i++) {
+      const a = i * Math.PI * 2 / 156;
+      const inner = .43 + .10 * Math.sin(i * 2.39);
+      const outer = .94 + .05 * Math.sin(i * 3.17);
+      const point = (r, angle) => `${(cx+rx*r*Math.cos(angle)).toFixed(2)} ${(cy+ry*r*Math.sin(angle)).toFixed(2)}`;
+      fibers.append(el('path', {
+        d:`M${point(inner,a)} Q${point(.72,a+.028*Math.sin(i))} ${point(outer,a)}`,
+        fill:'none', stroke:i%3 ? '#d8b775' : '#302a20',
+        'stroke-width':side ? '.45' : '.75', 'stroke-linecap':'round',
+        opacity: .3 + (i%7)*.08
+      }));
+    }
+    base.after(fibers);
+  });
+  // Subtle nail rim highlights and fingertip ridges on the existing hand geometry.
+  document.querySelectorAll('[fill="url(#sideNail)"]').forEach(nail => {
+    const highlight = nail.cloneNode(false);
+    highlight.removeAttribute('id');
+    highlight.setAttribute('fill','none');
+    highlight.setAttribute('stroke','#ffe9d8');
+    highlight.setAttribute('stroke-width','.65');
+    highlight.setAttribute('opacity','.65');
+    highlight.setAttribute('pointer-events','none');
+    nail.after(highlight);
+  });
+  const pad = document.querySelector('#sideInsertionAssembly > g');
+  for(let i=0;i<6;i++) pad.append(el('path',{
+    d:`M${296+i*1.5} ${282+i*4} Q${304+i} ${270+i*4} ${316+i*.7} ${282+i*4}`,
+    fill:'none', stroke:'#a96e60','stroke-width':'.65',opacity:'.22','pointer-events':'none'
+  }));
+  // Fine skin grain is clipped to the SVG and kept away from controls.
+  ['wearEyeScene','eyeScene'].forEach((id,index) => {
+    const svg=document.getElementById(id);
+    if(!svg) return;
+    const defs=svg.querySelector('defs');
+    const filter=el('filter',{id:`portraitGrain${index}`,x:'0',y:'0',width:'100%',height:'100%'});
+    filter.append(el('feTurbulence',{type:'fractalNoise',baseFrequency:'.82',numOctaves:'2',seed:'12'}));
+    filter.append(el('feColorMatrix',{type:'saturate',values:'0'}));
+    defs.append(filter);
+    svg.append(el('rect',{width:'400',height:'500',filter:`url(#portraitGrain${index})`,opacity:'.035','pointer-events':'none'}));
+  });
+})();
+</script>
+</body>
+</html>
