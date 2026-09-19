@@ -2359,8 +2359,8 @@
           renderGeometry();
           if (dy < -12) {
             setFeedback('위쪽이 아니라 아래 흰자위 방향으로 밀어주세요.', 'error');
-          } else if (state.lensY >= 54) {
-            setFeedback('좋아요! 렌즈가 충분히 내려왔어요. 손을 떼면 집어 제거 단계로 넘어갑니다. 더 조절하려면 다시 위아래로 움직여보세요.');
+          } else if (state.lensY >= 34) {
+            setFeedback('좋아요! 이 정도면 충분해요. 손을 떼면 집어 제거 단계로 넘어갑니다. 더 조절하려면 다시 위아래로 움직여보세요.');
           } else {
             setFeedback('렌즈를 아래 흰자위 방향으로 천천히 밀어주세요. 아직 다시 위로 올려서 조절할 수 있어요.');
           }
@@ -2370,10 +2370,10 @@
         if (state.step === 3) {
           if (state.drag?.type === 'lensAdjust' && state.drag.id === event.pointerId && state.pointers.size === 1 && !state.pinch) {
             const dy = point.y - state.drag.startY;
-            state.lensY = Math.max(18, Math.min(112, state.drag.startLensY + dy));
+            state.lensY = Math.max(12, Math.min(112, state.drag.startLensY + dy));
             state.upperLidOffset = Math.min(60, state.lensY);
             renderGeometry();
-            if (state.lensY < 48) {
+            if (state.lensY < 30) {
               setFeedback('렌즈를 조금 더 아래 흰자위 쪽으로 내린 뒤 양쪽을 집어보세요. 계속 위아래로 조절할 수 있어요.');
             } else {
               setFeedback('좋아요! 이제 검지와 엄지를 렌즈 양쪽에 두고 살짝 모아 제거해보세요.');
@@ -2414,9 +2414,11 @@
         if (state.drag?.id === event.pointerId) state.drag = null;
 
         if (state.step === 2 && releasedDrag === 'lens' && !state.success) {
-          if (state.lensY >= 54) {
-            state.lensY = Math.max(60, state.lensY);
-            state.upperLidOffset = Math.max(60, state.upperLidOffset);
+          if (state.lensY >= 34) {
+            // 이 정도만 흰자위 쪽으로 내려와도 집어 제거 단계로 진행.
+            // 기존처럼 60까지 강제로 내려 스냅하지 않고 사용자가 놓은 위치를 그대로 유지한다.
+            state.lensY = Math.max(34, state.lensY);
+            state.upperLidOffset = Math.min(60, Math.max(34, state.lensY));
             renderGeometry();
             goToStep(3);
             return;
