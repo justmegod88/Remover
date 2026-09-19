@@ -1308,6 +1308,14 @@
       }
     }
 
+  
+
+    /* ===== Removal illustration natural polish ===== */
+    #upperLashes path, #lowerLashes path {
+      vector-effect: non-scaling-stroke;
+      stroke-linejoin: round;
+    }
+
   </style>
 </head>
 <body data-mode="wear">
@@ -1463,7 +1471,7 @@
                 <circle cx="200" cy="250" r="52" fill="#4a2d18"/>
                 <circle cx="200" cy="250" r="39" fill="#05090c"/>
                 <ellipse cx="174" cy="207" rx="20" ry="30" fill="#fff" opacity=".78"/>
-                <ellipse cx="223" cy="224" rx="8" ry="10" fill="#fff" opacity=".62"/>
+                <ellipse cx="223" cy="225" rx="7" ry="9" fill="#fff" opacity=".44"/>
               </g>
             </g>
 
@@ -1473,16 +1481,16 @@
             </g>
 
             <g id="wearUpperLid">
-              <path id="wearUpperOuter" d="M24,250 Q200,145 376,250" fill="none" stroke="#70473c" stroke-width="14" stroke-linecap="round"/>
-              <path id="wearUpperInner" d="M31,245 Q200,158 369,245" fill="none" stroke="#efbea7" stroke-width="7" stroke-linecap="round"/>
+              <path id="wearUpperOuter" d="M24,250 Q200,145 376,250" fill="none" stroke="#84584d" stroke-width="11" stroke-linecap="round"/>
+              <path id="wearUpperInner" d="M31,245 Q200,158 369,245" fill="none" stroke="#f2c9b4" stroke-width="5" stroke-linecap="round"/>
               <g id="wearUpperLashes" fill="none" stroke="#3b2724" stroke-width="4" stroke-linecap="round" opacity=".9"><path d="M64 221 Q47 200 43 184 M88 205 Q74 179 75 163 M116 187 Q106 157 112 142 M146 170 Q141 138 151 124 M178 159 Q177 125 188 112 M211 158 Q216 124 228 114 M244 166 Q254 134 267 125 M276 181 Q291 152 306 146 M307 201 Q326 176 340 173 M333 221 Q352 201 363 197"/></g>
               <path id="wearUpperHit" d="M24,250 Q200,145 376,250" fill="none" stroke="transparent" stroke-width="68"/>
             </g>
 
             <g id="wearLowerLid">
-              <path id="wearLowerOuter" d="M24,250 Q200,355 376,250" fill="none" stroke="#8f5949" stroke-width="14" stroke-linecap="round"/>
-              <path id="wearLowerInner" d="M31,255 Q200,342 369,255" fill="none" stroke="#f0bfaa" stroke-width="7" stroke-linecap="round"/>
-              <path id="wearLowerCrease" d="M46 291 Q200 390 354 291" fill="none" stroke="#714238" stroke-width="7" opacity=".25"/>
+              <path id="wearLowerOuter" d="M24,250 Q200,355 376,250" fill="none" stroke="#9a6759" stroke-width="11" stroke-linecap="round"/>
+              <path id="wearLowerInner" d="M31,255 Q200,342 369,255" fill="none" stroke="#f4cab5" stroke-width="5" stroke-linecap="round"/>
+              <path id="wearLowerCrease" d="M46 291 Q200 390 354 291" fill="none" stroke="#9f6d61" stroke-width="4.5" opacity=".18"/>
               <g id="wearLowerLashes" fill="none" stroke="#49302c" stroke-width="3" stroke-linecap="round" opacity=".72"><path d="M72 299 Q60 319 57 334 M104 316 Q95 338 96 352 M139 333 Q134 356 138 368 M174 341 Q172 365 178 376 M212 341 Q214 366 220 376 M248 334 Q254 358 262 369 M282 318 Q293 341 302 353 M316 302 Q331 322 339 336"/></g>
               <path id="wearLowerHit" d="M24,250 Q200,355 376,250" fill="none" stroke="transparent" stroke-width="68"/>
             </g>
@@ -1796,8 +1804,8 @@
                 </g>
                 <circle cx="200" cy="250" r="53" fill="none" stroke="#4a2d18" stroke-width="9" opacity=".8"/>
                 <circle cx="200" cy="250" r="39" fill="url(#pupil)"/>
-                <ellipse cx="174" cy="207" rx="20" ry="30" fill="#fff" opacity=".8" filter="url(#wetGlow)"/>
-                <ellipse cx="223" cy="224" rx="8" ry="10" fill="#fff" opacity=".62"/>
+                <ellipse cx="172" cy="206" rx="18" ry="28" fill="#fff" opacity=".62" filter="url(#wetGlow)"/>
+                <ellipse cx="223" cy="225" rx="7" ry="9" fill="#fff" opacity=".44"/>
               </g>
               <path d="M74 290 Q200 363 326 290" fill="none" stroke="#fff" stroke-width="4" opacity=".3" filter="url(#wetGlow)"/>
             </g>
@@ -1806,9 +1814,11 @@
           <g id="lensWindow" clip-path="url(#eyeClip)">
             <g id="lensPosition" transform="translate(0 0)">
               <g id="lensFold">
-                <circle id="lensHit" cx="200" cy="250" r="119.636364" fill="url(#lensGlow)" stroke="#76dff5" stroke-width="3" stroke-opacity=".92"/>
-                <ellipse cx="178" cy="215" rx="56" ry="32" fill="none" stroke="#d8fbff" stroke-width="2" stroke-opacity=".62"/>
-                <path d="M126 287 Q200 318 274 287" fill="none" stroke="#81dff0" stroke-width="2" stroke-opacity=".6"/>
+                <circle id="lensHit" cx="200" cy="250" r="119.636364" fill="#d9f6ff" fill-opacity=".12" stroke="#86dff2" stroke-width="2.2" stroke-opacity=".58"/>
+                <circle cx="200" cy="250" r="114" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-opacity=".28"/>
+                <ellipse cx="171" cy="214" rx="52" ry="29" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-opacity=".44"/>
+                <ellipse cx="226" cy="291" rx="40" ry="13" fill="none" stroke="#7fd7ee" stroke-width="1.6" stroke-opacity=".34"/>
+                <path d="M125 283 Q200 309 275 283" fill="none" stroke="#88dcef" stroke-width="1.8" stroke-opacity=".34"/>
               </g>
             </g>
           </g>
@@ -1816,8 +1826,8 @@
           <g id="upperLid">
             <path id="upperLidOuter" d="M24,250 Q200,105 376,250" fill="none" stroke="#70473c" stroke-width="14" stroke-linecap="round"/>
             <path id="upperLidInner" d="M31,245 Q200,122 369,245" fill="none" stroke="#efbea7" stroke-width="7" stroke-linecap="round" opacity=".92"/>
-            <g id="upperLashes" fill="none" stroke="#3b2724" stroke-width="4" stroke-linecap="round" opacity=".82">
-              <path d="M64 221 Q47 200 43 184 M88 195 Q74 169 75 153 M116 171 Q106 141 112 126 M146 151 Q141 119 151 105 M178 139 Q177 105 188 92 M211 138 Q216 104 228 94 M244 146 Q254 114 267 105 M276 161 Q291 132 306 126 M307 181 Q326 156 340 153 M333 207 Q352 187 363 183"/>
+            <g id="upperLashes" fill="none" stroke="#4c3530" stroke-width="3.4" stroke-linecap="round" opacity=".76">
+              <path d="M58 224 Q42 205 37 188 M81 206 Q66 180 66 163 M106 186 Q95 153 100 136 M133 168 Q125 133 134 117 M161 152 Q157 117 166 102 M190 144 Q190 109 198 94 M220 145 Q225 110 236 98 M249 154 Q258 121 271 111 M278 170 Q293 141 309 134 M304 190 Q324 166 339 162 M327 211 Q348 193 360 190"/>
             </g>
             <path id="upperLidHit" d="M24,250 Q200,105 376,250" fill="none" stroke="transparent" stroke-width="62"/>
           </g>
@@ -1826,8 +1836,8 @@
             <path id="lowerLidOuter" d="M24,250 Q200,395 376,250" fill="none" stroke="#8f5949" stroke-width="14" stroke-linecap="round"/>
             <path id="lowerLidInner" d="M31,255 Q200,378 369,255" fill="none" stroke="#f0bfaa" stroke-width="7" stroke-linecap="round" opacity=".92"/>
             <path id="lowerCrease" d="M46 291 Q200 420 354 291" fill="none" stroke="#714238" stroke-width="7" opacity=".25"/>
-            <g id="lowerLashes" fill="none" stroke="#49302c" stroke-width="3" stroke-linecap="round" opacity=".58">
-              <path d="M72 303 Q60 323 57 338 M104 329 Q95 351 96 365 M139 351 Q134 374 138 386 M174 365 Q172 389 178 400 M212 365 Q214 390 220 400 M248 354 Q254 378 262 389 M282 335 Q293 358 302 370 M316 310 Q331 330 339 344"/>
+            <g id="lowerLashes" fill="none" stroke="#6f4f48" stroke-width="2.1" stroke-linecap="round" opacity=".42">
+              <path d="M74 305 Q64 321 60 334 M104 329 Q96 346 97 358 M139 349 Q135 370 140 381 M175 361 Q174 381 179 391 M212 361 Q215 382 221 392 M248 351 Q255 372 264 383 M282 333 Q294 353 304 364 M314 311 Q328 328 337 339"/>
             </g>
             <path id="lidHit" d="M24,250 Q200,395 376,250" fill="none" stroke="transparent" stroke-width="58"/>
           </g>
@@ -2052,8 +2062,8 @@
         },
         3: {
           title: '오른손 검지와 엄지로 렌즈를 빼세요',
-          body: '렌즈 위치가 맞지 않으면 다시 위아래로 드래그해 조절하고, 손톱이 아닌 검지와 엄지의 지문 면을 렌즈 양쪽 테두리에 놓고 안쪽으로 살짝 모으세요.',
-          feedback: '렌즈를 다시 위아래로 조절할 수 있어요. 손톱 말고 지문 면을 사용하세요. 왼쪽은 검지, 오른쪽은 엄지입니다.'
+          body: '손톱이 아닌 검지와 엄지의 지문 면을 렌즈 양쪽 테두리에 놓고 안쪽으로 살짝 모으세요.',
+          feedback: '손톱 말고 지문 면을 사용하세요. 왼쪽은 검지, 오른쪽은 엄지입니다.'
         }
       };
 
@@ -2317,12 +2327,12 @@
           if (state.pointers.size === 1) {
             if (withinLens(point, 16)) {
               state.drag = { type: 'lensAdjust', id: event.pointerId, startY: point.y, startLensY: state.lensY };
-              setFeedback('렌즈 위치를 다시 조절할 수 있어요. 위아래로 드래그하거나 두 손가락으로 집어 제거하세요.');
+              setFeedback('검지와 엄지를 렌즈 양쪽 테두리에 놓고 안쪽으로 살짝 모아 제거하세요.');
             }
             clearTimeout(state.oneFingerTimer);
             state.oneFingerTimer = setTimeout(() => {
               if (state.step === 3 && state.pointers.size === 1 && !state.success) {
-                setFeedback('반대쪽 렌즈 테두리에도 다른 손가락을 놓아주세요. 렌즈 위치가 맞지 않으면 먼저 다시 드래그해 조절해도 돼요.', 'error');
+                setFeedback('반대쪽 렌즈 테두리에도 다른 손가락을 놓아주세요.', 'error');
               }
             }, 900);
           } else {
@@ -2360,9 +2370,9 @@
           if (dy < -12) {
             setFeedback('위쪽이 아니라 아래 흰자위 방향으로 밀어주세요.', 'error');
           } else if (state.lensY >= 34) {
-            setFeedback('좋아요! 이 정도면 충분해요. 손을 떼면 집어 제거 단계로 넘어갑니다. 더 조절하려면 다시 위아래로 움직여보세요.');
+            setFeedback('좋아요! 이 정도면 충분해요. 손을 떼면 집어 제거 단계로 넘어갑니다.');
           } else {
-            setFeedback('렌즈를 아래 흰자위 방향으로 천천히 밀어주세요. 아직 다시 위로 올려서 조절할 수 있어요.');
+            setFeedback('렌즈를 아래 흰자위 방향으로 천천히 밀어주세요.');
           }
           return;
         }
@@ -2374,7 +2384,7 @@
             state.upperLidOffset = Math.min(60, state.lensY);
             renderGeometry();
             if (state.lensY < 30) {
-              setFeedback('렌즈를 조금 더 아래 흰자위 쪽으로 내린 뒤 양쪽을 집어보세요. 계속 위아래로 조절할 수 있어요.');
+              setFeedback('렌즈를 조금 더 아래 흰자위 쪽으로 내린 뒤 양쪽을 집어보세요.');
             } else {
               setFeedback('좋아요! 이제 검지와 엄지를 렌즈 양쪽에 두고 살짝 모아 제거해보세요.');
             }
@@ -2423,7 +2433,7 @@
             goToStep(3);
             return;
           }
-          setFeedback('렌즈를 더 아래 흰자위 방향으로 밀어주세요. 다시 위아래로 계속 조절할 수 있어요.');
+          setFeedback('렌즈를 더 아래 흰자위 방향으로 밀어주세요.');
         }
 
         // 두 손가락이 한 번 함께 인식됐다면 손가락을 떼는 동작도 핀치 완료로 인정한다.
