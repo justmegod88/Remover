@@ -1700,12 +1700,21 @@
     ctx.setTransform(2,0,0,2,-80,-260);ctx.fillStyle='#b8def5';ctx.fillRect(40,130,340,240);
     const u=clamp(latest.upper/60,0,1),l=clamp(latest.lower/60,0,1);
     background(u,l);
-    // Two middle fingers remain behind the foreground index.
-    finger(upperPath,104,105-u*12,.18);
-    // The middle finger bends behind the foreground index; keep its pad on the lid.
-    ctx.save();ctx.translate(153,307+l*12);ctx.rotate(-28*Math.PI/180);
-    finger(lowerPath,-143,-53,.22);ctx.restore();
-    arrow(153,197-u*12,153,177-u*12);arrow(153,309+l*12,153,329+l*12);
+    // Broad pads approach the lid obliquely; the contact stays fixed during the drag.
+    const topY=211-u*12, bottomY=302+l*12;
+    function contactShadow(x,y){
+      ctx.save();ctx.translate(x,y);ctx.scale(1,.34);
+      const g=ctx.createRadialGradient(0,0,1,0,0,20);
+      g.addColorStop(0,'rgba(103,50,34,.22)');g.addColorStop(1,'rgba(103,50,34,0)');
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.fill();ctx.restore();
+    }
+    contactShadow(153,topY+2);contactShadow(153,bottomY+1);
+    ctx.save();ctx.translate(153,topY);ctx.rotate(-24*Math.PI/180);ctx.scale(1.28,.92);
+    finger(upperPath,-49,-108,.18);ctx.restore();
+    // A wider, bent middle finger recedes behind the index rather than pointing sideways.
+    ctx.save();ctx.translate(153,bottomY);ctx.rotate(7*Math.PI/180);ctx.scale(1.32,.85);
+    finger(lowerPath,-143,-46,.22);ctx.restore();
+    arrow(143,topY-20,143,topY-34);arrow(159,bottomY+15,159,bottomY+29);
     ctx.save();ctx.translate(latest.approach,0);ctx.translate(287,238);ctx.rotate(latest.angle*Math.PI/180);ctx.translate(-287,-238);
     // Shorten the shaft below the fingertip without moving the lens contact point.
     ctx.save();ctx.translate(0,250);ctx.scale(1,.82);ctx.translate(0,-250);
