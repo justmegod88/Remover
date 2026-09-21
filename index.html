@@ -941,7 +941,7 @@
       *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
     }
 
-    .side-view-stage, #sideViewScene { aspect-ratio: 34 / 31; max-height:none; }
+    .side-view-stage, #sideViewScene { aspect-ratio: 34 / 24; max-height:none; }
     #sideViewScene { position:relative; z-index:2; opacity:0; width:100%; height:auto; display:block; touch-action:none; }
     #portraitCanvas { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
     #wearFeedback { position:relative; inset:auto; margin:0; border:0; border-radius:0; min-height:64px; padding:14px 18px; }
@@ -1150,8 +1150,8 @@
           </svg>
 
           <div class="side-view-stage" id="sideViewStage" hidden>
-            <span class="side-view-label">SIDE VIEW · 측면</span><canvas id="portraitCanvas" width="680" height="620" aria-hidden="true"></canvas>
-            <svg id="sideViewScene" viewBox="40 130 340 310" role="img" aria-labelledby="sideViewTitle sideViewDesc">
+            <span class="side-view-label">SIDE VIEW · 측면</span><canvas id="portraitCanvas" width="680" height="480" aria-hidden="true"></canvas>
+            <svg id="sideViewScene" viewBox="40 130 340 240" role="img" aria-labelledby="sideViewTitle sideViewDesc">
               <title id="sideViewTitle">각막과 렌즈의 측면 정렬 연습</title>
               <desc id="sideViewDesc">왼손 중지로 윗눈꺼풀 위 피부를 올리고, 오른손 중지로 아랫눈꺼풀 아래 피부를 내린 채, 아래에서 올라오는 오른손 검지 위 렌즈의 각도를 조절하여 각막 정면에 고르게 닿도록 연습합니다.</desc>
               <defs>
@@ -1697,15 +1697,19 @@
     pending=false;if(!face.complete||!face.naturalWidth||!hands.complete||!hands.naturalWidth)return;
     canvas ||= document.getElementById('portraitCanvas');if(!canvas)return;
     ctx ||= canvas.getContext('2d',{alpha:false});
-    ctx.setTransform(2,0,0,2,-80,-260);ctx.fillStyle='#b8def5';ctx.fillRect(40,130,340,310);
+    ctx.setTransform(2,0,0,2,-80,-260);ctx.fillStyle='#b8def5';ctx.fillRect(40,130,340,240);
     const u=clamp(latest.upper/60,0,1),l=clamp(latest.lower/60,0,1);
     background(u,l);
     // Two middle fingers remain behind the foreground index.
     finger(upperPath,104,105-u*12,.18);
-    finger(lowerPath,35,260+l*12,.18);
+    // The middle finger bends behind the foreground index; keep its pad on the lid.
+    ctx.save();ctx.translate(153,307+l*12);ctx.rotate(-28*Math.PI/180);
+    finger(lowerPath,-143,-53,.22);ctx.restore();
     arrow(153,197-u*12,153,177-u*12);arrow(153,309+l*12,153,329+l*12);
     ctx.save();ctx.translate(latest.approach,0);ctx.translate(287,238);ctx.rotate(latest.angle*Math.PI/180);ctx.translate(-287,-238);
-    finger(indexPath, -20, 211, .24);lens();
+    // Shorten the shaft below the fingertip without moving the lens contact point.
+    ctx.save();ctx.translate(0,250);ctx.scale(1,.82);ctx.translate(0,-250);
+    finger(indexPath, -20, 211, .24);ctx.restore();lens();
     for(const [id,y] of [['sideTopContact',198],['sideBottomContact',302]])if(visible(id)){ctx.beginPath();ctx.arc(258,y,6,0,Math.PI*2);ctx.fillStyle='#ed535d';ctx.fill();}
     ctx.restore();
     if(latest.approach>-65)arrow(244,250,220,250);
