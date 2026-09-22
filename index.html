@@ -2380,6 +2380,10 @@
 
       const SIDE_ROTATION_PIVOT_X = 287;
       const SIDE_ROTATION_PIVOT_Y = 238;
+      // 검지가 하안검을 잡은 중지와 떨어져 보이지 않도록,
+      // 아래쪽 손가락 근처를 축으로 V자처럼 벌어졌다가 닫히는 느낌으로 움직인다.
+      const SIDE_INSERT_FAN_PIVOT_X = 356;
+      const SIDE_INSERT_FAN_PIVOT_Y = 418;
 
       const wearState = {
         step: 1,
@@ -2392,7 +2396,7 @@
         attemptLocked: false,
         success: false,
         blinking: false,
-        angle: 15,
+        angle: 18,
         approach: 0,
         inserting: false,
         lastFail: 'lid',
@@ -2509,8 +2513,15 @@
         sideLowerHoldingHand.setAttribute('transform', `translate(18 ${lowerHandOffset})`);
         sideLowerHoldingGuide.setAttribute('transform', `translate(18 ${lowerHandOffset})`);
 
-        sideInsertionAssembly.setAttribute('transform', `translate(${wearState.approach} 0) rotate(${wearState.angle} ${SIDE_ROTATION_PIVOT_X} ${SIDE_ROTATION_PIVOT_Y})`);
-        sideAngleGuide.setAttribute('transform', `translate(${wearState.approach} 0)`);
+        const approachRatio = Math.max(0, Math.min(1, -wearState.approach / 92));
+        // 검지가 아래 손가락과 한 쌍처럼 보이도록 단순 평행이동이 아니라
+        // 아랫쪽 축을 중심으로 V자 형태로 좁혀지며 들어오게 만든다.
+        const fanClosing = approachRatio * 12;
+        const insertionTranslateX = wearState.approach;
+        const insertionTranslateY = -approachRatio * 10;
+        const insertionVisualAngle = wearState.angle - fanClosing;
+        sideInsertionAssembly.setAttribute('transform', `translate(${insertionTranslateX} ${insertionTranslateY}) rotate(${insertionVisualAngle} ${SIDE_INSERT_FAN_PIVOT_X} ${SIDE_INSERT_FAN_PIVOT_Y})`);
+        sideAngleGuide.setAttribute('transform', `translate(${insertionTranslateX} ${insertionTranslateY})`);
         const showAngleGuide = DIRECT_SIDE_WEAR
           ? wearState.step === 2 && wearState.upper >= 42 && wearState.lower >= 42 && !wearState.inserting && !wearState.success
           : wearState.step === 3 && wearState.viewMode === 'side' && !wearState.inserting && !wearState.success;
