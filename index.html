@@ -1681,7 +1681,12 @@
   eyeCurve([423,350],[463,330],[486,389],[492,435]);
   eyeCurve([492,435],[504,494],[482,562],[455,585]);
   eyeCurve([455,585],[411,616],[326,558],[259,462]);
+  // Slight mannequin finish: keep the real anatomy/photo base, but soften
+  // color and contrast so the training model feels a little less photographic.
+  const MANNEQUIN_FILTER='saturate(.91) contrast(.95) brightness(1.035)';
   function background(u,l){
+    ctx.save();
+    ctx.filter=MANNEQUIN_FILTER;
     ctx.drawImage(face,40,77.55,414.948,416.363);
     if(u<.999 || l<.999){
       const nx=20,ny=24,x0=100,x1=800,y0=0,y1=950;
@@ -1695,8 +1700,21 @@
       ctx.save();ctx.beginPath();eyeContour.forEach((p,i)=>{const q=sourcePoint(...p,u,l);i?ctx.lineTo(...q):ctx.moveTo(...q);});ctx.closePath();ctx.clip();
       ctx.drawImage(face,40,77.55,414.948,416.363);ctx.restore();
     }
+    ctx.restore();
   }
-  function finger(path,x,y,scale) {ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);ctx.clip(path);ctx.drawImage(hands,0,0);ctx.restore();}
+  function finger(path,x,y,scale) {
+    ctx.save();
+    ctx.translate(x,y);ctx.scale(scale,scale);ctx.clip(path);
+    ctx.filter=MANNEQUIN_FILTER;
+    ctx.drawImage(hands,0,0);
+    // Very light skin veil reduces tiny photographic texture without making
+    // the fingers look cartoonish. The clip keeps this only inside the finger.
+    ctx.filter='none';
+    ctx.globalAlpha=.055;
+    ctx.fillStyle='#ffe8dc';
+    ctx.fillRect(0,0,hands.naturalWidth||1600,hands.naturalHeight||1100);
+    ctx.restore();
+  }
   function arrow(x1,y1,x2,y2){
     ctx.save();ctx.strokeStyle='#48b8e8';ctx.fillStyle='#48b8e8';ctx.lineWidth=2.6;ctx.lineCap='round';
     ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
