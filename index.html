@@ -1769,9 +1769,18 @@
     const topY=169+(1-u)*28, bottomY=330-(1-l)*14;
     arrow(169,topY+8,169,topY-7);arrow(177,bottomY-4,177,bottomY+11);
     ctx.save();ctx.translate(latest.approach,0);ctx.translate(287,238);ctx.rotate(latest.angle*Math.PI/180);ctx.translate(-287,-238);
-    // Shorten the shaft below the fingertip without moving the lens contact point.
-    ctx.save();ctx.translate(279,250);ctx.scale(1,.96);ctx.translate(-279,-250);
-    finger(indexPath, -20, 211, .24);ctx.restore();lens();rotationGuide();
+    // 오른손 검지는 하안검을 잡은 중지와 같은 손에서 벌어지는 V자 자세로 보이게 한다.
+    // 렌즈 각도 자체는 그대로 유지하되, 검지 몸통은 약간 안쪽으로 기울여 두 손가락이
+    // 화면 아래에서 자연스럽게 가까워지도록 하고 드래그 시 이 V자 자세가 함께 움직인다.
+    ctx.save();
+    ctx.translate(279,250);
+    const fingerVLean=(28-latest.angle*.65)*Math.PI/180;
+    ctx.rotate(fingerVLean);
+    ctx.scale(1,.95);
+    ctx.translate(-279,-250);
+    finger(indexPath, -26, 211, .24);
+    ctx.restore();
+    lens();rotationGuide();
     for(const [id,y] of [['sideTopContact',198],['sideBottomContact',302]])if(visible(id)){ctx.beginPath();ctx.arc(258,y,6,0,Math.PI*2);ctx.fillStyle='#ed535d';ctx.fill();}
     ctx.restore();
     if(latest.approach>-65){ctx.save();ctx.globalAlpha=clamp((latest.approach+65)/35,0,1);arrow(243,250,213,250);ctx.restore();}
