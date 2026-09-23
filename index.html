@@ -1660,7 +1660,11 @@
     const lowerWeight=py>309 ? 1 : Math.exp(-(((py-309)/31)**2));
     const upper=(1-u)*18*lateral*upperWeight;
     const lower=-(1-l)*9*lateral*lowerWeight;
-    return [px,py+upper+lower];
+    // Restore the upper fingertip close to the lid without lowering the eye.
+    const fingerX=Math.exp(-Math.pow((px-170)/43,6));
+    const fingerY=py<=166?1:Math.max(0,1-(py-166)/29);
+    const fingerShift=13*fingerX*fingerY*fingerY*(3-2*fingerY);
+    return [px,py+upper+lower+fingerShift];
   }
   function triangle(img, src, dst) {
     const [s0,s1,s2]=src,[d0,d1,d2]=dst;
@@ -1684,7 +1688,7 @@
   eyeCurve([455,585],[411,616],[326,558],[259,462]);
   function background(u,l){
     ctx.drawImage(face,40,77.55,414.948,416.363);
-    if(u<.999 || l<.999){
+    {
       const nx=20,ny=24,x0=100,x1=800,y0=0,y1=950;
       for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){
         const a=[x0+(x1-x0)*i/nx,y0+(y1-y0)*j/ny],b=[x0+(x1-x0)*(i+1)/nx,a[1]];
@@ -1762,12 +1766,12 @@
     g.addColorStop(0,'#f8c5a6');g.addColorStop(.7,'#eeb18f');g.addColorStop(1,'#d69272');
     ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(254,366,34,25,.2,0,Math.PI*2);ctx.fill();
     // Middle nail sits on the back of the finger; the rounded pad reaches the lid.
-    fingerTexture([267,378],[231,350],[195,middleY+15],[176,middleY-4],810,.116);
-    const tip=[padX+14*Math.cos(a),250+14*Math.sin(a)];
+    fingerTexture([276,384],[236,354],[200,middleY+20],[180,middleY-2],720,.160);
+    const tip=[padX+20*Math.cos(a),250+20*Math.sin(a)];
     // Keep the distal phalanx nearly upright at contact; bend the PIP instead.
-    const end=[tip[0]+14*Math.sin(a),tip[1]-14*Math.cos(a)];
+    const end=[tip[0]+20*Math.sin(a),tip[1]-20*Math.cos(a)];
     const distal=[end[0]-42*Math.sin(a),end[1]+42*Math.cos(a)];
-    fingerTexture([278,378],[282-20*progress,325],distal,end,1250,.112);
+    fingerTexture([289,386],[295-25*progress,325],distal,end,1100,.160);
     ctx.save();ctx.translate(padX,250);ctx.rotate(a);ctx.translate(-280,-250);
     lens(0,visible('sideContactSuccess'));rotationGuide();
     for(const [id,y] of [['sideTopContact',198],['sideBottomContact',302]])if(visible(id)){ctx.beginPath();ctx.arc(258,y,5,0,Math.PI*2);ctx.fillStyle='#ed535d';ctx.fill();}
