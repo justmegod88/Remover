@@ -1655,7 +1655,10 @@
     const [px,py]=basePoint(x,y);
     // Move only a shallow lid band. A broad image warp makes the brow and
     // eyelid folds look pinched while the user is still opening the eye.
-    const lateral=Math.exp(-(((px-175)/52)**4));
+    const lidT=clamp((px-118)/76,0,1);
+    const lidCenter=Math.pow(Math.sin(Math.PI*lidT),2);
+    const transition=clamp((py-177)/24,0,1);
+    const lateral=(1-transition)*Math.exp(-(((px-175)/52)**4))+transition*lidCenter;
     const upperWeight=py<207 ? 1 : Math.exp(-(((py-207)/43)**2));
     const lowerWeight=py>309 ? 1 : Math.exp(-(((py-309)/31)**2));
     const upper=(1-u)*18*lateral*upperWeight;
@@ -1766,12 +1769,12 @@
     g.addColorStop(0,'#f8c5a6');g.addColorStop(.7,'#eeb18f');g.addColorStop(1,'#d69272');
     ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(254,366,34,25,.2,0,Math.PI*2);ctx.fill();
     // Middle nail sits on the back of the finger; the rounded pad reaches the lid.
-    fingerTexture([276,384],[236,354],[200,middleY+20],[180,middleY-2],720,.160);
-    const tip=[padX+20*Math.cos(a),250+20*Math.sin(a)];
-    // Keep the distal phalanx nearly upright at contact; bend the PIP instead.
-    const end=[tip[0]+20*Math.sin(a),tip[1]-20*Math.cos(a)];
-    const distal=[end[0]-42*Math.sin(a),end[1]+42*Math.cos(a)];
-    fingerTexture([289,386],[295-25*progress,325],distal,end,1100,.160);
+    // Uniform similarity transforms preserve the exact nail, joint and skin
+    // proportions at every approach and angle. Never mesh-warp the fingers.
+    ctx.save();ctx.translate(179,middleY-1);ctx.rotate(-.88);
+    ctx.scale(.16,.16);ctx.drawImage(fingerArt,-450,-192);ctx.restore();
+    ctx.save();ctx.translate(padX,250);ctx.rotate(a);
+    ctx.scale(.16,.16);ctx.drawImage(fingerArt,-313,-340);ctx.restore();
     ctx.save();ctx.translate(padX,250);ctx.rotate(a);ctx.translate(-280,-250);
     lens(0,visible('sideContactSuccess'));rotationGuide();
     for(const [id,y] of [['sideTopContact',198],['sideBottomContact',302]])if(visible(id)){ctx.beginPath();ctx.arc(258,y,5,0,Math.PI*2);ctx.fillStyle='#ed535d';ctx.fill();}
