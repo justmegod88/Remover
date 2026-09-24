@@ -1655,10 +1655,8 @@
     const [px,py]=basePoint(x,y);
     // Move only a shallow lid band. A broad image warp makes the brow and
     // eyelid folds look pinched while the user is still opening the eye.
-    const lidT=clamp((px-118)/76,0,1);
-    const lidCenter=Math.pow(Math.sin(Math.PI*lidT),2);
-    const transition=clamp((py-177)/24,0,1);
-    const lateral=(1-transition)*Math.exp(-(((px-175)/52)**4))+transition*lidCenter;
+    // Broad, smooth displacement avoids a local hump at the upper lid.
+    const lateral=Math.exp(-Math.pow((px-157)/ 70,4));
     const upperWeight=py<207 ? 1 : Math.exp(-(((py-207)/43)**2));
     const lowerWeight=py>309 ? 1 : Math.exp(-(((py-309)/31)**2));
     const upper=(1-u)*18*lateral*upperWeight;
@@ -1692,7 +1690,7 @@
   function background(u,l){
     ctx.drawImage(face,40,77.55,414.948,416.363);
     {
-      const nx=20,ny=24,x0=100,x1=800,y0=0,y1=950;
+      const nx=36,ny=44,x0=100,x1=800,y0=0,y1=950;
       for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){
         const a=[x0+(x1-x0)*i/nx,y0+(y1-y0)*j/ny],b=[x0+(x1-x0)*(i+1)/nx,a[1]];
         const c=[b[0],y0+(y1-y0)*(j+1)/ny],d=[a[0],c[1]];
@@ -1772,9 +1770,9 @@
     // Uniform similarity transforms preserve the exact nail, joint and skin
     // proportions at every approach and angle. Never mesh-warp the fingers.
     ctx.save();ctx.translate(179,middleY-1);ctx.rotate(-.88);
-    ctx.scale(.16,.16);ctx.drawImage(fingerArt,-450,-192);ctx.restore();
+    ctx.filter='brightness(1.10) saturate(.88)';ctx.scale(.168,.168);ctx.drawImage(fingerArt,-450,-192);ctx.restore();
     ctx.save();ctx.translate(padX,250);ctx.rotate(a);
-    ctx.scale(.16,.16);ctx.drawImage(fingerArt,-313,-340);ctx.restore();
+    ctx.filter='brightness(1.10) saturate(.88)';ctx.scale(.168,.168);ctx.drawImage(fingerArt,-313,-340);ctx.restore();
     ctx.save();ctx.translate(padX,250);ctx.rotate(a);ctx.translate(-280,-250);
     lens(0,visible('sideContactSuccess'));rotationGuide();
     for(const [id,y] of [['sideTopContact',198],['sideBottomContact',302]])if(visible(id)){ctx.beginPath();ctx.arc(258,y,5,0,Math.PI*2);ctx.fillStyle='#ed535d';ctx.fill();}
