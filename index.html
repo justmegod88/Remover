@@ -3467,19 +3467,11 @@
   });
   $('coachStop').addEventListener('click', () => { if (recorder?.state === 'recording') recorder.stop(); });
   $('coachClear').addEventListener('click', () => { clearVideo(); say('영상과 장면을 지웠어요. 휴대폰에 저장된 원본은 그대로입니다.'); });
-  const encodeFrame = canvas => {
-    let quality = .88, image = canvas.toDataURL('image/jpeg', quality);
-    while (image.length > 320000 && quality > .32) {
-      quality -= .08; image = canvas.toDataURL('image/jpeg', quality);
-    }
-    if (image.length >= 350000) throw new Error('장면 용량이 너무 커요. 더 짧고 단순한 배경의 영상으로 다시 선택해 주세요.');
-    return image;
-  };
   $('coachExtract').addEventListener('click', async () => {
     busy = true; clearFrames(); $('coachProgress').hidden = false; video.pause(); update();
-    const canvas = document.createElement('canvas'), cx = canvas.getContext('2d'); const scale = Math.min(1, 1280 / Math.max(video.videoWidth, video.videoHeight)); canvas.width = Math.round(video.videoWidth * scale); canvas.height = Math.round(video.videoHeight * scale);
+    const canvas = document.createElement('canvas'), cx = canvas.getContext('2d'); const scale = Math.min(1, 640 / Math.max(video.videoWidth, video.videoHeight)); canvas.width = Math.round(video.videoWidth * scale); canvas.height = Math.round(video.videoHeight * scale);
     try {
-      for (let i = 0; i < 8; i++) { const time = .05 + (video.duration - .15) * i / 7; await wait('seeked', () => { video.currentTime = time; }); cx.drawImage(video, 0, 0, canvas.width, canvas.height); frames.push({ time: Number(time.toFixed(2)), image: encodeFrame(canvas) }); $('coachProgress').value = i + 1; say(`장면을 준비하고 있어요 · ${i + 1} / 8`); }
+      for (let i = 0; i < 8; i++) { const time = .05 + (video.duration - .15) * i / 7; await wait('seeked', () => { video.currentTime = time; }); cx.drawImage(video, 0, 0, canvas.width, canvas.height); frames.push({ time: Number(time.toFixed(2)), image: canvas.toDataURL('image/jpeg', .72) }); $('coachProgress').value = i + 1; say(`장면을 준비하고 있어요 · ${i + 1} / 8`); }
       const container = $('coachFrames'); container.replaceChildren(); frames.forEach((frame, i) => { const box = document.createElement('div'); box.className = 'coach-frame'; const img = new Image(); img.src = frame.image; img.alt = `${frame.time}초 영상 장면`; const label = document.createElement('label'); const check = document.createElement('input'); check.type = 'checkbox'; check.id = 'coachFrame' + i; check.checked = true; check.addEventListener('change', update); label.append(check, document.createTextNode(`${frame.time.toFixed(1)}초`)); box.append(img, label); container.append(box); }); container.hidden = false; say('장면을 확인한 뒤 필요 없는 장면은 체크를 해제해 주세요.');
     } catch (error) { say(error.message, true); } finally { busy = false; $('coachProgress').hidden = true; update(); }
   });
@@ -3491,16 +3483,16 @@
     const value = $('coachEndpoint').value.trim(); if (!value) { if (location.protocol === 'file:') throw new Error('분석 서버 주소를 입력해 주세요. GitHub Pages 주소에서는 /api/analyze를 직접 실행할 수 없습니다.'); return '/api/analyze'; }
     const url = new URL(value); if (url.protocol !== 'https:' && !(url.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(url.hostname))) throw new Error('HTTPS 분석 서버 주소를 입력해 주세요.'); return url.href;
   };
-  const render = (result, sentFrames) => {
+  const render = result => {
     const target = $('coachResult'); target.replaceChildren(); const listen = document.createElement('button'); listen.className = 'coach-listen'; listen.type = 'button'; listen.textContent = '음성으로 듣기'; let speech = [result.summary, result.next_step, ...(result.observations || []).map(item => item.coaching), result.limitations].filter(Boolean).join(' '); listen.onclick = () => { if (!window.speechSynthesis) return; if (speechSynthesis.speaking) { speechSynthesis.cancel(); listen.textContent = '음성으로 듣기'; return; } const utterance = new SpeechSynthesisUtterance(speech); utterance.lang = 'ko-KR'; utterance.rate = .95; utterance.onend = () => { listen.textContent = '음성으로 듣기'; }; listen.textContent = '읽기 멈추기'; speechSynthesis.speak(utterance); }; target.append(listen); const title = document.createElement('h3'); title.textContent = result.quality === 'reviewable' ? '확인 가능한 장면을 검토했어요' : '추가로 확인할 장면이 필요해요'; target.append(title); const p = document.createElement('p'); p.textContent = result.summary || ''; target.append(p); const next = document.createElement('p'); next.className = 'coach-note'; next.textContent = result.next_step || ''; target.append(next);
-    (result.observations || []).slice(0, 3).forEach(item => { const source = sentFrames[item.frame_index]; if (!source) return; const row = document.createElement('div'); row.className = 'coach-observation'; const image = new Image(); image.src = source.image; image.alt = `${source.time}초 근거 장면`; const body = document.createElement('div'); const h = document.createElement('h3'); h.textContent = `${source.time.toFixed(1)}초 · ${item.title || '관찰 내용'}`; const evidence = document.createElement('p'); evidence.textContent = item.evidence || ''; const coaching = document.createElement('p'); coaching.textContent = item.coaching || ''; body.append(h, evidence, coaching); row.append(image, body); target.append(row); }); const limit = document.createElement('p'); limit.className = 'hint'; limit.textContent = result.limitations || '정지 장면만 검토했기 때문에 연속 동작을 확정할 수 없습니다.'; target.append(limit); target.hidden = false;
+    (result.observations || []).slice(0, 3).forEach(item => { const source = frames[item.frame_index]; if (!source) return; const row = document.createElement('div'); row.className = 'coach-observation'; const image = new Image(); image.src = source.image; image.alt = `${source.time}초 근거 장면`; const body = document.createElement('div'); const h = document.createElement('h3'); h.textContent = `${source.time.toFixed(1)}초 · ${item.title || '관찰 내용'}`; const evidence = document.createElement('p'); evidence.textContent = item.evidence || ''; const coaching = document.createElement('p'); coaching.textContent = item.coaching || ''; body.append(h, evidence, coaching); row.append(image, body); target.append(row); }); const limit = document.createElement('p'); limit.className = 'hint'; limit.textContent = result.limitations || '정지 장면만 검토했기 때문에 연속 동작을 확정할 수 없습니다.'; target.append(limit); target.hidden = false;
   };
   $('coachAnalyze').addEventListener('click', async () => {
     if (!$('coachConsent').checked || chosen().length < 3) return; let url; try { url = endpoint(); } catch (error) { say(error.message, true); return; }
     if (!$('coachAccess').value.trim()) { say('AI 연결 설정에 테스트 접속 코드를 입력해 주세요.', true); return; }
     busy = true; update(); request = new AbortController(); const timeout = setTimeout(() => request.abort(), 65000); const selected = chosen();
-    try { const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Coach-Code': $('coachAccess').value.trim() }, body: JSON.stringify({ frames: selected, mode: 'wear', outcome: 'unknown', question: $('coachQuestion').value, symptoms: false, consent: true }), signal: request.signal }); const data = await response.json().catch(() => ({})); if (!response.ok) throw new Error(data.error || '분석 서버가 응답하지 않았어요.'); if (!data.result) throw new Error('코칭 결과를 받지 못했어요.'); render(data.result, selected); say('코칭 결과를 확인해 주세요.'); $('coachResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
-    catch (error) { say(error.name === 'AbortError' ? '분석 시간이 초과됐어요. 잠시 뒤 다시 시도해 주세요.' : /load failed|failed to fetch/i.test(error.message) ? '서버에 연결하지 못했어요. 분석 서버 주소와 허용된 사이트 설정을 확인해 주세요.' : error.message, true); }
+    try { const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Coach-Code': $('coachAccess').value.trim() }, body: JSON.stringify({ frames: selected, mode: 'wear', outcome: 'unknown', question: $('coachQuestion').value, symptoms: false, consent: true }), signal: request.signal }); const data = await response.json().catch(() => ({})); if (!response.ok) throw new Error(data.error || '분석 서버가 응답하지 않았어요.'); if (!data.result) throw new Error('코칭 결과를 받지 못했어요.'); render(data.result); say('코칭 결과를 확인해 주세요.'); $('coachResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+    catch (error) { say(error.name === 'AbortError' ? '분석 시간이 초과됐어요. 잠시 뒤 다시 시도해 주세요.' : error.message, true); }
     finally { clearTimeout(timeout); request = null; busy = false; update(); }
   });
   window.addEventListener('pagehide', clearVideo); update();
