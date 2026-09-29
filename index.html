@@ -346,8 +346,7 @@
     #wearEyeScene:active { cursor: grabbing; }
 
     #wearEyeScene[hidden],
-    .side-view-stage[hidden],
-    .video-pip[hidden] { display: none; }
+    .side-view-stage[hidden] { display: none; }
 
     .side-view-stage {
       position: relative;
@@ -360,36 +359,6 @@
 
     #sideViewScene {
       aspect-ratio: 36 / 41;
-    }
-
-    .video-pip {
-      position: absolute;
-      z-index: 18;
-      top: 14px;
-      right: 14px;
-      width: min(40%, 170px);
-      overflow: hidden;
-      border: 3px solid rgba(255,255,255,.94);
-      border-radius: 17px;
-      background: #082a48;
-      box-shadow: 0 8px 24px rgba(4, 25, 43, .28);
-    }
-
-    .video-pip span {
-      display: block;
-      padding: 7px 9px;
-      color: #fff;
-      font-size: 11px;
-      font-weight: 800;
-      text-align: center;
-    }
-
-    .video-pip iframe {
-      display: block;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      border: 0;
-      background: #061d31;
     }
 
     .wear-control-dock {
@@ -987,6 +956,41 @@
     .coach-observation img { width:92px; aspect-ratio:4/3; object-fit:contain; border-radius:8px; background:#102d42; }
     .coach-listen { float:right; padding:7px 10px; border:1px solid #c9dce8; border-radius:9px; background:#fff; color:#0c496d; font-weight:700; cursor:pointer; }
     @media (max-width:560px) { .coach-modal { padding:8px; } .coach-sheet { margin:1vh auto; border-radius:18px; } .coach-body { padding:15px; } .coach-frames { grid-template-columns:repeat(3,1fr); } .coach-header { padding:16px; } }
+    /* Clear practice stage and a dedicated video menu. */
+    .topbar-row { flex-wrap:wrap; gap:14px; }
+    .topbar-row > div:first-child { flex:1 0 100%; }
+    .top-actions { width:100%; display:flex; gap:7px; }
+    .top-actions button { flex:1 1 auto; font-size:13px; padding:9px 7px; }
+    .topbar { padding-top:max(22px,env(safe-area-inset-top)); }
+    #removalPractice .simulator { background:#f5d5be; }
+    #eyeScene { display:block; width:100%; height:auto; aspect-ratio:400/420; }
+    #removalPractice #feedback { position:relative; inset:auto; border:0; border-radius:0; margin:0; padding:16px 20px; background:#0a2940; }
+    #eyeScene #upperLidOuter { stroke:#805148; stroke-width:5; }
+    #eyeScene #upperLidInner { stroke:#eeb7a4; stroke-width:2.8; }
+    #eyeScene #lowerLidOuter { stroke:#a97563; stroke-width:5; }
+    #eyeScene #lowerLidInner { stroke:#f9d2bc; stroke-width:3; }
+    #eyeScene #eyeWhite { stroke:#aa7462; stroke-width:3; }
+    #eyeScene #lowerCrease { stroke:#b7836c; stroke-width:2; opacity:.3; }
+    #eyeScene #irisGroup use { opacity:.12; }
+    #eyeScene #lensHit { stroke:#88d8e9; stroke-width:1.5; stroke-opacity:.6; }
+    #eyeScene #guideLayer text { font-size:9px; }
+    #eyeScene #guideLayer > g > text { display:none; }
+    #eyeScene #guideLayer circle { fill:#147daf; fill-opacity:.12; stroke-width:1.2; stroke-opacity:.55; }
+    #eyeScene #guideStep1 circle {opacity:0}
+    #eyeScene #guideStep1 path {transform:translate(-12px,-18px);}
+    #eyeScene #upperLidOuter {stroke-width:3.2}
+    #eyeScene #lowerLidOuter {stroke-width:3}
+    #eyeScene #lowerCrease {opacity:.13}
+    .coach-observation small {display:block;color:#5f7f8f;font-size:12px;margin-bottom:7px}
+    .coach-observation {background:#fff;border:1px solid #dfeaf0;border-radius:18px;padding:16px;margin-top:14px}
+    .coach-observation img {width:100%;border-radius:12px;max-height:220px;object-fit:contain;background:#eaf3f8}
+    #eyeScene #guideLayer path { stroke:#c0f2ff; stroke-width:3; }
+    .watch-tabs { display:flex; gap:8px; margin-bottom:16px; }
+    .watch-tabs button,.watch-link { padding:12px 18px; border:1px solid #c4dce9; border-radius:12px; background:white; color:#154c70; font-weight:700; text-decoration:none; }
+    .watch-tabs button[aria-selected=true] { background:#126eab; color:white; }
+    .watch-frame { width:100%; aspect-ratio:16/9; border:0; border-radius:14px; background:#0b2940; display:block; }
+    .watch-link { display:inline-block; margin-top:15px; }
+    @media(min-width:700px) { .topbar-row > div:first-child { flex:1; } .top-actions { width:auto; } }
   </style>
 </head>
 <body>
@@ -999,6 +1003,7 @@
         </div>
         <div class="top-actions">
           <button class="faq-button" id="faqButton" type="button" aria-haspopup="dialog">FAQ</button>
+          <button class="faq-button" id="watchVideoButton" type="button" aria-haspopup="dialog">▶ 영상으로 보기</button>
           <button class="faq-button" id="videoCoachButton" type="button" aria-haspopup="dialog">영상 코칭</button>
           <button class="reset-button" id="resetButton" type="button" aria-label="처음부터 다시 시작">↺ 처음</button>
         </div>
@@ -1096,10 +1101,6 @@
         </div>
 
         <section class="simulator" aria-label="콘택트렌즈 착용 연습">
-          <div class="video-pip" aria-label="실제 착용 방법 영상">
-            <span>▶ 실제 착용 방법 같이 보기</span>
-            <iframe id="wearVideo" title="아큐브 콘택트렌즈 착용 방법" src="https://www.youtube.com/embed/SK0bOgx5pEM?autoplay=1&mute=1&playsinline=1&loop=1&playlist=SK0bOgx5pEM&controls=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
-          </div>
 
           <div class="opening-meter" id="openingMeter" hidden>
             <span id="openingMeterText">현재 눈 벌림 0%</span>
@@ -1369,20 +1370,20 @@
       </section>
 
       <section class="simulator" aria-label="콘택트렌즈 제거 연습">
-        <div class="video-pip" aria-label="실제 제거 방법 영상">
-          <span>▶ 실제 제거 방법 같이 보기</span>
-          <iframe id="removalVideo" title="아큐브 콘택트렌즈 제거 방법" src="https://www.youtube.com/embed/R3Z0pg4OjAs?autoplay=1&mute=1&playsinline=1&loop=1&playlist=R3Z0pg4OjAs&controls=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
-        </div>
-        <svg id="eyeScene" viewBox="0 0 400 500" role="img" aria-labelledby="sceneTitle sceneDesc">
+        <svg id="eyeScene" viewBox="0 55 400 420" role="img" aria-labelledby="sceneTitle sceneDesc">
           <title id="sceneTitle">콘택트렌즈 제거 연습용 눈</title>
           <desc id="sceneDesc">오른손 중지로 아랫눈꺼풀을 내린 뒤, 오른손 검지로 렌즈를 흰자위로 이동하고 손톱이 아닌 오른손 검지와 엄지의 지문 면으로 렌즈 양쪽을 집어 제거합니다.</desc>
-          <defs>
+          <defs><radialGradient id="removalSkinLight" cx="25%" cy="52%" r="65%"><stop stop-color="#ffe7d2"/><stop offset=".6" stop-color="#f3c2a2"/><stop offset="1" stop-color="#d7987c"/></radialGradient>
+<linearGradient id="removalFingerSkin" x1="0" x2="1"><stop stop-color="#c98970"/><stop offset=".25" stop-color="#eeb99a"/><stop offset=".55" stop-color="#ffe0c2"/><stop offset=".85" stop-color="#f3bea0"/><stop offset="1" stop-color="#d69a7d"/></linearGradient>
+<linearGradient id="removalNail" x1="0" y1="0" x2="1" y2=".8"><stop stop-color="#d49c92"/><stop offset=".45" stop-color="#f4c9bd"/><stop offset=".85" stop-color="#f9ded1"/><stop offset="1" stop-color="#dfb2a4"/></linearGradient>
+<filter id="removalBlur"><feGaussianBlur stdDeviation="5"/></filter>
+<filter id="removalSmallBlur"><feGaussianBlur stdDeviation="2"/></filter>
             <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#b97862"/>
-              <stop offset="0.22" stop-color="#d99d80"/>
-              <stop offset="0.52" stop-color="#efc5aa"/>
-              <stop offset="0.78" stop-color="#d7977d"/>
-              <stop offset="1" stop-color="#9f5f54"/>
+              <stop offset="0" stop-color="#db9e7f"/>
+              <stop offset="0.22" stop-color="#f4c5a5"/>
+              <stop offset="0.52" stop-color="#ffe0c4"/>
+              <stop offset="0.78" stop-color="#edb594"/>
+              <stop offset="1" stop-color="#d7987c"/>
             </linearGradient>
             <radialGradient id="sclera" cx="48%" cy="43%" r="65%">
               <stop offset="0" stop-color="#fffefc"/>
@@ -1402,9 +1403,9 @@
               <stop offset="1" stop-color="#000"/>
             </radialGradient>
             <radialGradient id="lensGlow" cx="42%" cy="35%" r="68%">
-              <stop offset="0" stop-color="#9eeeff" stop-opacity=".32"/>
-              <stop offset=".74" stop-color="#56c7e9" stop-opacity=".13"/>
-              <stop offset="1" stop-color="#1d91bf" stop-opacity=".2"/>
+              <stop offset="0" stop-color="#e6faff" stop-opacity=".05"/>
+              <stop offset=".74" stop-color="#b5eeff" stop-opacity=".025"/>
+              <stop offset="1" stop-color="#7ed6ea" stop-opacity=".09"/>
             </radialGradient>
             <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
               <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#10283b" flood-opacity=".28"/>
@@ -1430,25 +1431,25 @@
             <path id="irisRay" d="M200 159 C196 177 204 194 200 211" fill="none" stroke="#e0b56b" stroke-width="3" stroke-linecap="round" opacity=".65"/>
           </defs>
 
-          <rect width="400" height="500" fill="url(#skin)"/>
+          <rect width="400" height="500" fill="url(#removalSkinLight)"/><path d="M-20 183 Q180 63 420 180" fill="none" stroke="#a36f57" stroke-width="38" opacity=".12" filter="url(#removalBlur)"/><ellipse cx="140" cy="363" rx="170" ry="54" fill="#fff3dd" opacity=".2" filter="url(#removalBlur)"/>
           <rect width="400" height="500" fill="#8d5c4e" opacity=".2" filter="url(#skinTexture)"/>
-          <ellipse cx="200" cy="273" rx="218" ry="200" fill="#713e35" opacity=".14"/>
-          <ellipse cx="200" cy="232" rx="205" ry="145" fill="#ffe0c8" opacity=".12"/>
-          <path d="M34 191 Q200 65 366 191" fill="none" stroke="#704338" stroke-width="9" opacity=".28"/>
-          <path d="M46 202 Q200 91 354 202" fill="none" stroke="#f3c5ad" stroke-width="4" opacity=".36"/>
+          <ellipse cx="200" cy="273" rx="218" ry="200" fill="#713e35" opacity=".035"/>
+          <ellipse cx="200" cy="232" rx="205" ry="145" fill="#ffe0c8" opacity=".025"/>
+          <path d="M34 197 Q200 101 366 201" fill="none" stroke="#98634e" stroke-width="1.5" opacity=".22"/><g id="removalBrow" fill="none" stroke="#714b37" stroke-linecap="round" opacity=".65"></g>
+          <path d="M46 193 Q200 104 354 198" fill="none" stroke="#ffdec4" stroke-width="2" opacity=".35"/>
 
           <g filter="url(#softShadow)">
             <path id="eyeWhite" d="M24,250 Q200,105 376,250 Q200,395 24,250Z" fill="url(#sclera)" stroke="#714a3e" stroke-width="8"/>
             <g clip-path="url(#eyeClip)">
-              <path d="M25 250 C73 226 111 236 154 249 M24 270 C78 261 116 274 151 266 M376 249 C331 228 293 239 251 250 M373 274 C326 260 292 272 253 266" fill="none" stroke="#d88e91" stroke-width="2" opacity=".45"/>
-              <path d="M38 230 C77 219 106 225 139 238 M363 230 C326 220 299 228 270 239 M47 291 C89 280 116 284 150 275 M352 294 C316 282 286 283 255 275" fill="none" stroke="#c96772" stroke-width="1.2" opacity=".38"/>
+              <path d="M25 250 C73 226 111 236 154 249 M24 270 C78 261 116 274 151 266 M376 249 C331 228 293 239 251 250 M373 274 C326 260 292 272 253 266" fill="none" stroke="#d88e91" stroke-width=".8" opacity=".2"/>
+              <path d="M38 230 C77 219 106 225 139 238 M363 230 C326 220 299 228 270 239 M47 291 C89 280 116 284 150 275 M352 294 C316 282 286 283 255 275" fill="none" stroke="#c96772" stroke-width=".6" opacity=".15"/>
               <ellipse cx="35" cy="252" rx="20" ry="14" fill="#d98786" opacity=".72"/>
               <ellipse cx="365" cy="252" rx="17" ry="12" fill="#d98786" opacity=".48"/>
               <g id="irisGroup">
                 <circle cx="200" cy="250" r="94" fill="url(#iris)"/>
                 <circle cx="200" cy="250" r="92" fill="none" stroke="#1e1711" stroke-width="8" opacity=".8"/>
                 <g>
-                <use href="#irisRay"/>
+                <use href="#irisRay" opacity=".18"/>
                 <use href="#irisRay" transform="rotate(15 200 250)"/>
                 <use href="#irisRay" transform="rotate(30 200 250)"/>
                 <use href="#irisRay" transform="rotate(45 200 250)"/>
@@ -1475,7 +1476,7 @@
                 </g>
                 <circle cx="200" cy="250" r="53" fill="none" stroke="#4a2d18" stroke-width="9" opacity=".8"/>
                 <circle cx="200" cy="250" r="39" fill="url(#pupil)"/>
-                <ellipse cx="174" cy="207" rx="20" ry="30" fill="#fff" opacity=".8" filter="url(#wetGlow)"/>
+                <ellipse cx="174" cy="207" rx="12" ry="17" fill="#fff" opacity=".76" filter="url(#wetGlow)"/>
                 <ellipse cx="223" cy="224" rx="8" ry="10" fill="#fff" opacity=".62"/>
               </g>
               <path d="M74 290 Q200 363 326 290" fill="none" stroke="#fff" stroke-width="4" opacity=".3" filter="url(#wetGlow)"/>
@@ -1485,14 +1486,14 @@
           <g id="lensWindow" clip-path="url(#eyeClip)">
             <g id="lensPosition" transform="translate(0 0)">
               <g id="lensFold">
-                <circle id="lensHit" cx="200" cy="250" r="119.636364" fill="url(#lensGlow)" stroke="#76dff5" stroke-width="3" stroke-opacity=".92"/>
-                <ellipse cx="178" cy="215" rx="56" ry="32" fill="none" stroke="#d8fbff" stroke-width="2" stroke-opacity=".62"/>
+                <circle id="lensHit" cx="200" cy="250" r="108" fill="url(#lensGlow)" stroke="#76dff5" stroke-width="3" stroke-opacity=".92"/>
+                <path d="M112 228 Q113 213 121 204" fill="none" stroke="#edffff" stroke-width="2" opacity=".5"/>
                 <path d="M126 287 Q200 318 274 287" fill="none" stroke="#81dff0" stroke-width="2" stroke-opacity=".6"/>
               </g>
             </g>
           </g>
 
-          <g id="upperLid">
+          <path id="lidSoftShadow" d="" fill="none" stroke="#733e32" stroke-width="14" opacity=".23" filter="url(#removalBlur)" pointer-events="none"/><path id="lidSoftHighlight" d="" fill="none" stroke="#fff0d8" stroke-width="12" opacity=".55" filter="url(#removalBlur)" pointer-events="none"/><g id="upperLid">
             <path id="upperLidOuter" d="M24,250 Q200,105 376,250" fill="none" stroke="#70473c" stroke-width="14" stroke-linecap="round"/>
             <path id="upperLidInner" d="M31,245 Q200,122 369,245" fill="none" stroke="#efbea7" stroke-width="7" stroke-linecap="round" opacity=".92"/>
             <g id="upperLashes" fill="none" stroke="#3b2724" stroke-width="4" stroke-linecap="round" opacity=".82">
@@ -1511,7 +1512,7 @@
             <path id="lidHit" d="M24,250 Q200,395 376,250" fill="none" stroke="transparent" stroke-width="58"/>
           </g>
 
-          <g id="guideLayer" pointer-events="none">
+          <g id="removalHoldingFinger" pointer-events="none"><path d="M208 337 C199 327 199 318 209 313 C219 308 232 316 242 332 L356 592 L281 622 C248 465 239 383 208 337Z" fill="url(#removalFingerSkin)" stroke="#c98e74" stroke-width=".7"/><path d="M211 316 C218 313 226 317 231 325 L245 348 Q236 364 223 354 L209 333 Q203 321 211 316Z" fill="url(#removalNail)" stroke="#f9decf" stroke-width="1.1"/><path d="M211 320 Q208 327 218 338" fill="none" stroke="#fff3e7" stroke-width="1.8" opacity=".75"/><path d="M233 369 q14 4 23 -5 M235 373 q12 4 21 -4" fill="none" stroke="#b87860" stroke-width=".7" opacity=".4"/></g><g id="guideLayer" pointer-events="none">
             <g id="guideStep1">
               <circle cx="200" cy="365" r="23" fill="#4aa9e8" fill-opacity=".45" stroke="#fff" stroke-width="3"/>
               <text x="200" y="362" fill="#fff" text-anchor="middle" font-size="9" font-weight="700">오른손</text>
@@ -1565,6 +1566,17 @@
     </main>
   </div>
 
+  <div class="coach-modal" id="watchVideoModal" hidden>
+    <section class="coach-sheet" role="dialog" aria-modal="true" aria-labelledby="watchVideoTitle">
+      <header class="coach-header"><div><p class="coach-kicker">VIDEO GUIDE</p><h2 id="watchVideoTitle">영상으로 보기</h2></div><button id="watchVideoClose" class="coach-close" type="button" aria-label="영상 닫기">×</button></header>
+      <div class="coach-body">
+        <div class="watch-tabs" role="tablist"><button id="watchWear" role="tab" aria-selected="true">착용 방법</button><button id="watchRemove" role="tab" aria-selected="false">제거 방법</button></div>
+        <iframe id="watchFrame" class="watch-frame" title="콘택트렌즈 사용 방법 영상" referrerpolicy="strict-origin-when-cross-origin" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
+        <a id="watchExternal" class="watch-link" target="_blank" rel="noopener noreferrer">YouTube에서 영상 보기 ↗</a>
+        <p class="coach-note">재생이 안 되면 위 버튼으로 YouTube에서 확인해 주세요. 닫으면 연습하던 화면으로 돌아갑니다.</p>
+      </div>
+    </section>
+  </div>
   <div class="coach-modal" id="videoCoachModal" hidden>
     <section class="coach-sheet" role="dialog" aria-modal="true" aria-labelledby="videoCoachTitle">
       <header class="coach-header">
@@ -1987,33 +1999,58 @@
         feedback.className = `feedback${type ? ` ${type}` : ''}`;
       }
 
+      function naturalLashes(group, controlY, upper) {
+        group.replaceChildren(); group.removeAttribute('transform');
+        group.setAttribute('stroke',upper ? '#39261f' : '#664437');
+        group.setAttribute('opacity',upper ? '.86' : '.65');
+        const count=upper?72:39;
+        for(let i=0;i<count;i++){
+          const t=.045+(i+Math.sin(i*7.3)*.32)/(count-1)*.91, u=1-t;
+          const x=u*u*u*24+3*u*u*t*(upper?98:124)+3*u*t*t*(upper?267:289)+t*t*t*376;
+          const y=u*u*u*250+3*u*u*t*(controlY+(upper?38:-45))+3*u*t*t*(controlY+(upper?22:-60))+t*t*t*241;
+          const length=(upper?10:5)+Math.sin(t*Math.PI)*(upper?18:9)+Math.sin(i*3.7)*4;
+          const lean=(t-.22)*(upper?39:24)+Math.sin(i*2.7)*5;
+          const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+          const sign=upper?-1:1,w=upper?.75:.5;
+          path.setAttribute('d',`M${x-w} ${y} C${x+lean*.1-2} ${y+sign*length*.3} ${x+lean*.35} ${y+sign*length*.76} ${x+lean} ${y+sign*length} C${x+lean*.4+1} ${y+sign*length*.6} ${x+lean*.1+1} ${y+sign*3} ${x+w} ${y}Z`);
+          path.setAttribute('fill',upper?'#3e2b24':'#795743');
+          path.setAttribute('stroke','none');
+          path.setAttribute('stroke-width',String((upper?.45:.3)+(i%4)*.22));
+          group.append(path);
+        }
+      }
       function renderGeometry() {
         // 눈꺼풀의 양 끝은 고정하고 가운데 곡선만 열어 실제 눈처럼 보이게 한다.
         const topOuter = 105 - state.upperLidOffset * 1.2;
         const topInner = 122 - state.upperLidOffset * 1.05;
         const bottomOuter = 395 + state.lidOffset * 1.08;
         const bottomInner = 378 + state.lidOffset * .95;
-        const eyeOpening = `M24,250 Q200,${topOuter} 376,250 Q200,${bottomOuter} 24,250Z`;
+        const topPath=`M24,250 C98,${topOuter+38} 267,${topOuter+22} 376,241`;
+        const bottomPath=`M24,250 C124,${bottomOuter-45} 289,${bottomOuter-60} 376,241`;
+        const eyeOpening = `${topPath} C289,${bottomOuter-60} 124,${bottomOuter-45} 24,250Z`;
 
         upperLid.removeAttribute('transform');
         lowerLid.removeAttribute('transform');
         eyeWhite.setAttribute('d', eyeOpening);
         eyeClipPath.setAttribute('d', eyeOpening);
-        upperLidOuter.setAttribute('d', `M24,250 Q200,${topOuter} 376,250`);
-        upperLidInner.setAttribute('d', `M31,245 Q200,${topInner} 369,245`);
-        upperLidHit.setAttribute('d', `M24,250 Q200,${topOuter} 376,250`);
-        lowerLidOuter.setAttribute('d', `M24,250 Q200,${bottomOuter} 376,250`);
-        lowerLidInner.setAttribute('d', `M31,255 Q200,${bottomInner} 369,255`);
-        lowerLidHit.setAttribute('d', `M24,250 Q200,${bottomOuter} 376,250`);
+        upperLidOuter.setAttribute('d', topPath);
+        upperLidInner.setAttribute('d', `M24,253 C98,${topOuter+42} 267,${topOuter+26} 376,244`);
+        upperLidHit.setAttribute('d', topPath);
+        lowerLidOuter.setAttribute('d', bottomPath);
+        lowerLidInner.setAttribute('d', `M24,248 C124,${bottomOuter-49} 289,${bottomOuter-64} 376,239`);
+        lowerLidHit.setAttribute('d', bottomPath);
         lowerCrease.setAttribute('d', `M46,291 Q200,${420 + state.lidOffset * .75} 354,291`);
-        upperLashes.setAttribute('transform', `translate(0 ${-state.upperLidOffset * .72})`);
-        lowerLashes.setAttribute('transform', `translate(0 ${state.lidOffset * .7})`);
+        naturalLashes(upperLashes,topOuter,true);
+        naturalLashes(lowerLashes,bottomOuter,false);
 
         // 렌즈를 아래로 미는 동안 시선은 위를 향한다.
         // 렌즈가 흰자위로 내려갈수록 눈동자는 위를 보되,
         // 검은 동공이 너무 위로 붙지 않도록 상승 폭을 제한한다.
         const gazeUp = state.success ? 115 : Math.min(115, state.lensY * 1.7);
-        irisGroup.setAttribute('transform', `translate(0 ${-gazeUp})`);
+        irisGroup.setAttribute('transform', `translate(0 ${-gazeUp*.82}) translate(200 250) scale(.88) translate(-200 -250)`);
+        document.getElementById('removalHoldingFinger').setAttribute('transform',`translate(0 ${state.lidOffset*.54})`);
+        document.getElementById('lidSoftShadow').setAttribute('d',topPath);
+        document.getElementById('lidSoftHighlight').setAttribute('d',bottomPath);
         lensPosition.setAttribute('transform', `translate(0 ${state.lensY})`);
         lensFold.style.transform = `scaleX(${state.fold})`;
       }
@@ -2406,7 +2443,6 @@
       const wearAttemptTitle = document.getElementById('wearAttemptTitle');
       const wearAttemptBody = document.getElementById('wearAttemptBody');
       const wearCompletion = document.getElementById('wearCompletion');
-      const wearVideoPip = wearPractice.querySelector('.video-pip');
       const sideViewStage = document.getElementById('sideViewStage');
       const sideViewScene = document.getElementById('sideViewScene');
       const sideApertureClipPath = document.getElementById('sideApertureClipPath');
@@ -2705,8 +2741,6 @@
         wearControlDock.hidden = DIRECT_SIDE_WEAR && wearState.step !== 1;
         openingMeter.hidden = DIRECT_SIDE_WEAR || wearState.step !== 2;
         const sidePracticeStep = (DIRECT_SIDE_WEAR && (wearState.step === 2 || wearState.step === 4)) || wearState.step === 3;
-        wearVideoPip.hidden = DIRECT_SIDE_WEAR || sidePracticeStep;
-        wearVideoPip.style.display = DIRECT_SIDE_WEAR || sidePracticeStep ? 'none' : '';
         wearFeedback.hidden = DIRECT_SIDE_WEAR && wearState.step === 1;
         if (DIRECT_SIDE_WEAR && (wearState.step === 2 || wearState.step === 4)) {
           setPracticeView('side');
@@ -3468,8 +3502,8 @@
   $('coachStop').addEventListener('click', () => { if (recorder?.state === 'recording') recorder.stop(); });
   $('coachClear').addEventListener('click', () => { clearVideo(); say('영상과 장면을 지웠어요. 휴대폰에 저장된 원본은 그대로입니다.'); });
   const encodeFrame = canvas => {
-    let quality = .88, image = canvas.toDataURL('image/jpeg', quality);
-    while (image.length > 320000 && quality > .32) {
+    let quality = .84, image = canvas.toDataURL('image/jpeg', quality);
+    while (image.length > 220000 && quality > .32) {
       quality -= .08; image = canvas.toDataURL('image/jpeg', quality);
     }
     if (image.length >= 350000) throw new Error('장면 용량이 너무 커요. 더 짧고 단순한 배경의 영상으로 다시 선택해 주세요.');
@@ -3477,14 +3511,14 @@
   };
   $('coachExtract').addEventListener('click', async () => {
     busy = true; clearFrames(); $('coachProgress').hidden = false; video.pause(); update();
-    const canvas = document.createElement('canvas'), cx = canvas.getContext('2d'); const scale = Math.min(1, 1280 / Math.max(video.videoWidth, video.videoHeight)); canvas.width = Math.round(video.videoWidth * scale); canvas.height = Math.round(video.videoHeight * scale);
+    const canvas = document.createElement('canvas'), cx = canvas.getContext('2d'); const scale = Math.min(1, 960 / Math.max(video.videoWidth, video.videoHeight)); canvas.width = Math.round(video.videoWidth * scale); canvas.height = Math.round(video.videoHeight * scale);
     try {
       for (let i = 0; i < 8; i++) { const time = .05 + (video.duration - .15) * i / 7; await wait('seeked', () => { video.currentTime = time; }); cx.drawImage(video, 0, 0, canvas.width, canvas.height); frames.push({ time: Number(time.toFixed(2)), image: encodeFrame(canvas) }); $('coachProgress').value = i + 1; say(`장면을 준비하고 있어요 · ${i + 1} / 8`); }
       const container = $('coachFrames'); container.replaceChildren(); frames.forEach((frame, i) => { const box = document.createElement('div'); box.className = 'coach-frame'; const img = new Image(); img.src = frame.image; img.alt = `${frame.time}초 영상 장면`; const label = document.createElement('label'); const check = document.createElement('input'); check.type = 'checkbox'; check.id = 'coachFrame' + i; check.checked = true; check.addEventListener('change', update); label.append(check, document.createTextNode(`${frame.time.toFixed(1)}초`)); box.append(img, label); container.append(box); }); container.hidden = false; say('장면을 확인한 뒤 필요 없는 장면은 체크를 해제해 주세요.');
     } catch (error) { say(error.message, true); } finally { busy = false; $('coachProgress').hidden = true; update(); }
   });
   $('coachConsent').addEventListener('change', update);
-  $('videoCoachButton').addEventListener('click', () => { modal.hidden = false; document.body.classList.add('faq-open'); $('videoCoachClose').focus(); });
+  $('videoCoachButton').addEventListener('click', () => { $('videoCoachTitle').textContent = $('removalPractice').hidden ? '내 착용 영상을 함께 살펴봐요' : '내 제거 영상을 함께 살펴봐요'; modal.hidden = false; document.body.classList.add('faq-open'); $('videoCoachClose').focus(); });
   $('videoCoachClose').addEventListener('click', () => { modal.hidden = true; document.body.classList.remove('faq-open'); });
   modal.addEventListener('click', event => { if (event.target === modal) { modal.hidden = true; document.body.classList.remove('faq-open'); } });
   const endpoint = () => {
@@ -3493,18 +3527,75 @@
   };
   const render = (result, sentFrames) => {
     const target = $('coachResult'); target.replaceChildren(); const listen = document.createElement('button'); listen.className = 'coach-listen'; listen.type = 'button'; listen.textContent = '음성으로 듣기'; let speech = [result.summary, result.next_step, ...(result.observations || []).map(item => item.coaching), result.limitations].filter(Boolean).join(' '); listen.onclick = () => { if (!window.speechSynthesis) return; if (speechSynthesis.speaking) { speechSynthesis.cancel(); listen.textContent = '음성으로 듣기'; return; } const utterance = new SpeechSynthesisUtterance(speech); utterance.lang = 'ko-KR'; utterance.rate = .95; utterance.onend = () => { listen.textContent = '음성으로 듣기'; }; listen.textContent = '읽기 멈추기'; speechSynthesis.speak(utterance); }; target.append(listen); const title = document.createElement('h3'); title.textContent = result.quality === 'reviewable' ? '확인 가능한 장면을 검토했어요' : '추가로 확인할 장면이 필요해요'; target.append(title); const p = document.createElement('p'); p.textContent = result.summary || ''; target.append(p); const next = document.createElement('p'); next.className = 'coach-note'; next.textContent = result.next_step || ''; target.append(next);
-    (result.observations || []).slice(0, 3).forEach(item => { const source = sentFrames[item.frame_index]; if (!source) return; const row = document.createElement('div'); row.className = 'coach-observation'; const image = new Image(); image.src = source.image; image.alt = `${source.time}초 근거 장면`; const body = document.createElement('div'); const h = document.createElement('h3'); h.textContent = `${source.time.toFixed(1)}초 · ${item.title || '관찰 내용'}`; const evidence = document.createElement('p'); evidence.textContent = item.evidence || ''; const coaching = document.createElement('p'); coaching.textContent = item.coaching || ''; body.append(h, evidence, coaching); row.append(image, body); target.append(row); }); const limit = document.createElement('p'); limit.className = 'hint'; limit.textContent = result.limitations || '정지 장면만 검토했기 때문에 연속 동작을 확정할 수 없습니다.'; target.append(limit); target.hidden = false;
+    (result.observations || []).slice(0, 3).forEach(item => { const source = sentFrames[item.frame_index]; if (!source) return; const row = document.createElement('div'); row.className = 'coach-observation'; const image = new Image(); image.src = source.image; image.alt = `${source.time}초 근거 장면`; const body = document.createElement('div'); const h = document.createElement('h3'); h.textContent = `${source.time.toFixed(1)}초 · ${item.title || '관찰 내용'}`; const evidence = document.createElement('p'); evidence.textContent = item.evidence || ''; const coaching = document.createElement('p'); coaching.textContent = item.coaching || ''; const certainty=document.createElement('small'); certainty.textContent=item.certainty==='visible'?'사진에서 확인한 내용':'명확히 확인하기 어려운 내용'; body.append(certainty, h, evidence, coaching); row.append(image, body); target.append(row); }); const limit = document.createElement('p'); limit.className = 'hint'; limit.textContent = result.limitations || '정지 장면만 검토했기 때문에 연속 동작을 확정할 수 없습니다.'; target.append(limit); target.hidden = false;
   };
   $('coachAnalyze').addEventListener('click', async () => {
     if (!$('coachConsent').checked || chosen().length < 3) return; let url; try { url = endpoint(); } catch (error) { say(error.message, true); return; }
     if (!$('coachAccess').value.trim()) { say('AI 연결 설정에 테스트 접속 코드를 입력해 주세요.', true); return; }
     busy = true; update(); request = new AbortController(); const timeout = setTimeout(() => request.abort(), 65000); const selected = chosen();
-    try { const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Coach-Code': $('coachAccess').value.trim() }, body: JSON.stringify({ frames: selected, mode: 'wear', outcome: 'unknown', question: $('coachQuestion').value, symptoms: false, consent: true }), signal: request.signal }); const data = await response.json().catch(() => ({})); if (!response.ok) throw new Error(data.error || '분석 서버가 응답하지 않았어요.'); if (!data.result) throw new Error('코칭 결과를 받지 못했어요.'); render(data.result, selected); say('코칭 결과를 확인해 주세요.'); $('coachResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+    try { const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Coach-Code': $('coachAccess').value.trim() }, body: JSON.stringify({ frames: selected, mode: $('removalPractice').hidden ? 'wear' : 'remove', outcome: 'unknown', question: $('coachQuestion').value, symptoms: false, consent: true }), signal: request.signal }); const data = await response.json().catch(() => ({})); if (!response.ok) throw new Error((data.error || (response.status === 413 ? '전송할 장면 용량이 커요. 장면 수를 줄여주세요.' : '분석 서버가 응답하지 않았어요.')) + (data.code ? ` [${data.code}]` : ` [HTTP ${response.status}]`)); if (!data.result) throw new Error('코칭 결과를 받지 못했어요.'); render(data.result, selected); say('코칭 결과를 확인해 주세요.'); $('coachResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
     catch (error) { say(error.name === 'AbortError' ? '분석 시간이 초과됐어요. 잠시 뒤 다시 시도해 주세요.' : /load failed|failed to fetch/i.test(error.message) ? '서버에 연결하지 못했어요. 분석 서버 주소와 허용된 사이트 설정을 확인해 주세요.' : error.message, true); }
     finally { clearTimeout(timeout); request = null; busy = false; update(); }
   });
   window.addEventListener('pagehide', clearVideo); update();
 })();
 </script>
+<script>
+(() => {
+  const $=id=>document.getElementById(id), modal=$('watchVideoModal'), frame=$('watchFrame');
+  let previous;
+  function select(removal) {
+    const id=removal?'R3Z0pg4OjAs':'SK0bOgx5pEM';
+    frame.src='https://www.youtube.com/embed/'+id+'?playsinline=1&rel=0';
+    $('watchExternal').href='https://www.youtube.com/watch?v='+id;
+    $('watchWear').setAttribute('aria-selected',String(!removal));
+    $('watchRemove').setAttribute('aria-selected',String(removal));
+  }
+  function close(){modal.hidden=true;frame.removeAttribute('src');document.body.classList.remove('faq-open');previous?.focus();}
+  $('watchVideoButton').onclick=()=>{previous=document.activeElement;select(!$('removalPractice').hidden);modal.hidden=false;document.body.classList.add('faq-open');$('watchVideoClose').focus();};
+  $('watchVideoClose').onclick=close;$('watchWear').onclick=()=>select(false);$('watchRemove').onclick=()=>select(true);
+  modal.onclick=e=>{if(e.target===modal)close();};
+  modal.addEventListener('keydown',e=>{
+    if(e.key==='Escape')close();
+    if(e.key==='Tab'){const els=[...modal.querySelectorAll('button,a[href],iframe')],first=els[0],last=els[els.length-1];
+      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+      if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}
+  });
+  const ns='http://www.w3.org/2000/svg',brow=$('removalBrow');
+  for(let i=0;i<230;i++){const t=i/229,x=36+t*324,y=136-30*Math.sin(t*Math.PI)+(Math.sin(i*6.9)*5);
+    const p=document.createElementNS(ns,'path');p.setAttribute('d',`M${x} ${y+(i%4)*1.8} q8 -8 ${13+(i%3)} -9`);
+    p.setAttribute('stroke-width',String(.55+i%4*.35));brow.append(p);}
+  const iris=$('irisGroup'),rays=document.createElementNS(ns,'g');rays.setAttribute('opacity','.36');
+  for(let i=0;i<170;i++){const a=i*Math.PI*2/170,r=44+7*Math.sin(i*2.3),end=85+4*Math.cos(i*1.7);
+    const p=document.createElementNS(ns,'path');p.setAttribute('d',`M${200+Math.cos(a)*r} ${250+Math.sin(a)*r} L${200+Math.cos(a+.016)*end} ${250+Math.sin(a+.016)*end}`);
+    p.setAttribute('stroke',i%3?'#c6954d':'#3b2518');p.setAttribute('stroke-width',String(.4+(i%4)*.2));rays.append(p);}
+  // Procedural iris texture: irregular fibres and a soft limbal ring.
+  const canvas=document.createElement('canvas');canvas.width=canvas.height=384;
+  const cx=canvas.getContext('2d'), pixels=cx.createImageData(384,384);
+  for(let y=0;y<384;y++)for(let x=0;x<384;x++){
+    const dx=(x-191.5)/190,dy=(y-191.5)/190,r=Math.hypot(dx,dy),a=Math.atan2(dy,dx),i=(y*384+x)*4;
+    if(r>1)continue;
+    const fibre=Math.sin(a*167+Math.sin(a*43)*3+r*12)*.12+Math.sin(a*311+r*23)*.07+Math.sin(a*67+Math.sin(r*24)*1.2)*.13;
+    const fleck=Math.sin(x*12.9898+y*78.233)*43758.5453%1;
+    const inner=.43+.045*Math.sin(a*17)+.025*Math.sin(a*39);
+    const shadow=1-.70*Math.pow(r,14);
+    const glow=(.75+fibre+.09*fleck+Math.sin(r*29+a*9)*.04)*shadow;
+    const amber=Math.exp(-Math.pow((r-inner)/.13,2));
+    pixels.data[i]=(121+44*amber)*glow;
+    pixels.data[i+1]=(77+34*amber)*glow;
+    pixels.data[i+2]=(41+10*amber)*glow;
+    pixels.data[i+3]=Math.min(255,(1-r)*25000);
+  }
+  cx.putImageData(pixels,0,0);
+  const texture=document.createElementNS(ns,'image');
+  texture.setAttribute('href',canvas.toDataURL());texture.setAttribute('x','106');texture.setAttribute('y','156');texture.setAttribute('width','188');texture.setAttribute('height','188');
+  iris.querySelectorAll('use').forEach(e=>e.remove());
+  iris.querySelector('[r="53"]')?.remove();
+  iris.insertBefore(texture,iris.querySelector('[r="39"]'));
+
+})();
+</script>
 </body>
 </html>
+
+
