@@ -947,6 +947,46 @@
     #portraitCanvas { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
     #wearFeedback { position:relative; inset:auto; margin:0; border:0; border-radius:0; min-height:64px; padding:14px 18px; }
     .side-view-label { top:10px; left:10px; font-size:10px; padding:5px 9px; }
+
+    /* Video coaching panel: isolated styles so the existing practice UI keeps
+       its original layout and behavior. */
+    .coach-modal[hidden] { display:none; }
+    .coach-modal { position:fixed; inset:0; z-index:100; display:flex; align-items:flex-start; justify-content:center; padding:18px; background:rgba(6,28,47,.62); overflow:auto; }
+    .coach-sheet { width:min(720px,100%); margin:3vh auto; background:#f7fbfe; border:1px solid #d5e3ec; border-radius:24px; box-shadow:0 24px 80px rgba(5,34,58,.36); overflow:hidden; }
+    .coach-header { display:flex; align-items:flex-start; justify-content:space-between; gap:14px; padding:20px 22px; color:#fff; background:linear-gradient(120deg,#0a3455,#087fb9); }
+    .coach-header h2 { margin:2px 0 0; color:#fff; font-size:22px; line-height:1.25; }
+    .coach-kicker { margin:0; color:#b6e7fa; font-size:10px; letter-spacing:.16em; font-weight:800; }
+    .coach-close { width:36px; height:36px; flex:0 0 36px; border:1px solid #ffffff59; border-radius:50%; background:#ffffff14; color:#fff; font-size:25px; line-height:1; cursor:pointer; }
+    .coach-body { padding:20px; color:#18384e; }
+    .coach-body p { margin:0 0 11px; }
+    .coach-note { padding:11px 13px; margin:12px 0; border-radius:12px; background:#e9f5fb; color:#426178; font-size:13px; line-height:1.55; }
+    .coach-note.warn { background:#fff1e2; color:#804f23; }
+    .coach-video { width:100%; max-height:330px; display:block; object-fit:contain; border-radius:14px; background:#102d42; margin:12px 0; }
+    .coach-row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    .coach-row button, .coach-row label { border:1px solid #c9dce8; border-radius:11px; padding:9px 13px; color:#0c496d; background:#fff; font-weight:700; cursor:pointer; }
+    .coach-row button.primary, .coach-primary { color:#fff; background:#087fbe; border-color:#087fbe; }
+    .coach-row button:disabled, .coach-primary:disabled { opacity:.45; cursor:default; }
+    .coach-row input[type=file] { display:none; }
+    .coach-progress { width:100%; height:7px; margin:12px 0; accent-color:#087fbe; }
+    .coach-status { min-height:24px; margin:10px 0; font-size:13px; color:#426178; white-space:pre-line; }
+    .coach-status.error { padding:9px 11px; border-radius:10px; color:#8c2d39; background:#fff0f1; }
+    .coach-frames { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:14px 0; }
+    .coach-frame { padding:5px; border:1px solid #d6e3eb; border-radius:10px; background:#fff; font-size:11px; color:#587083; }
+    .coach-frame img { width:100%; aspect-ratio:4/3; object-fit:contain; display:block; background:#102d42; border-radius:7px; }
+    .coach-frame label { display:flex; gap:4px; align-items:center; margin-top:4px; }
+    .coach-field { display:block; margin-top:12px; color:#426178; font-size:12px; font-weight:700; }
+    .coach-field input, .coach-field textarea { display:block; width:100%; margin-top:4px; padding:9px 10px; border:1px solid #c9dce8; border-radius:9px; background:#fff; color:#18384e; }
+    .coach-field textarea { min-height:60px; resize:vertical; }
+    .coach-consent { display:flex; gap:8px; align-items:flex-start; margin:12px 0; color:#526e80; font-size:12px; line-height:1.5; }
+    .coach-consent input { width:17px; height:17px; margin-top:2px; flex:0 0 17px; accent-color:#087fbe; }
+    .coach-result { margin-top:15px; padding-top:15px; border-top:1px solid #d7e3eb; }
+    .coach-result[hidden] { display:none; }
+    .coach-result h3 { margin:0 0 6px; color:#123f60; font-size:16px; }
+    .coach-result p { font-size:13px; }
+    .coach-observation { display:grid; grid-template-columns:92px 1fr; gap:10px; padding:12px 0; border-top:1px solid #e0e9ef; }
+    .coach-observation img { width:92px; aspect-ratio:4/3; object-fit:contain; border-radius:8px; background:#102d42; }
+    .coach-listen { float:right; padding:7px 10px; border:1px solid #c9dce8; border-radius:9px; background:#fff; color:#0c496d; font-weight:700; cursor:pointer; }
+    @media (max-width:560px) { .coach-modal { padding:8px; } .coach-sheet { margin:1vh auto; border-radius:18px; } .coach-body { padding:15px; } .coach-frames { grid-template-columns:repeat(3,1fr); } .coach-header { padding:16px; } }
   </style>
 </head>
 <body>
@@ -959,6 +999,7 @@
         </div>
         <div class="top-actions">
           <button class="faq-button" id="faqButton" type="button" aria-haspopup="dialog">FAQ</button>
+          <button class="faq-button" id="videoCoachButton" type="button" aria-haspopup="dialog">영상 코칭</button>
           <button class="reset-button" id="resetButton" type="button" aria-label="처음부터 다시 시작">↺ 처음</button>
         </div>
       </div>
@@ -1522,6 +1563,39 @@
 
       <p class="safety-note">교육용 시뮬레이터입니다. 실제 착용·제거 시 손을 깨끗이 씻고 안경전문가의 안내를 따라주세요.</p>
     </main>
+  </div>
+
+  <div class="coach-modal" id="videoCoachModal" hidden>
+    <section class="coach-sheet" role="dialog" aria-modal="true" aria-labelledby="videoCoachTitle">
+      <header class="coach-header">
+        <div><p class="coach-kicker">CONTACT LENS · VIDEO COACH</p><h2 id="videoCoachTitle">내 착용 영상을 함께 살펴봐요</h2></div>
+        <button class="coach-close" id="videoCoachClose" type="button" aria-label="영상 코칭 닫기">×</button>
+      </header>
+      <div class="coach-body">
+        <p>한 번의 시도를 짧게 촬영하면, 확인 가능한 장면을 골라 다음에 고칠 한 가지를 찾아볼 수 있어요.</p>
+        <div class="coach-note">영상 원본은 보내지 않습니다. 아래에서 선택한 정지 장면만 분석 서버로 전송합니다. 손이나 렌즈가 가려진 장면, 렌즈의 실제 착용 여부와 눈 건강 상태는 확정할 수 없습니다.</div>
+        <video id="coachVideo" class="coach-video" controls playsinline hidden></video>
+        <div class="coach-row">
+          <button id="coachCamera" class="primary" type="button">카메라 켜기</button>
+          <button id="coachRecord" type="button" hidden>● 15초 촬영</button>
+          <button id="coachStop" type="button" hidden>촬영 끝내기</button>
+          <label for="coachFile">영상 선택<input id="coachFile" type="file" accept="video/*"></label>
+        </div>
+        <progress id="coachProgress" class="coach-progress" max="8" value="0" hidden></progress>
+        <div id="coachStatus" class="coach-status" role="status" aria-live="polite">3~30초 영상을 선택하거나 촬영해 주세요.</div>
+        <div class="coach-row"><button id="coachExtract" class="coach-primary" type="button" disabled>검토할 장면 준비하기</button><button id="coachClear" type="button" disabled>영상 지우기</button></div>
+        <div id="coachFrames" class="coach-frames" hidden></div>
+        <label class="coach-field">궁금한 점 <span>(선택)</span><textarea id="coachQuestion" maxlength="400" placeholder="예: 렌즈를 가까이 가져가면 눈을 감게 돼요."></textarea></label>
+        <label class="coach-consent"><input id="coachConsent" type="checkbox"><span>선택한 장면과 질문을 AI 분석 서버로 보내는 데 동의합니다. 원본 영상과 음성은 보내지 않습니다.</span></label>
+        <details><summary>AI 연결 설정</summary>
+          <label class="coach-field">분석 서버 주소<input id="coachEndpoint" type="url" placeholder="https://배포주소.vercel.app/api/analyze"></label>
+          <label class="coach-field">테스트 접속 코드<input id="coachAccess" type="password" autocomplete="off" placeholder="서버에 설정한 접속 코드"></label>
+          <p class="coach-note warn">GitHub Pages에 올린 파일은 `/api/analyze`를 직접 실행할 수 없습니다. Vercel 분석 서버 주소가 필요합니다.</p>
+        </details>
+        <button id="coachAnalyze" class="coach-primary" type="button" disabled>선택한 장면으로 코칭 받기</button>
+        <div id="coachResult" class="coach-result" hidden></div>
+      </div>
+    </section>
   </div>
 
   <div class="faq-modal" id="faqModal" hidden>
@@ -3321,6 +3395,107 @@
     defs.append(filter);
     svg.append(el('rect',{width:'400',height:'500',filter:`url(#portraitGrain${index})`,opacity:'.035','pointer-events':'none'}));
   });
+})();
+</script>
+<script>
+/* Video coaching is an optional layer. It does not touch the wear/removal
+   state machines above; it only extracts user-approved still frames and calls
+   an explicitly configured analysis endpoint. */
+(() => {
+  const $ = id => document.getElementById(id);
+  const modal = $('videoCoachModal'), video = $('coachVideo'), file = $('coachFile');
+  const status = $('coachStatus');
+  let objectUrl = '', stream = null, recorder = null, timer = null, busy = false, request = null, frames = [];
+  const say = (message, error = false) => { status.textContent = message; status.className = error ? 'coach-status error' : 'coach-status'; };
+  const chosen = () => frames.filter((_, i) => $('coachFrame' + i)?.checked);
+  const update = () => {
+    const recording = recorder?.state === 'recording';
+    $('coachExtract').disabled = busy || !objectUrl || recording;
+    $('coachClear').disabled = busy || (!objectUrl && !stream);
+    $('coachCamera').disabled = busy || recording;
+    file.disabled = busy || recording;
+    $('coachAnalyze').disabled = busy || !$('coachConsent').checked || chosen().length < 3;
+  };
+  const stopStream = () => { stream?.getTracks().forEach(track => track.stop()); stream = null; video.srcObject = null; clearInterval(timer); timer = null; };
+  const clearFrames = () => { frames = []; $('coachFrames').replaceChildren(); $('coachFrames').hidden = true; $('coachConsent').checked = false; $('coachResult').hidden = true; window.speechSynthesis?.cancel(); };
+  const clearVideo = () => {
+    request?.abort(); request = null;
+    if (recorder?.state === 'recording') { recorder.onstop = null; recorder.stop(); }
+    recorder = null; stopStream();
+    if (objectUrl) URL.revokeObjectURL(objectUrl);
+    objectUrl = ''; video.removeAttribute('src'); video.load(); video.hidden = true;
+    clearFrames(); file.value = ''; busy = false; update();
+  };
+  const wait = (event, action, timeout = 15000) => new Promise((resolve, reject) => {
+    let clock; const clean = () => { clearTimeout(clock); video.removeEventListener(event, done); video.removeEventListener('error', failed); };
+    const done = () => { clean(); resolve(); }; const failed = () => { clean(); reject(new Error('영상을 읽을 수 없어요. 다른 MP4 또는 WebM 영상을 선택해 주세요.')); };
+    video.addEventListener(event, done, { once: true }); video.addEventListener('error', failed, { once: true });
+    clock = setTimeout(() => { clean(); reject(new Error('영상 읽기 시간이 초과됐어요. 짧은 영상으로 다시 시도해 주세요.')); }, timeout);
+    try { action(); } catch (error) { clean(); reject(error); }
+  });
+  const loadVideo = async blob => {
+    clearVideo();
+    if (blob.size > 100 * 1024 * 1024) throw new Error('100MB 이하 영상을 선택해 주세요.');
+    busy = true; update();
+    try {
+      objectUrl = URL.createObjectURL(blob); await wait('loadedmetadata', () => { video.src = objectUrl; video.load(); });
+      if (!Number.isFinite(video.duration) || video.duration < 3 || video.duration > 30.5) throw new Error('3~30초 영상을 선택해 주세요.');
+      video.hidden = false; video.controls = true; video.muted = false; say(`${video.duration.toFixed(1)}초 영상을 준비했어요. 장면을 확인하려면 버튼을 눌러 주세요.`);
+    } catch (error) { clearVideo(); say(error.message, true); } finally { busy = false; update(); }
+  };
+  file.addEventListener('change', event => { const picked = event.target.files?.[0]; if (picked) loadVideo(picked); });
+  $('coachCamera').addEventListener('click', async () => {
+    clearVideo();
+    if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) { say('이 브라우저에서 직접 촬영할 수 없어요. 휴대폰으로 촬영한 영상을 선택해 주세요.', true); return; }
+    busy = true; update();
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
+      video.srcObject = stream; video.muted = true; video.controls = false; video.hidden = false; await video.play(); $('coachRecord').hidden = false; say('눈과 손가락이 함께 보이는지 확인한 뒤 촬영을 시작하세요.');
+    } catch { stopStream(); say('카메라 권한을 허용하거나 촬영한 영상을 선택해 주세요.', true); }
+    finally { busy = false; update(); }
+  });
+  $('coachRecord').addEventListener('click', () => {
+    if (!stream) return; const chunks = []; const type = ['video/mp4', 'video/webm;codecs=vp8', 'video/webm'].find(m => MediaRecorder.isTypeSupported(m));
+    try {
+      recorder = new MediaRecorder(stream, type ? { mimeType: type } : {});
+      recorder.ondataavailable = event => { if (event.data.size) chunks.push(event.data); };
+      recorder.onstop = () => { const blob = new Blob(chunks, { type: recorder.mimeType }); stopStream(); loadVideo(blob); };
+      recorder.start(250); let started = Date.now(); $('coachRecord').hidden = true; $('coachStop').hidden = false;
+      timer = setInterval(() => { const seconds = Math.floor((Date.now() - started) / 1000); say(`촬영 중입니다 · ${seconds} / 15초`); if (seconds >= 15 && recorder?.state === 'recording') recorder.stop(); }, 200);
+      update();
+    } catch { clearVideo(); say('촬영을 시작할 수 없어요. 영상 선택으로 다시 시도해 주세요.', true); }
+  });
+  $('coachStop').addEventListener('click', () => { if (recorder?.state === 'recording') recorder.stop(); });
+  $('coachClear').addEventListener('click', () => { clearVideo(); say('영상과 장면을 지웠어요. 휴대폰에 저장된 원본은 그대로입니다.'); });
+  $('coachExtract').addEventListener('click', async () => {
+    busy = true; clearFrames(); $('coachProgress').hidden = false; video.pause(); update();
+    const canvas = document.createElement('canvas'), cx = canvas.getContext('2d'); const scale = Math.min(1, 640 / Math.max(video.videoWidth, video.videoHeight)); canvas.width = Math.round(video.videoWidth * scale); canvas.height = Math.round(video.videoHeight * scale);
+    try {
+      for (let i = 0; i < 8; i++) { const time = .05 + (video.duration - .15) * i / 7; await wait('seeked', () => { video.currentTime = time; }); cx.drawImage(video, 0, 0, canvas.width, canvas.height); frames.push({ time: Number(time.toFixed(2)), image: canvas.toDataURL('image/jpeg', .72) }); $('coachProgress').value = i + 1; say(`장면을 준비하고 있어요 · ${i + 1} / 8`); }
+      const container = $('coachFrames'); container.replaceChildren(); frames.forEach((frame, i) => { const box = document.createElement('div'); box.className = 'coach-frame'; const img = new Image(); img.src = frame.image; img.alt = `${frame.time}초 영상 장면`; const label = document.createElement('label'); const check = document.createElement('input'); check.type = 'checkbox'; check.id = 'coachFrame' + i; check.checked = true; check.addEventListener('change', update); label.append(check, document.createTextNode(`${frame.time.toFixed(1)}초`)); box.append(img, label); container.append(box); }); container.hidden = false; say('장면을 확인한 뒤 필요 없는 장면은 체크를 해제해 주세요.');
+    } catch (error) { say(error.message, true); } finally { busy = false; $('coachProgress').hidden = true; update(); }
+  });
+  $('coachConsent').addEventListener('change', update);
+  $('videoCoachButton').addEventListener('click', () => { modal.hidden = false; document.body.classList.add('faq-open'); $('videoCoachClose').focus(); });
+  $('videoCoachClose').addEventListener('click', () => { modal.hidden = true; document.body.classList.remove('faq-open'); });
+  modal.addEventListener('click', event => { if (event.target === modal) { modal.hidden = true; document.body.classList.remove('faq-open'); } });
+  const endpoint = () => {
+    const value = $('coachEndpoint').value.trim(); if (!value) { if (location.protocol === 'file:') throw new Error('분석 서버 주소를 입력해 주세요. GitHub Pages 주소에서는 /api/analyze를 직접 실행할 수 없습니다.'); return '/api/analyze'; }
+    const url = new URL(value); if (url.protocol !== 'https:' && !(url.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(url.hostname))) throw new Error('HTTPS 분석 서버 주소를 입력해 주세요.'); return url.href;
+  };
+  const render = result => {
+    const target = $('coachResult'); target.replaceChildren(); const listen = document.createElement('button'); listen.className = 'coach-listen'; listen.type = 'button'; listen.textContent = '음성으로 듣기'; let speech = [result.summary, result.next_step, ...(result.observations || []).map(item => item.coaching), result.limitations].filter(Boolean).join(' '); listen.onclick = () => { if (!window.speechSynthesis) return; if (speechSynthesis.speaking) { speechSynthesis.cancel(); listen.textContent = '음성으로 듣기'; return; } const utterance = new SpeechSynthesisUtterance(speech); utterance.lang = 'ko-KR'; utterance.rate = .95; utterance.onend = () => { listen.textContent = '음성으로 듣기'; }; listen.textContent = '읽기 멈추기'; speechSynthesis.speak(utterance); }; target.append(listen); const title = document.createElement('h3'); title.textContent = result.quality === 'reviewable' ? '확인 가능한 장면을 검토했어요' : '추가로 확인할 장면이 필요해요'; target.append(title); const p = document.createElement('p'); p.textContent = result.summary || ''; target.append(p); const next = document.createElement('p'); next.className = 'coach-note'; next.textContent = result.next_step || ''; target.append(next);
+    (result.observations || []).slice(0, 3).forEach(item => { const source = frames[item.frame_index]; if (!source) return; const row = document.createElement('div'); row.className = 'coach-observation'; const image = new Image(); image.src = source.image; image.alt = `${source.time}초 근거 장면`; const body = document.createElement('div'); const h = document.createElement('h3'); h.textContent = `${source.time.toFixed(1)}초 · ${item.title || '관찰 내용'}`; const evidence = document.createElement('p'); evidence.textContent = item.evidence || ''; const coaching = document.createElement('p'); coaching.textContent = item.coaching || ''; body.append(h, evidence, coaching); row.append(image, body); target.append(row); }); const limit = document.createElement('p'); limit.className = 'hint'; limit.textContent = result.limitations || '정지 장면만 검토했기 때문에 연속 동작을 확정할 수 없습니다.'; target.append(limit); target.hidden = false;
+  };
+  $('coachAnalyze').addEventListener('click', async () => {
+    if (!$('coachConsent').checked || chosen().length < 3) return; let url; try { url = endpoint(); } catch (error) { say(error.message, true); return; }
+    if (!$('coachAccess').value.trim()) { say('AI 연결 설정에 테스트 접속 코드를 입력해 주세요.', true); return; }
+    busy = true; update(); request = new AbortController(); const timeout = setTimeout(() => request.abort(), 65000); const selected = chosen();
+    try { const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Coach-Code': $('coachAccess').value.trim() }, body: JSON.stringify({ frames: selected, mode: 'wear', outcome: 'unknown', question: $('coachQuestion').value, symptoms: false, consent: true }), signal: request.signal }); const data = await response.json().catch(() => ({})); if (!response.ok) throw new Error(data.error || '분석 서버가 응답하지 않았어요.'); if (!data.result) throw new Error('코칭 결과를 받지 못했어요.'); render(data.result); say('코칭 결과를 확인해 주세요.'); $('coachResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+    catch (error) { say(error.name === 'AbortError' ? '분석 시간이 초과됐어요. 잠시 뒤 다시 시도해 주세요.' : error.message, true); }
+    finally { clearTimeout(timeout); request = null; busy = false; update(); }
+  });
+  window.addEventListener('pagehide', clearVideo); update();
 })();
 </script>
 </body>
