@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b2f58">
-  <!-- Removal semi-realistic artwork build: 2026-09-30-r7 -->
+  <!-- Removal semi-realistic artwork build: 2026-09-30-r8 -->
   <title>콘택트렌즈 착용·제거 연습</title>
   <style>
     :root {
@@ -1689,7 +1689,11 @@
   <style>
     /* Shared FAQ-style sheet for all three menus. */
     #faqModal,#watchVideoModal,#videoCoachModal {position:fixed;inset:0;z-index:1000;display:grid;align-items:end;padding:env(safe-area-inset-top) 0 0;background:rgba(4,23,40,.62);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);overflow:hidden}
-    #faqModal,#watchVideoModal,#videoCoachModal {grid-template-columns:minmax(0,1fr)}
+    #faqModal,#watchVideoModal,#videoCoachModal {grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+    #videoCoachModal {display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100dvh;box-sizing:border-box}
+    #videoCoachModal>.coach-sheet {flex:0 1 auto;min-height:0;height:min(94dvh,820px);max-height:100%;width:min(100%,640px)}
+    #videoCoachModal .coach-header {position:relative;z-index:2;flex:0 0 auto}
+    #videoCoachModal .coach-body {flex:1 1 0;min-height:0;overflow-y:auto;overflow-anchor:none}
     #faqModal[hidden],#watchVideoModal[hidden],#videoCoachModal[hidden] {display:none}
     #faqModal>.faq-sheet,#watchVideoModal>.coach-sheet,#videoCoachModal>.coach-sheet {display:flex;flex-direction:column;width:min(100%,640px);max-width:640px;max-height:94dvh;min-height:0;margin:0 auto;border:0;border-radius:28px 28px 0 0;background:#f8fbfe;box-shadow:0 -18px 60px rgba(4,23,40,.28);overflow:hidden;animation:menuSheetIn .28s cubic-bezier(.2,.7,.2,1)}
     #faqModal .faq-header,#watchVideoModal .coach-header,#videoCoachModal .coach-header {flex:none;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:20px 20px 14px;color:#fff;background:linear-gradient(135deg,#092b50,#0b659b)}
@@ -1702,7 +1706,7 @@
     #videoCoachModal .coach-result {margin:20px -18px -20px;padding:20px 18px calc(20px + env(safe-area-inset-bottom))}
     #eyeScene #lensHit {fill:url(#lensGlow);fill-opacity:1;stroke:url(#lensEdgeLight);stroke-opacity:1;stroke-width:1.15}
     @keyframes menuSheetIn {from{transform:translateY(46px);opacity:0}to{transform:translateY(0);opacity:1}}
-    @media(min-width:700px){#faqModal,#watchVideoModal,#videoCoachModal{align-items:center;padding:24px}#faqModal>.faq-sheet,#watchVideoModal>.coach-sheet,#videoCoachModal>.coach-sheet{border-radius:28px;max-height:calc(100dvh - 48px)}}
+    @media(min-width:700px){#faqModal,#watchVideoModal,#videoCoachModal{align-items:center;padding:24px}#videoCoachModal{justify-content:center}#faqModal>.faq-sheet,#watchVideoModal>.coach-sheet,#videoCoachModal>.coach-sheet{border-radius:28px;max-height:calc(100dvh - 48px)}}
     @media(prefers-reduced-motion:reduce){#faqModal>.faq-sheet,#watchVideoModal>.coach-sheet,#videoCoachModal>.coach-sheet{animation:none}}
   </style>
   <div class="faq-modal" id="faqModal" hidden>
@@ -1828,6 +1832,12 @@
 (() => {
  const $=id=>document.getElementById(id), svg=$('eyeScene');
  const lensWindow=$('lensWindow'), lens=$('lensPosition'), fold=$('lensFold'), guide=$('guideLayer');
+ // Keep the iris on an unwarped layer; only the surrounding lid/skin deforms.
+ const fixedDefs=document.createElementNS('http://www.w3.org/2000/svg','defs');
+ fixedDefs.innerHTML='<radialGradient id="fixedIrisFade"><stop offset="0" stop-color="white"/><stop offset=".88" stop-color="white"/><stop offset="1" stop-color="black"/></radialGradient><mask id="fixedIrisMask" maskUnits="userSpaceOnUse" x="165" y="170" width="106" height="106"><circle cx="218" cy="223" r="51" fill="url(#fixedIrisFade)"/></mask>';
+ svg.append(fixedDefs);
+ const fixedIris=$('removalNaturalArt').cloneNode(false);
+ fixedIris.id='removalFixedIris';fixedIris.removeAttribute('filter');fixedIris.setAttribute('mask','url(#fixedIrisMask)');svg.append(fixedIris);
  svg.append(lensWindow,guide);
  lensWindow.setAttribute('clip-path','url(#naturalEyeClip)');
  $('lensHit').setAttribute('cx','218');$('lensHit').setAttribute('cy','223');$('lensHit').setAttribute('r','55');
@@ -1840,7 +1850,10 @@
  const map=document.createElement('canvas');map.width=map.height=96;const c=map.getContext('2d'),p=c.createImageData(96,96);
  for(let y=0;y<96;y++) for(let x=0;x<96;x++){
   const sx=x/95*400,sy=55+y/95*420,dx=(sx-232)/76,dy=(sy-281)/64;
-  const weight=Math.exp(-dx*dx-dy*dy)*Math.min(1,Math.max(0,(sy-240)/35));
+  const irisDistance=Math.hypot(sx-218,sy-223);
+  const edge=Math.min(1,Math.max(0,(irisDistance-50)/16));
+  const irisProtection=edge*edge*(3-2*edge);
+  const weight=Math.exp(-dx*dx-dy*dy)*Math.min(1,Math.max(0,(sy-260)/25))*irisProtection;
   const i=(y*96+x)*4;p.data[i]=128;p.data[i+1]=128-120*weight;p.data[i+2]=128;p.data[i+3]=255;
  }
  c.putImageData(p,0,0);$('removalDisplacementMap').setAttribute('href',map.toDataURL());
@@ -3666,7 +3679,7 @@
     if (!$('coachConsent').checked || chosen().length < 3) return; let url; try { url = endpoint(); } catch (error) { say(error.message, true); return; }
     if (!$('coachAccess').value.trim()) { $('coachSettings').open = true; say('연결 설정에 접속 코드를 입력해 주세요.', true); $('coachAccess').focus(); return; }
     busy = true; request = new AbortController(); update(); const timeout = setTimeout(() => request.abort(), 65000); const selected = chosen();
-    try { const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Coach-Code': $('coachAccess').value.trim() }, body: JSON.stringify({ frames: selected, mode: $('removalPractice').hidden ? 'wear' : 'remove', outcome: 'unknown', question: $('coachQuestion').value, symptoms: false, consent: true }), signal: request.signal }); const data = await response.json().catch(() => ({})); if (!response.ok) throw new Error((data.error || (response.status === 413 ? '전송할 장면 용량이 커요. 장면 수를 줄여주세요.' : '분석 서버가 응답하지 않았어요.')) + (data.code ? ` [${data.code}]` : ` [HTTP ${response.status}]`)); if (!data.result) throw new Error('코칭 결과를 받지 못했어요.'); render(data.result, selected); say('코칭 결과를 확인해 주세요.'); $('coachResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+    try { const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Coach-Code': $('coachAccess').value.trim() }, body: JSON.stringify({ frames: selected, mode: $('removalPractice').hidden ? 'wear' : 'remove', outcome: 'unknown', question: $('coachQuestion').value, symptoms: false, consent: true }), signal: request.signal }); const data = await response.json().catch(() => ({})); if (!response.ok) throw new Error((data.error || (response.status === 413 ? '전송할 장면 용량이 커요. 장면 수를 줄여주세요.' : '분석 서버가 응답하지 않았어요.')) + (data.code ? ` [${data.code}]` : ` [HTTP ${response.status}]`)); if (!data.result) throw new Error('코칭 결과를 받지 못했어요.'); render(data.result, selected); say('코칭 결과를 확인해 주세요.'); requestAnimationFrame(() => { const body=modal.querySelector('.coach-body'), result=$('coachResult'); body.scrollTo({top:body.scrollTop+result.getBoundingClientRect().top-body.getBoundingClientRect().top-16,behavior:'smooth'}); }); }
     catch (error) { say(error.name === 'AbortError' ? '분석 시간이 초과됐어요. 잠시 뒤 다시 시도해 주세요.' : /load failed|failed to fetch/i.test(error.message) ? '서버에 연결하지 못했어요. 분석 서버 주소와 허용된 사이트 설정을 확인해 주세요.' : error.message, true); }
     finally { clearTimeout(timeout); request = null; busy = false; update(); }
   });
