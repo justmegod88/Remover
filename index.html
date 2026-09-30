@@ -985,11 +985,6 @@
     .coach-observation {background:#fff;border:1px solid #dfeaf0;border-radius:18px;padding:16px;margin-top:14px}
     .coach-observation img {width:100%;border-radius:12px;max-height:220px;object-fit:contain;background:#eaf3f8}
     #eyeScene #guideLayer path { stroke:#c0f2ff; stroke-width:3; }
-    .watch-tabs { display:flex; gap:8px; margin-bottom:16px; }
-    .watch-tabs button,.watch-link { padding:12px 18px; border:1px solid #c4dce9; border-radius:12px; background:white; color:#154c70; font-weight:700; text-decoration:none; }
-    .watch-tabs button[aria-selected=true] { background:#126eab; color:white; }
-    .watch-frame { width:100%; aspect-ratio:16/9; border:0; border-radius:14px; background:#0b2940; display:block; }
-    .watch-link { display:inline-block; margin-top:15px; }
     @media(min-width:700px) { .topbar-row > div:first-child { flex:1; } .top-actions { width:auto; } }
   /* Natural removal scene: photo-style material, live transparent lens, no diagram outlines. */
     #eyeScene #guideStep1 path {transform:none;}
@@ -1004,23 +999,135 @@
     #removalPractice .simulator {touch-action:none;overscroll-behavior:contain;overflow-anchor:none}
     #removalPractice .coach {transition:none}
     #removalPractice #feedback {transition:background-color 180ms ease;overflow-anchor:none}
-  </style>
+  
+    /* Official-guide-first journey navigation */
+    .journey-nav {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .journey-button {
+      display: flex;
+      min-width: 0;
+      min-height: 88px;
+      padding: 10px 7px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid #cbdfea;
+      border-radius: 16px;
+      background: #fff;
+      color: #1d405c;
+      text-align: center;
+      box-shadow: 0 5px 16px rgba(20,72,108,.06);
+      cursor: pointer;
+    }
+    .journey-button.active { border-color:#9dcae5; background:#eef8ff; }
+    .journey-step {
+      display:grid; place-items:center; flex:0 0 30px; width:30px; height:30px; border-radius:50%;
+      background:#0b5f94; color:#fff; font-size:12px; font-weight:900;
+    }
+    .journey-button strong { display:block; margin-bottom:3px; font-size:13px; line-height:1.25; }
+    .journey-button small { display:block; color:#738698; font-size:10px; line-height:1.35; }
+    .positioning-card {
+      margin: 0 0 14px; padding: 12px 14px; border:1px solid #d8e8f2; border-radius:15px;
+      background:linear-gradient(135deg,#f5fbff,#eef7fc); color:#25475f; line-height:1.45;
+    }
+    .positioning-card strong { display:block; margin-bottom:3px; color:#0a5d91; font-size:13px; }
+    .positioning-card span { font-size:11px; color:#60798c; }
+    #officialGuideModal { position:fixed; inset:0; z-index:1000; display:grid; align-items:end; padding-top:env(safe-area-inset-top); background:rgba(4,23,40,.62); backdrop-filter:blur(7px); -webkit-backdrop-filter:blur(7px); }
+    #officialGuideModal[hidden] { display:none; }
+    #officialGuideModal>.coach-sheet { display:flex; flex-direction:column; width:min(100%,640px); max-height:94dvh; margin:0 auto; border-radius:28px 28px 0 0; background:#f8fbfe; overflow:hidden; box-shadow:0 -18px 60px rgba(4,23,40,.28); }
+    #officialGuideModal .coach-header { flex:none; align-items:center; padding:20px 20px 14px; background:linear-gradient(135deg,#092b50,#0b659b); }
+    #officialGuideModal .coach-body { overflow:auto; padding:18px 18px calc(22px + env(safe-area-inset-bottom)); }
+    .official-guide-intro { color:#566f82; font-size:13px; line-height:1.65; }
+    .official-guide-card { display:flex; align-items:center; gap:12px; margin:10px 0; padding:14px; border:1px solid #d6e6ef; border-radius:16px; background:#fff; color:#183e5b; text-decoration:none; box-shadow:0 5px 16px rgba(20,72,108,.05); }
+    .official-guide-card>span:nth-child(2) { min-width:0; flex:1; }
+    .official-guide-card strong { display:block; margin-bottom:3px; font-size:14px; }
+    .official-guide-card small { display:block; color:#6c8293; font-size:11px; line-height:1.45; }
+    .official-guide-card b { color:#0b6fa7; font-size:18px; }
+    .official-guide-num { display:grid; place-items:center; flex:0 0 34px; width:34px; height:34px; border-radius:11px; background:#e8f4fb; color:#0b669b; font-size:10px; font-weight:900; }
+    @media (min-width:700px) { #officialGuideModal { align-items:center; padding:24px; } #officialGuideModal>.coach-sheet { border-radius:28px; max-height:calc(100dvh - 48px); } }
+    @media (max-width:380px) { .journey-nav { gap:6px; } .journey-button { min-height:66px; padding:9px; gap:8px; } .journey-step { width:27px; height:27px; flex-basis:27px; } }
+
+    /* 2026-09-30 blue header menu: title + reset, then 4 menu buttons inside header */
+    .topbar { padding: calc(18px + env(safe-area-inset-top)) 18px 16px; }
+    .topbar-row { flex-wrap: nowrap; align-items: center; gap: 12px; }
+    .topbar-row > div:first-child,
+    .topbar-title-wrap { flex: 1 1 auto; min-width: 0; }
+    .topbar-title-wrap h1 { font-size: clamp(22px, 5.6vw, 29px); white-space: normal; }
+    .top-actions { display: none; }
+    .top-reset-button {
+      flex: 0 0 auto; min-width: 70px; min-height: 42px; padding: 9px 12px;
+      border-color: rgba(255,255,255,.48); background: rgba(255,255,255,.12);
+      color:#fff; font-size: 13px; font-weight: 800; white-space: nowrap;
+    }
+    .topbar .journey-nav {
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 7px;
+      margin: 14px 0 0;
+      padding: 0;
+    }
+    .topbar .journey-button {
+      min-width:0;
+      min-height: 52px;
+      padding: 9px 4px;
+      border: 1px solid rgba(255,255,255,.48);
+      border-radius: 14px;
+      background: rgba(255,255,255,.08);
+      color:#fff;
+      box-shadow:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+    }
+    .topbar .journey-button strong {
+      margin:0;
+      color:inherit;
+      font-size:12px;
+      line-height:1.2;
+      letter-spacing:-.03em;
+      white-space:nowrap;
+    }
+    .topbar .journey-button.active {
+      border-color: rgba(255,255,255,.72);
+      background: rgba(255,255,255,.18);
+      color:#fff;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+    }
+    .topbar .journey-button:active { background: rgba(255,255,255,.24); }
+    main { padding-top: 16px; }
+    .positioning-card { display: none !important; }
+    @media (max-width: 380px) {
+      .topbar { padding-inline: 14px; }
+      .topbar-row { gap: 8px; }
+      .topbar-title-wrap h1 { font-size: 21px; }
+      .top-reset-button { min-width: 62px; padding-inline: 9px; font-size: 12px; }
+      .topbar .journey-nav { gap: 5px; margin-top:12px; }
+      .topbar .journey-button { min-height: 48px; padding: 8px 2px; }
+      .topbar .journey-button strong { font-size: 10.5px; }
+    }
+</style>
 </head>
 <body>
   <div class="app">
     <header class="topbar">
       <div class="topbar-row">
-        <div>
-          <p class="eyebrow" id="modeEyebrow">WEARING PRACTICE</p>
-          <h1 id="pageTitle">콘택트렌즈 착용 연습</h1>
+        <div class="topbar-title-wrap">
+          <h1 id="pageTitle">콘택트렌즈 착용·제거 연습</h1>
         </div>
-        <div class="top-actions">
-          <button class="faq-button" id="faqButton" type="button" aria-haspopup="dialog">FAQ</button>
-          <button class="faq-button" id="watchVideoButton" type="button" aria-haspopup="dialog">▶ 영상으로 보기</button>
-          <button class="faq-button" id="videoCoachButton" type="button" aria-haspopup="dialog">영상 코칭</button>
-          <button class="reset-button" id="resetButton" type="button" aria-label="처음부터 다시 시작">↺ 처음</button>
-        </div>
+        <button class="reset-button top-reset-button" id="resetButton" type="button" aria-label="처음부터 다시 시작">↺ 처음</button>
       </div>
+      <nav class="journey-nav" aria-label="착용·제거 학습 메뉴">
+        <button class="journey-button" id="officialGuideButton" type="button" aria-haspopup="dialog"><strong>공식 가이드</strong></button>
+        <button class="journey-button active" id="practiceNavButton" type="button"><strong>연습하기</strong></button>
+        <button class="journey-button" id="videoCoachButton" type="button" aria-haspopup="dialog"><strong>영상 코칭</strong></button>
+        <button class="journey-button" id="faqButton" type="button" aria-haspopup="dialog"><strong>FAQ</strong></button>
+      </nav>
     </header>
 
     <main>
@@ -1588,21 +1695,32 @@
       </section>
       </section>
 
-      <p class="safety-note">교육용 시뮬레이터입니다. 실제 착용·제거 시 손을 깨끗이 씻고 안경전문가의 안내를 따라주세요.</p>
+      <p class="safety-note">본 페이지는 콘택트렌즈 착용·제거 연습용 시뮬레이터입니다. 제품별 공식 사용법은 제조사 안내와 안경전문가의 지도를 확인해 주세요.</p>
     </main>
   </div>
 
-  <div class="coach-modal" id="watchVideoModal" hidden>
-    <section class="coach-sheet" role="dialog" aria-modal="true" aria-labelledby="watchVideoTitle">
-      <header class="coach-header"><div><p class="coach-kicker">VIDEO GUIDE</p><h2 id="watchVideoTitle">영상으로 보기</h2></div><button id="watchVideoClose" class="coach-close" type="button" aria-label="영상 닫기">×</button></header>
-      <div class="coach-body">
-        <div class="watch-tabs" role="tablist"><button id="watchWear" role="tab" aria-selected="true">착용 방법</button><button id="watchRemove" role="tab" aria-selected="false">제거 방법</button></div>
-        <iframe id="watchFrame" class="watch-frame" title="콘택트렌즈 사용 방법 영상" referrerpolicy="strict-origin-when-cross-origin" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
-        <a id="watchExternal" class="watch-link" target="_blank" rel="noopener noreferrer">YouTube에서 영상 보기 ↗</a>
-        <p class="coach-note">재생이 안 되면 위 버튼으로 YouTube에서 확인해 주세요. 닫으면 연습하던 화면으로 돌아갑니다.</p>
+  <div class="coach-modal" id="officialGuideModal" hidden>
+    <section class="coach-sheet" role="dialog" aria-modal="true" aria-labelledby="officialGuideTitle">
+      <header class="coach-header">
+        <div><p class="coach-kicker">OFFICIAL ACUVUE® GUIDE</p><h2 id="officialGuideTitle">공식 가이드 먼저 보기</h2></div>
+        <button id="officialGuideClose" class="coach-close" type="button" aria-label="공식 가이드 닫기">×</button>
+      </header>
+      <div class="coach-body official-guide-body">
+        <p class="official-guide-intro">아래 아큐브® 공식 페이지에서 착용·제거 영상과 사용법을 먼저 확인한 뒤, 이 페이지로 돌아와 손동작을 직접 연습해 보세요.</p>
+        <a class="official-guide-card" href="https://www.acuvue.co.kr/easy_acuvue/" target="_blank" rel="noopener noreferrer">
+          <span class="official-guide-num">01</span><span><strong>EASY 아큐브®</strong><small>착용·제거 공식 영상과 렌즈관리 콘텐츠를 한 번에 확인</small></span><b>↗</b>
+        </a>
+        <a class="official-guide-card" href="https://www.acuvue.co.kr/new-wearer-guide/lens-wear-tips" target="_blank" rel="noopener noreferrer">
+          <span class="official-guide-num">02</span><span><strong>아큐브® 렌즈 착용 팁</strong><small>앞뒤 구분부터 착용·제거 순서까지 확인</small></span><b>↗</b>
+        </a>
+        <a class="official-guide-card" href="https://acuvue.co.kr/patient-instruction-guides" target="_blank" rel="noopener noreferrer">
+          <span class="official-guide-num">03</span><span><strong>제품 사용 안내</strong><small>제품별 공식 사용 설명서 확인</small></span><b>↗</b>
+        </a>
+        <p class="coach-note">이 연습 페이지는 공식 설명을 대체하지 않고, 공식 가이드를 본 뒤 실제 손동작을 반복해서 익히는 용도로 구성했습니다.</p>
       </div>
     </section>
   </div>
+
   <style>
     #videoCoachModal {padding:16px;background:rgba(7,28,46,.64);backdrop-filter:blur(5px)}
     #videoCoachModal [hidden] {display:none!important}
@@ -1687,27 +1805,27 @@
   </div>
 
   <style>
-    /* Shared FAQ-style sheet for all three menus. */
-    #faqModal,#watchVideoModal,#videoCoachModal {position:fixed;inset:0;z-index:1000;display:grid;align-items:end;padding:env(safe-area-inset-top) 0 0;background:rgba(4,23,40,.62);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);overflow:hidden}
-    #faqModal,#watchVideoModal,#videoCoachModal {grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+    /* Shared sheet styling for FAQ and video coaching. */
+    #faqModal,#videoCoachModal {position:fixed;inset:0;z-index:1000;display:grid;align-items:end;padding:env(safe-area-inset-top) 0 0;background:rgba(4,23,40,.62);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);overflow:hidden}
+    #faqModal,#videoCoachModal {grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
     #videoCoachModal {display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100dvh;box-sizing:border-box}
     #videoCoachModal>.coach-sheet {flex:0 1 auto;min-height:0;height:min(94dvh,820px);max-height:100%;width:min(100%,640px)}
     #videoCoachModal .coach-header {position:relative;z-index:2;flex:0 0 auto}
     #videoCoachModal .coach-body {flex:1 1 0;min-height:0;overflow-y:auto;overflow-anchor:none}
-    #faqModal[hidden],#watchVideoModal[hidden],#videoCoachModal[hidden] {display:none}
-    #faqModal>.faq-sheet,#watchVideoModal>.coach-sheet,#videoCoachModal>.coach-sheet {display:flex;flex-direction:column;width:min(100%,640px);max-width:640px;max-height:94dvh;min-height:0;margin:0 auto;border:0;border-radius:28px 28px 0 0;background:#f8fbfe;box-shadow:0 -18px 60px rgba(4,23,40,.28);overflow:hidden;animation:menuSheetIn .28s cubic-bezier(.2,.7,.2,1)}
-    #faqModal .faq-header,#watchVideoModal .coach-header,#videoCoachModal .coach-header {flex:none;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:20px 20px 14px;color:#fff;background:linear-gradient(135deg,#092b50,#0b659b)}
-    #faqModal .faq-header h2,#watchVideoModal .coach-header h2,#videoCoachModal .coach-header h2 {margin:0;font-size:24px;line-height:1.3;letter-spacing:-.035em}
-    #faqModal .faq-kicker,#watchVideoModal .coach-kicker,#videoCoachModal .coach-kicker {margin:0 0 3px;color:#aee4ff;font-size:11px;font-weight:800;letter-spacing:.12em}
-    #faqModal .faq-close,#watchVideoModal .coach-close,#videoCoachModal .coach-close {display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;padding:0;border:1px solid #ffffff59;border-radius:50%;background:#ffffff24;color:#fff;font-size:24px;line-height:1;cursor:pointer}
-    #watchVideoModal .coach-body,#videoCoachModal .coach-body {flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;padding:18px 18px calc(20px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch}
+    #faqModal[hidden],#videoCoachModal[hidden] {display:none}
+    #faqModal>.faq-sheet,#videoCoachModal>.coach-sheet {display:flex;flex-direction:column;width:min(100%,640px);max-width:640px;max-height:94dvh;min-height:0;margin:0 auto;border:0;border-radius:28px 28px 0 0;background:#f8fbfe;box-shadow:0 -18px 60px rgba(4,23,40,.28);overflow:hidden;animation:menuSheetIn .28s cubic-bezier(.2,.7,.2,1)}
+    #faqModal .faq-header,#videoCoachModal .coach-header {flex:none;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:20px 20px 14px;color:#fff;background:linear-gradient(135deg,#092b50,#0b659b)}
+    #faqModal .faq-header h2,#videoCoachModal .coach-header h2 {margin:0;font-size:24px;line-height:1.3;letter-spacing:-.035em}
+    #faqModal .faq-kicker,#videoCoachModal .coach-kicker {margin:0 0 3px;color:#aee4ff;font-size:11px;font-weight:800;letter-spacing:.12em}
+    #faqModal .faq-close,#videoCoachModal .coach-close {display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;padding:0;border:1px solid #ffffff59;border-radius:50%;background:#ffffff24;color:#fff;font-size:24px;line-height:1;cursor:pointer}
+    #videoCoachModal .coach-body {flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;padding:18px 18px calc(20px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch}
     #faqModal .faq-search-wrap {flex:none}
     #faqModal .faq-list {padding-bottom:calc(24px + env(safe-area-inset-bottom))}
     #videoCoachModal .coach-result {margin:20px -18px -20px;padding:20px 18px calc(20px + env(safe-area-inset-bottom))}
     #eyeScene #lensHit {fill:url(#lensGlow);fill-opacity:1;stroke:url(#lensEdgeLight);stroke-opacity:1;stroke-width:1.15}
     @keyframes menuSheetIn {from{transform:translateY(46px);opacity:0}to{transform:translateY(0);opacity:1}}
-    @media(min-width:700px){#faqModal,#watchVideoModal,#videoCoachModal{align-items:center;padding:24px}#videoCoachModal{justify-content:center}#faqModal>.faq-sheet,#watchVideoModal>.coach-sheet,#videoCoachModal>.coach-sheet{border-radius:28px;max-height:calc(100dvh - 48px)}}
-    @media(prefers-reduced-motion:reduce){#faqModal>.faq-sheet,#watchVideoModal>.coach-sheet,#videoCoachModal>.coach-sheet{animation:none}}
+    @media(min-width:700px){#faqModal,#videoCoachModal{align-items:center;padding:24px}#videoCoachModal{justify-content:center}#faqModal>.faq-sheet,#videoCoachModal>.coach-sheet{border-radius:28px;max-height:calc(100dvh - 48px)}}
+    @media(prefers-reduced-motion:reduce){#faqModal>.faq-sheet,#videoCoachModal>.coach-sheet{animation:none}}
   </style>
   <div class="faq-modal" id="faqModal" hidden>
     <section class="faq-sheet" role="dialog" aria-modal="true" aria-labelledby="faqTitle">
@@ -1724,7 +1842,7 @@
         <div class="faq-search-row">
           <input id="faqSearch" type="search" placeholder="예: 안 빠져요, 수돗물, 잠" autocomplete="off">
         </div>
-        <p class="faq-count" id="faqCount" aria-live="polite">22개 질문</p>
+        <p class="faq-count" id="faqCount" aria-live="polite">23개 질문</p>
       </div>
 
       <div class="faq-list" id="faqList">
@@ -1815,6 +1933,10 @@
         <details class="faq-item" data-search="증상 응급 병원 통증 충혈 눈부심 분비물 눈물 시야 변화">
           <summary><span class="faq-tag">증상</span>어떤 증상이 생기면 즉시 빼고 진료받아야 하나요?</summary>
           <p>통증, 심한 충혈, 갑작스럽거나 지속되는 시야 흐림, 눈부심, 많은 눈물이나 분비물이 생기면 렌즈를 즉시 빼고 안과 전문가에게 연락하세요. 증상이 심하거나 빠르게 악화되면 지체하지 말고 진료받으세요.</p>
+        </details>
+        <details class="faq-item" data-search="공식 가이드 차이 연습 시뮬레이터 영상 코칭 아큐브">
+          <summary><span class="faq-tag">안내</span>공식 아큐브® 가이드와 이 페이지는 무엇이 다른가요?</summary>
+          <p>아큐브® 공식 페이지는 올바른 착용·제거 방법과 제품 정보를 확인하는 기준 자료입니다. 이 페이지는 공식 가이드를 본 다음 손 위치와 순서를 직접 따라 해보고, 필요하면 촬영 영상에서 동작을 다시 확인하는 연습 도구입니다.</p>
         </details>
         <p class="faq-empty" id="faqEmpty" hidden>검색 결과가 없습니다. 다른 단어로 찾아보세요.</p>
       </div>
@@ -3688,25 +3810,22 @@
 </script>
 <script>
 (() => {
-  const $=id=>document.getElementById(id), modal=$('watchVideoModal'), frame=$('watchFrame');
-  let previous;
-  function select(removal) {
-    const id=removal?'R3Z0pg4OjAs':'SK0bOgx5pEM';
-    frame.src='https://www.youtube.com/embed/'+id+'?playsinline=1&rel=0';
-    $('watchExternal').href='https://www.youtube.com/watch?v='+id;
-    $('watchWear').setAttribute('aria-selected',String(!removal));
-    $('watchRemove').setAttribute('aria-selected',String(removal));
-  }
-  function close(){modal.hidden=true;frame.removeAttribute('src');document.body.classList.remove('faq-open');previous?.focus();}
-  $('watchVideoButton').onclick=()=>{previous=document.activeElement;select(!$('removalPractice').hidden);modal.hidden=false;document.body.classList.add('faq-open');$('watchVideoClose').focus();};
-  $('watchVideoClose').onclick=close;$('watchWear').onclick=()=>select(false);$('watchRemove').onclick=()=>select(true);
-  modal.onclick=e=>{if(e.target===modal)close();};
-  modal.addEventListener('keydown',e=>{
-    if(e.key==='Escape')close();
-    if(e.key==='Tab'){const els=[...modal.querySelectorAll('button,a[href],iframe')],first=els[0],last=els[els.length-1];
-      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
-      if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}
-  });
+  const modal=document.getElementById('officialGuideModal');
+  const open=document.getElementById('officialGuideButton');
+  const close=document.getElementById('officialGuideClose');
+  const practice=document.getElementById('practiceNavButton');
+  let previous=null;
+  const shut=()=>{modal.hidden=true;document.body.classList.remove('faq-open');previous?.focus();};
+  open.addEventListener('click',()=>{previous=document.activeElement;modal.hidden=false;document.body.classList.add('faq-open');close.focus();});
+  close.addEventListener('click',shut);
+  modal.addEventListener('click',e=>{if(e.target===modal)shut();});
+  modal.addEventListener('keydown',e=>{if(e.key==='Escape')shut();});
+  practice.addEventListener('click',()=>document.querySelector('.mode-tabs')?.scrollIntoView({behavior:'smooth',block:'start'}));
+})();
+</script>
+<script>
+(() => {
+  const $=id=>document.getElementById(id);
   const ns='http://www.w3.org/2000/svg',brow=$('removalBrow');
   for(let i=0;i<230;i++){const t=i/229,x=36+t*324,y=136-30*Math.sin(t*Math.PI)+(Math.sin(i*6.9)*5);
     const p=document.createElementNS(ns,'path');p.setAttribute('d',`M${x} ${y+(i%4)*1.8} q8 -8 ${13+(i%3)} -9`);
