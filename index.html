@@ -1037,13 +1037,30 @@
     }
     .positioning-card strong { display:block; margin-bottom:3px; color:#0a5d91; font-size:13px; }
     .positioning-card span { font-size:11px; color:#60798c; }
-    #officialGuideModal { position:fixed; inset:0; z-index:1000; display:grid; align-items:end; padding-top:env(safe-area-inset-top); background:rgba(4,23,40,.62); backdrop-filter:blur(7px); -webkit-backdrop-filter:blur(7px); }
+    #officialGuideModal {
+      position:fixed; inset:0; z-index:1000; display:grid; align-items:center;
+      padding:8px;
+      background:rgba(4,23,40,.62); backdrop-filter:blur(7px); -webkit-backdrop-filter:blur(7px);
+    }
     #officialGuideModal[hidden] { display:none; }
-    #officialGuideModal>.coach-sheet { display:flex; flex-direction:column; width:min(100%,640px); max-height:94dvh; margin:0 auto; border-radius:28px 28px 0 0; background:#f8fbfe; overflow:hidden; box-shadow:0 -18px 60px rgba(4,23,40,.28); }
-    #officialGuideModal .coach-header { flex:none; align-items:center; padding:20px 20px 14px; background:linear-gradient(135deg,#092b50,#0b659b); }
-    #officialGuideModal .coach-body { overflow:auto; padding:18px 18px calc(22px + env(safe-area-inset-bottom)); }
-    .official-guide-intro { color:#566f82; font-size:13px; line-height:1.65; }
-    .official-guide-card { display:flex; align-items:center; gap:12px; margin:10px 0; padding:14px; border:1px solid #d6e6ef; border-radius:16px; background:#fff; color:#183e5b; text-decoration:none; box-shadow:0 5px 16px rgba(20,72,108,.05); }
+    #officialGuideModal>.coach-sheet {
+      display:flex; flex-direction:column; width:100%; max-width:680px;
+      height:calc(100dvh - 16px); max-height:calc(100dvh - 16px); margin:0 auto;
+      border:2px solid rgba(255,255,255,.96); border-radius:28px;
+      background:#f8fbfe; overflow:hidden;
+      box-shadow:0 22px 70px rgba(4,23,40,.38), inset 0 0 0 1px rgba(255,255,255,.6);
+    }
+    #officialGuideModal .coach-header { flex:none; align-items:center; padding:20px 20px 16px; background:linear-gradient(135deg,#092b50,#0b659b); }
+    #officialGuideModal .coach-body { flex:1 1 auto; min-height:0; overflow:auto; padding:18px 18px calc(22px + env(safe-area-inset-bottom)); }
+    .official-guide-intro { margin:0 0 14px; color:#566f82; font-size:13px; line-height:1.65; }
+    .official-guide-preview {
+      display:block; width:100%; margin:0 0 12px; overflow:hidden;
+      border:1px solid #d8e8f2; border-radius:18px; background:#eaf4fb;
+      box-shadow:0 7px 22px rgba(20,72,108,.08); text-decoration:none;
+    }
+    .official-guide-preview img { display:block; width:100%; height:clamp(145px,25dvh,230px); object-fit:cover; object-position:center; background:#dfeef7; }
+    .official-guide-preview span { display:block; padding:9px 12px; color:#5b7487; font-size:10px; font-weight:750; }
+    .official-guide-card { display:flex; align-items:center; gap:12px; margin:10px 0 0; padding:14px; border:1px solid #d6e6ef; border-radius:16px; background:#fff; color:#183e5b; text-decoration:none; box-shadow:0 5px 16px rgba(20,72,108,.05); }
     .official-guide-card>span:nth-child(2) { min-width:0; flex:1; }
     .official-guide-card strong { display:block; margin-bottom:3px; font-size:14px; }
     .official-guide-card small { display:block; color:#6c8293; font-size:11px; line-height:1.45; }
@@ -1052,7 +1069,10 @@
     .official-guide-card-single { min-height:82px; padding:16px; }
     .official-guide-link-icon { display:grid; place-items:center; flex:0 0 42px; width:42px; height:42px; border-radius:13px; background:#e8f4fb; color:#0b669b; font-size:21px; font-weight:900; }
     .official-guide-card-single strong { font-size:16px; }
-    @media (min-width:700px) { #officialGuideModal { align-items:center; padding:24px; } #officialGuideModal>.coach-sheet { border-radius:28px; max-height:calc(100dvh - 48px); } }
+    @media (min-width:700px) {
+      #officialGuideModal { padding:18px; }
+      #officialGuideModal>.coach-sheet { height:auto; min-height:min(760px,calc(100dvh - 36px)); max-height:calc(100dvh - 36px); border-radius:28px; }
+    }
     @media (max-width:380px) { .journey-nav { gap:6px; } .journey-button { min-height:66px; padding:9px; gap:8px; } .journey-step { width:27px; height:27px; flex-basis:27px; } }
 
     /* 2026-09-30 blue header menu: title + reset, then 4 menu buttons inside header */
@@ -1366,7 +1386,7 @@
           <div class="step-number" id="wearStepNumber">1</div>
           <div>
             <strong id="wearInstructionTitle">렌즈의 앞뒤를 먼저 확인 후 적절한 렌즈를 선택해 주세요</strong>
-            <p id="wearInstructionBody">가장자리가 위로 선 둥근 그릇 모양이 올바른 방향입니다.</p>
+            <p id="wearInstructionBody" hidden></p>
           </div>
         </section>
 
@@ -1389,7 +1409,7 @@
                 <circle cx="142" cy="83" r="13" fill="#19a99a"/>
                 <path d="M136 83 L141 88 L149 77" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              <span class="orientation-caption">가장자리가 곧게 위로<small>깊고 둥근 그릇 모양</small></span>
+              <span class="orientation-caption">가장자리가 곧게 위로</span>
             </button>
             <button class="wear-action orientation-card wrong" id="wrongOrientation" type="button" aria-label="가장자리가 바깥으로 벌어진 뒤집힌 렌즈 선택">
               <span class="orientation-card-title">뒤집힌 렌즈 <small>INSIDE OUT</small></span>
@@ -1409,7 +1429,7 @@
                 <circle cx="143" cy="83" r="13" fill="#e95f45"/>
                 <path d="M138 78 L148 88 M148 78 L138 88" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
               </svg>
-              <span class="orientation-caption">가장자리가 바깥으로 벌어짐<small>둥근 곡률은 남아 있는 뒤집힌 모양</small></span>
+              <span class="orientation-caption">가장자리가 바깥으로 벌어짐</span>
             </button>
           </div>
           <div class="wear-actions" id="openingActions" hidden>
@@ -1926,12 +1946,15 @@
       </header>
       <div class="coach-body official-guide-body">
         <p class="official-guide-intro">아래 아큐브® 공식 페이지에서 착용·제거 영상과 사용법을 먼저 확인한 뒤, 이 페이지로 돌아와 손동작을 직접 연습해 보세요.</p>
+        <a class="official-guide-preview" href="https://www.acuvue.co.kr/easy_acuvue/" target="_blank" rel="noopener noreferrer" aria-label="EASY 아큐브 공식 페이지 열기">
+          <img src="https://www.acuvue.co.kr/easy_acuvue/assets/images/banner.jpg" alt="EASY 아큐브® 공식 페이지 미리보기" loading="lazy">
+          <span>EASY 아큐브® 공식 페이지 미리보기</span>
+        </a>
         <a class="official-guide-card official-guide-card-single" href="https://www.acuvue.co.kr/easy_acuvue/" target="_blank" rel="noopener noreferrer">
           <span class="official-guide-link-icon" aria-hidden="true">↗</span>
           <span><strong>EASY 아큐브® 바로가기</strong><small>착용·제거 공식 영상과 렌즈관리 콘텐츠를 한 번에 확인</small></span>
           <b>›</b>
         </a>
-        <p class="coach-note">이 연습 페이지는 공식 설명을 대체하지 않고, 공식 가이드를 본 뒤 실제 손동작을 반복해서 익히는 용도로 구성했습니다.</p>
       </div>
     </section>
   </div>
@@ -2954,7 +2977,7 @@
       const wearCopy = {
         1: {
           title: '렌즈의 앞뒤를 먼저 확인 후 적절한 렌즈를 선택해 주세요',
-          body: '가장자리가 위로 선 둥근 그릇 모양이 올바른 방향입니다.',
+          body: '',
           feedback: '두 렌즈 중 올바른 앞면 모양을 선택하세요.'
         },
         2: {
@@ -3181,9 +3204,11 @@
         if (wearState.step === 2 && displayStep === 2) {
           wearInstructionTitle.textContent = '위·아래 눈꺼풀 중앙을 잡고 벌려주세요';
           wearInstructionBody.textContent = '왼손 중지로 윗눈꺼풀 중앙을 올리고, 오른손 중지로 아랫눈꺼풀 중앙을 내려주세요. 벌린 상태를 계속 유지해주세요.';
+          wearInstructionBody.hidden = false;
         } else if (wearState.step === 2 && displayStep === 3) {
           wearInstructionTitle.textContent = '오른손 검지 끝의 렌즈를 눈 중앙으로 가져가세요';
           wearInstructionBody.textContent = '눈꺼풀을 잡은 두 손가락은 그대로 유지해주세요. 렌즈가 기울지 않도록 오른손 검지를 눈 중앙으로 천천히 가져가세요.';
+          wearInstructionBody.hidden = false;
         }
       }
 
@@ -3193,6 +3218,7 @@
         wearStepNumber.textContent = displayStep;
         wearInstructionTitle.textContent = current.title;
         wearInstructionBody.textContent = current.body;
+        wearInstructionBody.hidden = !current.body;
         setWearFeedback(current.feedback);
 
         wearProgress.forEach((item, index) => {
