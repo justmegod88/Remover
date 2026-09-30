@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b2f58">
-  <!-- Removal semi-realistic artwork build: 2026-09-30-r5 -->
+  <!-- Removal semi-realistic artwork build: 2026-09-30-r7 -->
   <title>콘택트렌즈 착용·제거 연습</title>
   <style>
     :root {
@@ -1415,11 +1415,15 @@
               <stop offset=".65" stop-color="#070b0e"/>
               <stop offset="1" stop-color="#000"/>
             </radialGradient>
-            <radialGradient id="lensGlow" cx="42%" cy="35%" r="68%">
-              <stop offset="0" stop-color="#e6faff" stop-opacity=".05"/>
-              <stop offset=".74" stop-color="#b5eeff" stop-opacity=".025"/>
-              <stop offset="1" stop-color="#7ed6ea" stop-opacity=".09"/>
+            <radialGradient id="lensGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0" stop-color="#d8f5ff" stop-opacity="0"/>
+              <stop offset=".72" stop-color="#c6effa" stop-opacity=".015"/>
+              <stop offset=".87" stop-color="#ade8f6" stop-opacity=".10"/>
+              <stop offset=".95" stop-color="#79cadd" stop-opacity=".32"/>
+              <stop offset=".985" stop-color="#e3faff" stop-opacity=".48"/>
+              <stop offset="1" stop-color="#83ccdf" stop-opacity=".24"/>
             </radialGradient>
+            <linearGradient id="lensEdgeLight" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f1fdff" stop-opacity=".95"/><stop offset=".32" stop-color="#86cddd" stop-opacity=".55"/><stop offset=".62" stop-color="#55a9bf" stop-opacity=".8"/><stop offset="1" stop-color="#dcfaff" stop-opacity=".9"/></linearGradient>
             <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
               <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#10283b" flood-opacity=".28"/>
             </filter>
@@ -1599,39 +1603,108 @@
       </div>
     </section>
   </div>
+  <style>
+    #videoCoachModal {padding:16px;background:rgba(7,28,46,.64);backdrop-filter:blur(5px)}
+    #videoCoachModal [hidden] {display:none!important}
+    #videoCoachModal .coach-sheet {max-width:640px;background:#fff;border:0;border-radius:24px}
+    #videoCoachModal .coach-header {align-items:center;padding:22px 24px;background:linear-gradient(125deg,#102f50,#146f97)}
+    #videoCoachModal .coach-header h2 {font-size:23px;margin-top:5px;letter-spacing:-.5px}
+    #videoCoachModal .coach-body {padding:22px 24px}
+    #videoCoachModal .coach-empty {padding:28px 16px;text-align:center;border-radius:18px;background:linear-gradient(145deg,#eef7fc,#f6f9fb);margin-bottom:14px;border:1px solid #e1edf4}
+    #videoCoachModal .coach-empty-icon {display:grid;place-items:center;margin:0 auto 12px;width:46px;height:46px;border-radius:15px;background:#fff;color:#167dab;font-size:29px;box-shadow:0 4px 16px #1d6e9810}
+    #videoCoachModal .coach-empty h3 {font-size:17px;margin:0 0 6px;color:#183e5c}
+    #videoCoachModal .coach-empty p {font-size:13px;color:#668195;margin:0}
+    #videoCoachModal .coach-video {margin:0 0 14px;max-height:270px;border-radius:16px}
+    #videoCoachModal .coach-row {gap:9px}
+    #videoCoachModal .coach-row button,#videoCoachModal .coach-upload {flex:1;text-align:center;min-height:45px;border-radius:12px;font-size:14px;display:flex;align-items:center;justify-content:center;padding:10px 12px}
+    #videoCoachModal .coach-upload:focus-visible {outline:3px solid #60bbde;outline-offset:2px}
+    #videoCoachModal .coach-tools {margin-top:8px}
+    #videoCoachModal .coach-tools:has(> [hidden]:first-child):has(> [hidden]:last-child) {display:none}
+    #videoCoachModal #coachClear {flex:0 0 auto;font-size:12px;border:0;background:transparent;color:#74838f}
+    #videoCoachModal .coach-status {font-size:12px;margin:10px 0;min-height:0;line-height:1.6}
+    #videoCoachModal .coach-status:empty {display:none}
+    #videoCoachModal .coach-disclosure {border-top:1px solid #e8eef3;margin-top:18px;padding-top:15px;font-size:13px}
+    #videoCoachModal summary {cursor:pointer;color:#476379;font-weight:650;min-height:28px}
+    #videoCoachModal summary span {font-size:11px;font-weight:400;color:#8b9ca9;margin-left:5px}
+    #videoCoachModal .coach-field input,#videoCoachModal .coach-field textarea {font:inherit;font-size:16px;line-height:1.5;padding:12px;border-radius:12px}
+    #videoCoachModal .coach-consent {margin:16px 0;font-size:12px;gap:10px}
+    #videoCoachModal .coach-consent input {width:20px;height:20px;flex-basis:20px}
+    #videoCoachModal .coach-consent small {display:block;color:#81929f;font-size:11px;margin-top:3px}
+    #videoCoachModal #coachAnalyze {width:100%;min-height:49px;border:0;border-radius:13px;font:inherit;font-weight:750;font-size:15px;box-shadow:0 6px 16px #127ca61a;cursor:pointer}
+    #videoCoachModal #coachAnalyze:disabled {background:#e6edf2;color:#8194a4;opacity:1;box-shadow:none;cursor:default}
+    #videoCoachModal .coach-boundary {font-size:11px;color:#8b99a4;line-height:1.6;margin:10px 0 0;text-align:center}
+    #videoCoachModal .coach-settings {margin-top:14px;padding-top:12px}
+    #videoCoachModal .coach-settings summary {font-size:12px;color:#82919e}
+    #videoCoachModal .coach-frames {grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:16px 0}
+    #videoCoachModal .coach-frame {border-radius:11px;padding:4px;font-size:11px}
+    #videoCoachModal .coach-frame img {aspect-ratio:3/4;max-height:115px}
+    #videoCoachModal .coach-frame:has(input:checked) {border-color:#74b9d6;background:#eff9fc}
+    #videoCoachModal .coach-frame input {accent-color:#157ca5}
+    #videoCoachModal .coach-result {border:0;background:#f4f8fb;margin:22px -24px -22px;padding:22px 24px;display:flow-root}
+    #videoCoachModal .coach-result>h3 {font-size:19px;margin:5px 0 12px;line-height:1.45}
+    #videoCoachModal .coach-result>p {line-height:1.75;clear:both}
+    #videoCoachModal .coach-listen {float:none;display:block;margin:0 0 12px auto;font-size:12px;padding:8px 11px;border-radius:20px}
+    #videoCoachModal .coach-note {background:#e0f0f7;color:#174d69;border-radius:14px;padding:14px;font-weight:650}
+    #videoCoachModal .coach-observation {grid-template-columns:76px minmax(0,1fr);padding:14px;gap:13px;border:1px solid #e3ebf1;border-radius:16px;box-shadow:0 3px 12px #17436204}
+    #videoCoachModal .coach-observation img {aspect-ratio:3/4;align-self:start}
+    #videoCoachModal .coach-observation h3 {font-size:14px;line-height:1.5}
+    #videoCoachModal .coach-observation p {font-size:12px;line-height:1.65;margin:7px 0 0}
+    #videoCoachModal .coach-observation small {font-size:10px;color:#7590a0;margin-bottom:4px}
+    #videoCoachModal .coach-observation p:last-child {color:#176185;font-weight:650}
+    #videoCoachModal .coach-sr-only {position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+    @media(max-width:560px){#videoCoachModal{padding:10px}#videoCoachModal .coach-sheet{margin:8px auto}#videoCoachModal .coach-body{padding:18px}#videoCoachModal .coach-header{padding:19px 18px}#videoCoachModal .coach-result{margin:20px -18px -18px;padding:20px 18px}}
+  </style>
   <div class="coach-modal" id="videoCoachModal" hidden>
     <section class="coach-sheet" role="dialog" aria-modal="true" aria-labelledby="videoCoachTitle">
       <header class="coach-header">
-        <div><p class="coach-kicker">CONTACT LENS · VIDEO COACH</p><h2 id="videoCoachTitle">내 착용 영상을 함께 살펴봐요</h2></div>
+        <div><p class="coach-kicker">VIDEO COACH</p><h2 id="videoCoachTitle">착용 영상 코칭</h2></div>
         <button class="coach-close" id="videoCoachClose" type="button" aria-label="영상 코칭 닫기">×</button>
       </header>
       <div class="coach-body">
-        <p>한 번의 시도를 짧게 촬영하면, 확인 가능한 장면을 골라 다음에 고칠 한 가지를 찾아볼 수 있어요.</p>
-        <div class="coach-note">영상 원본은 보내지 않습니다. 아래에서 선택한 정지 장면만 분석 서버로 전송합니다. 손이나 렌즈가 가려진 장면, 렌즈의 실제 착용 여부와 눈 건강 상태는 확정할 수 없습니다.</div>
+        <div id="coachEmpty" class="coach-empty"><span class="coach-empty-icon" aria-hidden="true">▷</span><h3>내 영상으로 연습해 보세요</h3><p>눈과 손가락이 함께 보이는 3~30초 영상</p></div>
         <video id="coachVideo" class="coach-video" controls playsinline hidden></video>
         <div class="coach-row">
-          <button id="coachCamera" class="primary" type="button">카메라 켜기</button>
+          <button id="coachCamera" class="primary" type="button">직접 촬영</button>
           <button id="coachRecord" type="button" hidden>● 15초 촬영</button>
           <button id="coachStop" type="button" hidden>촬영 끝내기</button>
-          <label for="coachFile">영상 선택<input id="coachFile" type="file" accept="video/*"></label>
+          <label for="coachFile" class="coach-upload" tabindex="0" role="button">영상 불러오기<input id="coachFile" type="file" accept="video/*"></label>
         </div>
         <progress id="coachProgress" class="coach-progress" max="8" value="0" hidden></progress>
-        <div id="coachStatus" class="coach-status" role="status" aria-live="polite">3~30초 영상을 선택하거나 촬영해 주세요.</div>
-        <div class="coach-row"><button id="coachExtract" class="coach-primary" type="button" disabled>검토할 장면 준비하기</button><button id="coachClear" type="button" disabled>영상 지우기</button></div>
+        <div id="coachStatus" class="coach-status" role="status" aria-live="polite"></div>
+        <div class="coach-row coach-tools"><button id="coachExtract" class="coach-primary" type="button" disabled hidden>장면 확인</button><button id="coachClear" type="button" disabled hidden>영상 삭제</button></div>
         <div id="coachFrames" class="coach-frames" hidden></div>
-        <label class="coach-field">궁금한 점 <span>(선택)</span><textarea id="coachQuestion" maxlength="400" placeholder="예: 렌즈를 가까이 가져가면 눈을 감게 돼요."></textarea></label>
-        <label class="coach-consent"><input id="coachConsent" type="checkbox"><span>선택한 장면과 질문을 AI 분석 서버로 보내는 데 동의합니다. 원본 영상과 음성은 보내지 않습니다.</span></label>
-        <details><summary>AI 연결 설정</summary>
+        <details class="coach-disclosure"><summary>궁금한 점 추가 <span>선택</span></summary><label class="coach-field"><span class="coach-sr-only">궁금한 점</span><textarea id="coachQuestion" maxlength="400" placeholder="예: 렌즈를 가까이 가져가면 눈을 감게 돼요."></textarea></label></details>
+        <label class="coach-consent"><input id="coachConsent" type="checkbox"><span>선택 장면과 질문의 AI 분석 전송에 동의합니다.<small>원본 영상과 음성은 전송하지 않아요.</small></span></label>
+        <button id="coachAnalyze" class="coach-primary" type="button" disabled>코칭 받기</button>
+        <p class="coach-boundary">보이는 동작에 대한 참고 코칭이며, 눈 건강이나 착용 성공을 판단하지 않습니다.</p>
+        <details id="coachSettings" class="coach-disclosure coach-settings"><summary>연결 설정</summary>
           <label class="coach-field">분석 서버 주소<input id="coachEndpoint" type="url" placeholder="https://배포주소.vercel.app/api/analyze"></label>
           <label class="coach-field">테스트 접속 코드<input id="coachAccess" type="password" autocomplete="off" placeholder="서버에 설정한 접속 코드"></label>
-          <p class="coach-note warn">GitHub Pages에 올린 파일은 `/api/analyze`를 직접 실행할 수 없습니다. Vercel 분석 서버 주소가 필요합니다.</p>
         </details>
-        <button id="coachAnalyze" class="coach-primary" type="button" disabled>선택한 장면으로 코칭 받기</button>
         <div id="coachResult" class="coach-result" hidden></div>
       </div>
     </section>
   </div>
 
+  <style>
+    /* Shared FAQ-style sheet for all three menus. */
+    #faqModal,#watchVideoModal,#videoCoachModal {position:fixed;inset:0;z-index:1000;display:grid;align-items:end;padding:env(safe-area-inset-top) 0 0;background:rgba(4,23,40,.62);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);overflow:hidden}
+    #faqModal,#watchVideoModal,#videoCoachModal {grid-template-columns:minmax(0,1fr)}
+    #faqModal[hidden],#watchVideoModal[hidden],#videoCoachModal[hidden] {display:none}
+    #faqModal>.faq-sheet,#watchVideoModal>.coach-sheet,#videoCoachModal>.coach-sheet {display:flex;flex-direction:column;width:min(100%,640px);max-width:640px;max-height:94dvh;min-height:0;margin:0 auto;border:0;border-radius:28px 28px 0 0;background:#f8fbfe;box-shadow:0 -18px 60px rgba(4,23,40,.28);overflow:hidden;animation:menuSheetIn .28s cubic-bezier(.2,.7,.2,1)}
+    #faqModal .faq-header,#watchVideoModal .coach-header,#videoCoachModal .coach-header {flex:none;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:20px 20px 14px;color:#fff;background:linear-gradient(135deg,#092b50,#0b659b)}
+    #faqModal .faq-header h2,#watchVideoModal .coach-header h2,#videoCoachModal .coach-header h2 {margin:0;font-size:24px;line-height:1.3;letter-spacing:-.035em}
+    #faqModal .faq-kicker,#watchVideoModal .coach-kicker,#videoCoachModal .coach-kicker {margin:0 0 3px;color:#aee4ff;font-size:11px;font-weight:800;letter-spacing:.12em}
+    #faqModal .faq-close,#watchVideoModal .coach-close,#videoCoachModal .coach-close {display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;padding:0;border:1px solid #ffffff59;border-radius:50%;background:#ffffff24;color:#fff;font-size:24px;line-height:1;cursor:pointer}
+    #watchVideoModal .coach-body,#videoCoachModal .coach-body {flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;padding:18px 18px calc(20px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch}
+    #faqModal .faq-search-wrap {flex:none}
+    #faqModal .faq-list {padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+    #videoCoachModal .coach-result {margin:20px -18px -20px;padding:20px 18px calc(20px + env(safe-area-inset-bottom))}
+    #eyeScene #lensHit {fill:url(#lensGlow);fill-opacity:1;stroke:url(#lensEdgeLight);stroke-opacity:1;stroke-width:1.15}
+    @keyframes menuSheetIn {from{transform:translateY(46px);opacity:0}to{transform:translateY(0);opacity:1}}
+    @media(min-width:700px){#faqModal,#watchVideoModal,#videoCoachModal{align-items:center;padding:24px}#faqModal>.faq-sheet,#watchVideoModal>.coach-sheet,#videoCoachModal>.coach-sheet{border-radius:28px;max-height:calc(100dvh - 48px)}}
+    @media(prefers-reduced-motion:reduce){#faqModal>.faq-sheet,#watchVideoModal>.coach-sheet,#videoCoachModal>.coach-sheet{animation:none}}
+  </style>
   <div class="faq-modal" id="faqModal" hidden>
     <section class="faq-sheet" role="dialog" aria-modal="true" aria-labelledby="faqTitle">
       <header class="faq-header">
@@ -1757,7 +1830,7 @@
  const lensWindow=$('lensWindow'), lens=$('lensPosition'), fold=$('lensFold'), guide=$('guideLayer');
  svg.append(lensWindow,guide);
  lensWindow.setAttribute('clip-path','url(#naturalEyeClip)');
- $('lensHit').setAttribute('cx','218');$('lensHit').setAttribute('cy','223');$('lensHit').setAttribute('r','47');
+ $('lensHit').setAttribute('cx','218');$('lensHit').setAttribute('cy','223');$('lensHit').setAttribute('r','55');
  for(const e of [...fold.children]) if(e.id!=='lensHit') e.remove();
  const ns='http://www.w3.org/2000/svg', glint=document.createElementNS(ns,'path');
  glint.setAttribute('d','M186 237 Q183 226 187 216');glint.setAttribute('stroke','#e4fcff');glint.setAttribute('stroke-width','1.3');glint.setAttribute('opacity','.7');glint.setAttribute('fill','none');fold.append(glint);
@@ -2035,7 +2108,7 @@
       function withinLens(point, extra = 0) {
         const dx = point.x - 218;
         const dy = point.y - (223 + state.lensY*.45);
-        return Math.hypot(dx, dy) <= 47 + extra;
+        return Math.hypot(dx, dy) <= 55 + extra;
       }
 
       function midpoint(a, b) {
@@ -3494,6 +3567,13 @@
   const chosen = () => frames.filter((_, i) => $('coachFrame' + i)?.checked);
   const update = () => {
     const recording = recorder?.state === 'recording';
+    $('coachEmpty').hidden = !!objectUrl || !!stream;
+    $('coachExtract').hidden = !objectUrl || frames.length > 0;
+    $('coachClear').hidden = !objectUrl && !stream;
+    $('coachCamera').hidden = !!stream;
+    $('coachRecord').hidden = !stream || recording;
+    $('coachStop').hidden = !recording;
+    $('coachAnalyze').textContent = busy && request ? '코칭을 준비하고 있어요…' : '코칭 받기';
     $('coachExtract').disabled = busy || !objectUrl || recording;
     $('coachClear').disabled = busy || (!objectUrl && !stream);
     $('coachCamera').disabled = busy || recording;
@@ -3524,10 +3604,13 @@
     try {
       objectUrl = URL.createObjectURL(blob); await wait('loadedmetadata', () => { video.src = objectUrl; video.load(); });
       if (!Number.isFinite(video.duration) || video.duration < 3 || video.duration > 30.5) throw new Error('3~30초 영상을 선택해 주세요.');
-      video.hidden = false; video.controls = true; video.muted = false; say(`${video.duration.toFixed(1)}초 영상을 준비했어요. 장면을 확인하려면 버튼을 눌러 주세요.`);
+      video.hidden = false; video.controls = true; video.muted = false; say(`${video.duration.toFixed(1)}초 영상 · 아래에서 장면을 확인해 주세요.`);
     } catch (error) { clearVideo(); say(error.message, true); } finally { busy = false; update(); }
   };
   file.addEventListener('change', event => { const picked = event.target.files?.[0]; if (picked) loadVideo(picked); });
+  document.querySelector('#videoCoachModal .coach-upload').addEventListener('keydown', event => {
+    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); if (!file.disabled) file.click(); }
+  });
   $('coachCamera').addEventListener('click', async () => {
     clearVideo();
     if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) { say('이 브라우저에서 직접 촬영할 수 없어요. 휴대폰으로 촬영한 영상을 선택해 주세요.', true); return; }
@@ -3564,11 +3647,11 @@
     const canvas = document.createElement('canvas'), cx = canvas.getContext('2d'); const scale = Math.min(1, 960 / Math.max(video.videoWidth, video.videoHeight)); canvas.width = Math.round(video.videoWidth * scale); canvas.height = Math.round(video.videoHeight * scale);
     try {
       for (let i = 0; i < 8; i++) { const time = .05 + (video.duration - .15) * i / 7; await wait('seeked', () => { video.currentTime = time; }); cx.drawImage(video, 0, 0, canvas.width, canvas.height); frames.push({ time: Number(time.toFixed(2)), image: encodeFrame(canvas) }); $('coachProgress').value = i + 1; say(`장면을 준비하고 있어요 · ${i + 1} / 8`); }
-      const container = $('coachFrames'); container.replaceChildren(); frames.forEach((frame, i) => { const box = document.createElement('div'); box.className = 'coach-frame'; const img = new Image(); img.src = frame.image; img.alt = `${frame.time}초 영상 장면`; const label = document.createElement('label'); const check = document.createElement('input'); check.type = 'checkbox'; check.id = 'coachFrame' + i; check.checked = true; check.addEventListener('change', update); label.append(check, document.createTextNode(`${frame.time.toFixed(1)}초`)); box.append(img, label); container.append(box); }); container.hidden = false; say('장면을 확인한 뒤 필요 없는 장면은 체크를 해제해 주세요.');
+      const container = $('coachFrames'); container.replaceChildren(); frames.forEach((frame, i) => { const box = document.createElement('div'); box.className = 'coach-frame'; const img = new Image(); img.src = frame.image; img.alt = `${frame.time}초 영상 장면`; const label = document.createElement('label'); const check = document.createElement('input'); check.type = 'checkbox'; check.id = 'coachFrame' + i; check.checked = true; check.addEventListener('change', update); label.append(check, document.createTextNode(`${frame.time.toFixed(1)}초`)); box.append(img, label); container.append(box); }); container.hidden = false; say('분석할 장면을 3개 이상 선택해 주세요.');
     } catch (error) { say(error.message, true); } finally { busy = false; $('coachProgress').hidden = true; update(); }
   });
   $('coachConsent').addEventListener('change', update);
-  $('videoCoachButton').addEventListener('click', () => { $('videoCoachTitle').textContent = $('removalPractice').hidden ? '내 착용 영상을 함께 살펴봐요' : '내 제거 영상을 함께 살펴봐요'; modal.hidden = false; document.body.classList.add('faq-open'); $('videoCoachClose').focus(); });
+  $('videoCoachButton').addEventListener('click', () => { $('videoCoachTitle').textContent = $('removalPractice').hidden ? '착용 영상 코칭' : '제거 영상 코칭'; modal.hidden = false; document.body.classList.add('faq-open'); $('videoCoachClose').focus(); });
   $('videoCoachClose').addEventListener('click', () => { modal.hidden = true; document.body.classList.remove('faq-open'); });
   modal.addEventListener('click', event => { if (event.target === modal) { modal.hidden = true; document.body.classList.remove('faq-open'); } });
   const endpoint = () => {
@@ -3576,13 +3659,13 @@
     const url = new URL(value); if (url.protocol !== 'https:' && !(url.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(url.hostname))) throw new Error('HTTPS 분석 서버 주소를 입력해 주세요.'); return url.href;
   };
   const render = (result, sentFrames) => {
-    const target = $('coachResult'); target.replaceChildren(); const listen = document.createElement('button'); listen.className = 'coach-listen'; listen.type = 'button'; listen.textContent = '음성으로 듣기'; let speech = [result.summary, result.next_step, ...(result.observations || []).map(item => item.coaching), result.limitations].filter(Boolean).join(' '); listen.onclick = () => { if (!window.speechSynthesis) return; if (speechSynthesis.speaking) { speechSynthesis.cancel(); listen.textContent = '음성으로 듣기'; return; } const utterance = new SpeechSynthesisUtterance(speech); utterance.lang = 'ko-KR'; utterance.rate = .95; utterance.onend = () => { listen.textContent = '음성으로 듣기'; }; listen.textContent = '읽기 멈추기'; speechSynthesis.speak(utterance); }; target.append(listen); const title = document.createElement('h3'); title.textContent = result.quality === 'reviewable' ? '확인 가능한 장면을 검토했어요' : '추가로 확인할 장면이 필요해요'; target.append(title); const p = document.createElement('p'); p.textContent = result.summary || ''; target.append(p); const next = document.createElement('p'); next.className = 'coach-note'; next.textContent = result.next_step || ''; target.append(next);
+    const target = $('coachResult'); target.replaceChildren(); const listen = document.createElement('button'); listen.className = 'coach-listen'; listen.type = 'button'; listen.textContent = '음성으로 듣기'; let speech = [result.summary, result.next_step, ...(result.observations || []).map(item => item.coaching), result.limitations].filter(Boolean).join(' '); listen.onclick = () => { if (!window.speechSynthesis) return; if (speechSynthesis.speaking) { speechSynthesis.cancel(); listen.textContent = '음성으로 듣기'; return; } const utterance = new SpeechSynthesisUtterance(speech); utterance.lang = 'ko-KR'; utterance.rate = .95; utterance.onend = () => { listen.textContent = '음성으로 듣기'; }; listen.textContent = '읽기 멈추기'; speechSynthesis.speak(utterance); }; target.append(listen); const title = document.createElement('h3'); title.textContent = result.quality === 'reviewable' ? '코칭 결과' : '더 선명한 장면이 필요해요'; target.append(title); const p = document.createElement('p'); p.textContent = result.summary || ''; target.append(p); const next = document.createElement('p'); next.className = 'coach-note'; next.textContent = result.next_step || ''; target.append(next);
     (result.observations || []).slice(0, 3).forEach(item => { const source = sentFrames[item.frame_index]; if (!source) return; const row = document.createElement('div'); row.className = 'coach-observation'; const image = new Image(); image.src = source.image; image.alt = `${source.time}초 근거 장면`; const body = document.createElement('div'); const h = document.createElement('h3'); h.textContent = `${source.time.toFixed(1)}초 · ${item.title || '관찰 내용'}`; const evidence = document.createElement('p'); evidence.textContent = item.evidence || ''; const coaching = document.createElement('p'); coaching.textContent = item.coaching || ''; const certainty=document.createElement('small'); certainty.textContent=item.certainty==='visible'?'사진에서 확인한 내용':'명확히 확인하기 어려운 내용'; body.append(certainty, h, evidence, coaching); row.append(image, body); target.append(row); }); const limit = document.createElement('p'); limit.className = 'hint'; limit.textContent = result.limitations || '정지 장면만 검토했기 때문에 연속 동작을 확정할 수 없습니다.'; target.append(limit); target.hidden = false;
   };
   $('coachAnalyze').addEventListener('click', async () => {
     if (!$('coachConsent').checked || chosen().length < 3) return; let url; try { url = endpoint(); } catch (error) { say(error.message, true); return; }
-    if (!$('coachAccess').value.trim()) { say('AI 연결 설정에 테스트 접속 코드를 입력해 주세요.', true); return; }
-    busy = true; update(); request = new AbortController(); const timeout = setTimeout(() => request.abort(), 65000); const selected = chosen();
+    if (!$('coachAccess').value.trim()) { $('coachSettings').open = true; say('연결 설정에 접속 코드를 입력해 주세요.', true); $('coachAccess').focus(); return; }
+    busy = true; request = new AbortController(); update(); const timeout = setTimeout(() => request.abort(), 65000); const selected = chosen();
     try { const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Coach-Code': $('coachAccess').value.trim() }, body: JSON.stringify({ frames: selected, mode: $('removalPractice').hidden ? 'wear' : 'remove', outcome: 'unknown', question: $('coachQuestion').value, symptoms: false, consent: true }), signal: request.signal }); const data = await response.json().catch(() => ({})); if (!response.ok) throw new Error((data.error || (response.status === 413 ? '전송할 장면 용량이 커요. 장면 수를 줄여주세요.' : '분석 서버가 응답하지 않았어요.')) + (data.code ? ` [${data.code}]` : ` [HTTP ${response.status}]`)); if (!data.result) throw new Error('코칭 결과를 받지 못했어요.'); render(data.result, selected); say('코칭 결과를 확인해 주세요.'); $('coachResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
     catch (error) { say(error.name === 'AbortError' ? '분석 시간이 초과됐어요. 잠시 뒤 다시 시도해 주세요.' : /load failed|failed to fetch/i.test(error.message) ? '서버에 연결하지 못했어요. 분석 서버 주소와 허용된 사이트 설정을 확인해 주세요.' : error.message, true); }
     finally { clearTimeout(timeout); request = null; busy = false; update(); }
